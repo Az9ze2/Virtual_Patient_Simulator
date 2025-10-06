@@ -1,0 +1,312 @@
+{
+  "case_id": "OSCE-CHC-2m-phimosis-2020-12-10-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้วัคซีนและการดูแลสุขภาพเด็กโดยรวม (CHC at age 2 months and phimosis)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking + Patient Education",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.เอก สุขสันต์",
+      "age": {
+        "value": 2,
+        "unit": "เดือน"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพามารับวัคซีนตามนัด EPI เด็กสบายดี มารดากังวลเรื่องหนังหุ้มอวัยวะเพศชายของบุตรไม่เปิด"
+    },
+    "physical_examination": {
+      "weight_kg": 4.8,
+      "length_cm": 57,
+      "ofc_cm": 38,
+      "percentiles": {
+        "weight": "P50",
+        "length": "P50",
+        "ofc": "P50"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 36.7,
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "others within normal limit for age"
+      },
+      "general_appearance": "an active male infant, no dysmorphic feature, weight 4.8 kg (P50), length 57 cm (P50), OFC 38 cm (P50)",
+      "heent": "no pale conjunctiva, no icteric sclera, AF 1X1 cm, PF finger tip, normal red reflex both eyes",
+      "heart": "regular, no murmur, normal S1 and S2",
+      "lungs": "clear and equal both lungs",
+      "abdomen": "soft, liver and spleen not palpable, no mass",
+      "extremities": "no deformity, no edema",
+      "neuro": "not provided"
+    },
+    "blood_tests": [
+      "not provided"
+    ],
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "หลังออกจากโรงพยาบาลตอนแรกเกิดไม่มีอาการผิดปกติ"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "หลังออกจากโรงพยาบาลตอนแรกเกิดไม่มีอาการผิดปกติ แข็งแรงดี ไม่เคยติดเชื้อในทางเดินปัสสาวะ",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "not provided",
+      "social_history": "อยู่บ้านจัดสรร 2 ชั้น แถวชานเมือง ในบ้านมีเปลที่มีรั้วกันสี่ด้าน โดยบุตรนอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกัน มีย่าของเด็กมาช่วยเลี้ยงเวลากลางวัน",
+      "immunization_history": "มารดาพามารับวัคซีนตามนัด EPI"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": [
+        "not provided"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "ศิริพร สุขสันต์",
+      "age": 25,
+      "occupation": "แม่บ้าน",
+      "family_structure": "สามีอายุ 31 ปี ทำอาชีพตำรวจ มีย่าของเด็กมาช่วยเลี้ยงเวลากลางวัน",
+      "role": "มารดาจำลอง",
+      "emotional_state": "กังวล"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "กินนมแม่อย่างเดียว",
+      "frequency": "ทุก 2-3 ชั่วโมง",
+      "duration_per_feed": "ครั้งละ 30 นาที",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "นอนหลับนานครั้งละ 2-4 ชั่วโมง",
+      "nighttime_sleep": "นอนหลับนานครั้งละ 2-4 ชั่วโมง",
+      "stool_pattern": "ถ่ายอุจจาระเป็นสีเหลืองวันละ 2-3 ครั้ง",
+      "urine_pattern": "ปัสสาวะวันละ 6-7 ครั้ง ปัสสาวะพุ่งดี ไม่มีการโป่งพองที่ปลายอวัยวะเพศชายหลังปัสสาวะเสร็จ"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรชายอายุ 2 เดือน พาบุตรมารับวัคซีนตามนัด กังวลเรื่องหนังหุ้มอวัยวะเพศชายของบุตรไม่เปิด ขณะนี้นั่งอยู่บนเก้าอี้ในห้องตรวจ รอแพทย์มาทำการตรวจรักษา",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_questions": {
+        "question_limit_type": "multiple",
+        "questions": [
+          {
+            "text": "อวัยวะเพศมีความผิดปกติหรือไม่",
+            "asked": false
+          },
+          {
+            "text": "การรักษาอวัยวะเพศผิดปกติ/ปลายไม่เปิด รักษาอย่างไร",
+            "asked": false
+          },
+          {
+            "text": "ผลข้างเคียงของการได้วัคซีนนี้คืออะไ",
+            "asked": false
+          },
+          {
+            "text": "ถ้ามีไข้หลังฉีดวัคซีนให้ทำอย่างไร",
+            "asked": false
+          }
+        ]
+      },
+      
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาน้องมาด้วยเรื่องอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารดาพามารับวัคซีนตามนัด EPI เด็กสบายดี"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีความกังวลอะไรเพิ่มเติมไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารดากังวลเรื่องหนังหุ้มอวัยวะเพศชายของบุตรไม่เปิด"
+            }
+          ]
+        },
+        {
+          "topic": "อาการทั่วไปของทารก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้น้องมีไข้หรือมีอาการผิดปกติไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "วันนี้สบายดี ไม่มีไข้"
+            }
+          ]
+        },
+        {
+          "topic": "ข้อมูลทั่วไปและผู้ดูแล",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คุณแม่อายุเท่าไหร่และทำงานอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารดาจำลองอายุ 25 ปี เป็นแม่บ้าน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คุณพ่อทำงานอะไรและอายุเท่าไหร่คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "สามีอายุ 31 ปี ทำอาชีพตำรวจ"
+            }
+          ]
+        },
+        {
+          "topic": "สิ่งแวดล้อมที่บ้านและที่นอน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องอาศัยอยู่ที่ไหนและนอนที่ไหนคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อยู่บ้านจัดสรร 2 ชั้น แถวชานเมือง ในบ้านมีเปลที่มีรั้วกันสี่ด้าน โดยบุตรนอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกัน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ใครช่วยดูแลน้องตอนกลางวันคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีย่าของเด็กมาช่วยเลี้ยงเวลากลางวัน"
+            }
+          ]
+        },
+        {
+          "topic": "การให้นมและการนอน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องกินนมอะไรและบ่อยแค่ไหนคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัจจุบันกินนมแม่อย่างเดียวทุก 2-3 ชั่วโมง โดยกินครั้งละ 30 นาที"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "นอนเป็นอย่างไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "นอนหลับนานครั้งละ 2-4 ชั่วโมง"
+            }
+          ]
+        },
+        {
+          "topic": "การขับถ่าย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ถ่ายอุจจาระบ่อยแค่ไหนและสีอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายอุจจาระเป็นสีเหลืองวันละ 2-3 ครั้ง"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปัสสาวะเป็นอย่างไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัสสาวะวันละ 6-7 ครั้ง ปัสสาวะพุ่งดี ไม่มีการโป่งพองที่ปลายอวัยวะเพศชายหลังปัสสาวะเสร็จ"
+            }
+          ]
+        },
+        {
+          "topic": "พัฒนาการตามวัย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "พัฒนาการเป็นอย่างไรบ้างคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พัฒนาการตามอายุคืออะไรบ้าง"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้น้องทำอะไรได้บ้างคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัจจุบันเด็กเริ่มชันคอ ส่งเสียงอ้อแอ้ หันหาเสียง มองหน้ามารดาและบิดา ยิ้มให้กับคนรอบข้างได้"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติหลังคลอด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "หลังออกจากโรงพยาบาลตอนแรกเกิดมีอาการผิดปกติไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "หลังออกจากโรงพยาบาลตอนแรกเกิดไม่มีอาการผิดปกติ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

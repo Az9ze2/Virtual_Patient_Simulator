@@ -1,0 +1,265 @@
+{
+  "test_info": {
+    "timestamp": "2025-10-01T10:36:06.059302",
+    "model": "gpt-4.1-mini",
+    "memory_mode": "summarize",
+    "total_cases": 5
+  },
+  "results": [
+    {
+      "case_id": "CASE-OSCE-PED-CRACKED-NIPPLE-2023-12-10-001",
+      "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้นมแม่ ในมารดาที่มีภาวะหัวนมแตก (cracked nipple)",
+      "metrics": {
+        "total_questions": 5,
+        "successful_responses": 5,
+        "error_count": 0,
+        "total_response_time": 9.558803796768188,
+        "avg_response_time": 1.9117607593536377,
+        "min_response_time": 1.4074950218200684,
+        "max_response_time": 2.6469106674194336,
+        "total_tokens": 2987,
+        "input_tokens": 2867,
+        "output_tokens": 120,
+        "fallback_questions_addressed": 0,
+        "fallback_questions_total": 3,
+        "test_scenario": "Basic History Taking"
+      },
+      "conversation_log": [
+        {
+          "question": "สวัสดีครับ วันนี้มีเรื่องอะไรให้ช่วยครับ",
+          "response": "สวัสดีค่ะ วันนี้พาลูกมาตรวจน้ำหนักตามนัดค่ะ อยากทราบว่าน้ำหนักลูกอยู่ในเกณฑ์ปกติไหมคะ",
+          "response_time": 2.6469106674194336,
+          "success": true
+        },
+        {
+          "question": "น้องชื่ออะไรครับ อายุเท่าไหร่",
+          "response": "ชื่อยินดีค่ะ อายุ 5 วันแล้วค่ะ",
+          "response_time": 1.9488821029663086,
+          "success": true
+        },
+        {
+          "question": "อาการเป็นมาตั้งแต่เมื่อไหร่ครับ",
+          "response": "ลูกสบายดีค่ะ ไม่มีอาการผิดปกติอะไรเลยนะคะ แค่หัวนมข้างขวาของแม่แตกนิดหน่อยค่ะ",
+          "response_time": 2.1139354705810547,
+          "success": true
+        },
+        {
+          "question": "มีอาการอื่นร่วมด้วยไหมครับ",
+          "response": "ไม่มีอาการอื่นค่ะ ลูกดูแข็งแรงดีมากค่ะ",
+          "response_time": 1.4074950218200684,
+          "success": true
+        },
+        {
+          "question": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "เพิ่งมาครั้งนี้เป็นครั้งแรกค่ะ แค่ติดตามน้ำหนักลูกตามนัดนะคะ",
+          "response_time": 1.4415805339813232,
+          "success": true
+        }
+      ]
+    },
+    {
+      "case_id": "OSCE-CHC-9mo-Anemia-2024-12-15-TH-001",
+      "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้วัคซีนและการดูแลสุขภาพเด็กโดยรวม (CHC at age 9 months and anemia)",
+      "metrics": {
+        "total_questions": 5,
+        "successful_responses": 5,
+        "error_count": 0,
+        "total_response_time": 4.81913161277771,
+        "avg_response_time": 0.963826322555542,
+        "min_response_time": 0.6993505954742432,
+        "max_response_time": 1.54886794090271,
+        "total_tokens": 2179,
+        "input_tokens": 2099,
+        "output_tokens": 80,
+        "fallback_questions_addressed": 0,
+        "fallback_questions_total": 0,
+        "test_scenario": "Basic History Taking"
+      },
+      "conversation_log": [
+        {
+          "question": "สวัสดีครับ วันนี้มีเรื่องอะไรให้ช่วยครับ",
+          "response": "สวัสดีค่ะ แม่พาดาวมารับวัคซีนตามนัดค่ะ",
+          "response_time": 0.9981930255889893,
+          "success": true
+        },
+        {
+          "question": "น้องชื่ออะไรครับ อายุเท่าไหร่",
+          "response": "ชื่อดาวค่ะ อายุ 9 เดือนค่ะ",
+          "response_time": 0.7035927772521973,
+          "success": true
+        },
+        {
+          "question": "อาการเป็นมาตั้งแต่เมื่อไหร่ครับ",
+          "response": "น้องไม่มีอาการอะไรค่ะ แค่มารับวัคซีนตามนัดค่ะ",
+          "response_time": 1.54886794090271,
+          "success": true
+        },
+        {
+          "question": "มีอาการอื่นร่วมด้วยไหมครับ",
+          "response": "ไม่มีค่ะ น้องสุขภาพแข็งแรงดีค่ะ",
+          "response_time": 0.6993505954742432,
+          "success": true
+        },
+        {
+          "question": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "เคยพาน้องไปหาหมอเพื่อตรวจสุขภาพประจำเดือนค่ะ",
+          "response_time": 0.8691272735595703,
+          "success": true
+        }
+      ]
+    },
+    {
+      "case_id": "OSCE-CHC-2m-phimosis-2020-12-10-001",
+      "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้วัคซีนและการดูแลสุขภาพเด็กโดยรวม (CHC at age 2 months and phimosis)",
+      "metrics": {
+        "total_questions": 5,
+        "successful_responses": 5,
+        "error_count": 0,
+        "total_response_time": 4.970489263534546,
+        "avg_response_time": 0.9940978527069092,
+        "min_response_time": 0.7580621242523193,
+        "max_response_time": 1.347503662109375,
+        "total_tokens": 2505,
+        "input_tokens": 2390,
+        "output_tokens": 115,
+        "fallback_questions_addressed": 0,
+        "fallback_questions_total": 0,
+        "test_scenario": "Basic History Taking"
+      },
+      "conversation_log": [
+        {
+          "question": "สวัสดีครับ วันนี้มีเรื่องอะไรให้ช่วยครับ",
+          "response": "สวัสดีค่ะ หมอคะ ลูกชายหนูหนังหุ้มปลายไม่เปิด หนูเป็นห่วงมากเลยค่ะ",
+          "response_time": 1.347503662109375,
+          "success": true
+        },
+        {
+          "question": "น้องชื่ออะไรครับ อายุเท่าไหร่",
+          "response": "ชื่อลูกเอกค่ะ อายุ 2 เดือนแล้วค่ะ",
+          "response_time": 0.8240442276000977,
+          "success": true
+        },
+        {
+          "question": "อาการเป็นมาตั้งแต่เมื่อไหร่ครับ",
+          "response": "ตั้งแต่เกิดเลยค่ะ หมอก็เคยบอกว่าบางทีเด็กเล็กหนังหุ้มอวัยวะเพศจะยังไม่เปิดนะคะ",
+          "response_time": 1.1423916816711426,
+          "success": true
+        },
+        {
+          "question": "มีอาการอื่นร่วมด้วยไหมครับ",
+          "response": "ไม่มีค่ะ ลูกยังดูแข็งแรงดี กินนมได้ปกติค่ะ",
+          "response_time": 0.8984875679016113,
+          "success": true
+        },
+        {
+          "question": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "เคยพามาตรวจตอนแรกคลอดค่ะ แต่ยังไม่มีการรักษาอะไรค่ะ",
+          "response_time": 0.7580621242523193,
+          "success": true
+        }
+      ]
+    },
+    {
+      "case_id": "TH-OSCE-AGn-6F-2559-HT-001",
+      "case_title": "การซักประวัติอาการบวมในผู้ป่วยเด็กหญิง อายุ 6 ปี (acute glomerulonephritis)",
+      "metrics": {
+        "total_questions": 5,
+        "successful_responses": 5,
+        "error_count": 0,
+        "total_response_time": 5.5390119552612305,
+        "avg_response_time": 1.107802391052246,
+        "min_response_time": 0.7215018272399902,
+        "max_response_time": 1.8922340869903564,
+        "total_tokens": 2596,
+        "input_tokens": 2462,
+        "output_tokens": 134,
+        "fallback_questions_addressed": 0,
+        "fallback_questions_total": 0,
+        "test_scenario": "Basic History Taking"
+      },
+      "conversation_log": [
+        {
+          "question": "สวัสดีครับ วันนี้มีเรื่องอะไรให้ช่วยครับ",
+          "response": "สวัสดีค่ะ หมอคะ ลูกสาวหนูมีอาการบวมที่หนังตาทั้งสองข้างมา 2 วันแล้วค่ะ หนูกังวลมากเลยค่ะ",
+          "response_time": 1.8922340869903564,
+          "success": true
+        },
+        {
+          "question": "น้องชื่ออะไรครับ อายุเท่าไหร่",
+          "response": "น้องชื่อมีนา อายุ 6 ขวบค่ะ",
+          "response_time": 0.7215018272399902,
+          "success": true
+        },
+        {
+          "question": "อาการเป็นมาตั้งแต่เมื่อไหร่ครับ",
+          "response": "เริ่มบวมตั้งแต่ 2 วันที่แล้วค่ะ แล้วก็ค่อยๆ เห็นชัดขึ้นเรื่อยๆ ค่ะ",
+          "response_time": 1.1500122547149658,
+          "success": true
+        },
+        {
+          "question": "มีอาการอื่นร่วมด้วยไหมครับ",
+          "response": "น้องไม่มีไข้ค่ะ แต่บางครั้งก็ขยี้ตาบ่อยเพราะรู้สึกคันนิดหน่อยค่ะ",
+          "response_time": 0.898979663848877,
+          "success": true
+        },
+        {
+          "question": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพาน้องไปหาหมอเรื่องนี้เลยค่ะ เพิ่งเริ่มบวมเมื่อสองวันก่อนค่ะ",
+          "response_time": 0.876284122467041,
+          "success": true
+        }
+      ]
+    },
+    {
+      "case_id": "OSCE-TH-PED-FEVER-RASH-2022-12-11-001",
+      "case_title": "การซักประวัติ แปลผลการตรวจร่างกาย และวินิจฉัยโรคในผู้ป่วยที่มาด้วยไข้ออกผื่น (fever with rash)",
+      "metrics": {
+        "total_questions": 5,
+        "successful_responses": 5,
+        "error_count": 0,
+        "total_response_time": 4.114552974700928,
+        "avg_response_time": 0.8229105949401856,
+        "min_response_time": 0.6905665397644043,
+        "max_response_time": 1.0301508903503418,
+        "total_tokens": 2337,
+        "input_tokens": 2239,
+        "output_tokens": 98,
+        "fallback_questions_addressed": 0,
+        "fallback_questions_total": 0,
+        "test_scenario": "Basic History Taking"
+      },
+      "conversation_log": [
+        {
+          "question": "สวัสดีครับ วันนี้มีเรื่องอะไรให้ช่วยครับ",
+          "response": "สวัสดีค่ะ คุณหมอ ลูกชายหนูมีไข้แล้วก็มีผื่นขึ้นค่ะ รู้สึกเป็นห่วงมากเลยค่ะ",
+          "response_time": 1.0301508903503418,
+          "success": true
+        },
+        {
+          "question": "น้องชื่ออะไรครับ อายุเท่าไหร่",
+          "response": "ชื่อน้องกานต์ค่ะ อายุ 4 ขวบค่ะ",
+          "response_time": 0.72987961769104,
+          "success": true
+        },
+        {
+          "question": "อาการเป็นมาตั้งแต่เมื่อไหร่ครับ",
+          "response": "เริ่มมีไข้และผื่นขึ้นเมื่อวานนี้ค่ะ",
+          "response_time": 0.6905665397644043,
+          "success": true
+        },
+        {
+          "question": "มีอาการอื่นร่วมด้วยไหมครับ",
+          "response": "น้องมีอาการซึมๆ และไม่ค่อยอยากกินข้าวค่ะ",
+          "response_time": 0.8303806781768799,
+          "success": true
+        },
+        {
+          "question": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพาน้องไปหาหมอเรื่องนี้เลยค่ะ เป็นครั้งแรกค่ะ",
+          "response_time": 0.8335752487182617,
+          "success": true
+        }
+      ]
+    }
+  ]
+}

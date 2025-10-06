@@ -1,0 +1,196 @@
+{
+  "case_id": "OSCE-PED-TB-LTBI-TH-2557-08-01",
+  "case_metadata": {
+    "case_title": "การซักประวัติหญิงที่เป็นวัณโรคปอด AFB 4+ เพื่อวางแผนการดูแลบุตรที่เลี้ยงดู (ขบวนการการค้นหา LTBI/Latent Tuberculosis Infection ในเด็ก)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking",
+    "exam_duration_minutes": 5
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "เด็กหญิงเดือน ส่องแสง",
+      "age": {
+        "value": 6,
+        "unit": "ปี"
+      },
+      "sex": "หญิง",
+      "occupation": "not provided",
+      "chief_complaint": "พาบุตรสาวมารับการตรวจวัณโรค เนื่องจากตนเองเป็นวัณโรคปอด"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "not provided",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "คลอดที่รพ.จังหวัด",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "เป็นหวัดประมาณ 3-4 ครั้ง/ปี หายเองโดยไม่ได้กินยา; ไม่มีอาการผิดปกติอื่นๆ",
+      "past_medication_history": "ไม่มีการใช้ยาประจำ; เวลาเป็นหวัดหายเองโดยไม่ได้กินยา",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "ไม่มี",
+      "family_history": "มารดาเป็นวัณโรคปอด (AFB 4+); คนอื่นในครอบครัวยังไม่ได้รับการตรวจ",
+      "social_history": "อาศัยอยู่กับปู่ ย่า พ่อ แม่ และบุตรสาว; บุตรสาวส่วนใหญ่นอนกับมารดา บางครั้งนอนกับย่า; ทุกคนกินอาหารร่วมกัน",
+      "immunization_history": "ได้รับวัคซีนครบตามนัดทุกครั้ง"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "วัน",
+        "description": "เริ่มไอเล็กน้อยเมื่อ 2-3 วันก่อน"
+      },
+      "duration": {
+        "value": 2,
+        "unit": "วัน",
+        "description": "ไอเล็กน้อยต่อเนื่อง"
+      },
+      "progression": [
+        "อาการไอเล็กน้อย เริ่มเมื่อ 2-3 วันก่อน",
+        "ไม่มีไข้ ไม่มีอาการอื่นๆ",
+        "อาการคงที่"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "จันทร์ ส่องแสง",
+      "age": 30,
+      "occupation": "แม่บ้าน",
+      "family_structure": "สมรสแล้ว มีบุตร 1 คน อาศัยกับปู่ ย่า พ่อ แม่ และบุตรสาว",
+      "role": "มารดา",
+      "emotional_state": "กังวลเล็กน้อย"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "not provided",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "not provided",
+      "urine_pattern": "not provided"
+    },
+    "simulation_instructions": {
+      "scenario": "มารดาจำลองพาบุตรสาวอายุ 6 ปี มาขอตรวจวัณโรค เนื่องจากมารดาเป็นวัณโรคปอด AFB 4+ และต้องการวางแผนการดูแลและป้องกันการแพร่เชื้อในครอบครัว",
+      "appearance": "การแต่งกายปกติ",
+      "behavior": "สีหน้ากังวลเล็กน้อย ตอบตามบทผู้ป่วยจำลอง",
+      "fallback_questions": null,
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้มาพบหมอด้วยเรื่องอะไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พาลูกสาวมาขอตรวจวัณโรคค่ะ เพราะดิฉันเป็นวัณโรคปอด"
+            }
+          ]
+        },
+        {
+          "topic": "อาการของเด็ก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องมีอาการอะไรบ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เช่นอะไรคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ไอ มีไข้ เบื่ออาหาร น้ำหนักลด หรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีอาการไอเล็กน้อยมา 2-3 วันค่ะ นอกนั้นไม่มีค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติวัคซีน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องได้รับวัคซีนครบตามวัยไหม ขอดูสมุดวัคซีนได้ไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ได้รับครบตามนัดค่ะ นี่สมุดวัคซีนค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การสัมผัสและสภาพความเป็นอยู่",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ที่บ้านอยู่กับใครบ้าง น้องนอนกับใคร และกินข้าวร่วมกันไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อยู่กับปู่ ย่า พ่อ และดิฉันค่ะ น้องส่วนใหญ่นอนกับดิฉัน บางครั้งนอนกับย่า ทุกคนกินอาหารร่วมกันค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการรักษาวัณโรคของมารดา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คุณแม่เริ่มมีอาการเมื่อไร ตอนนี้รักษาด้วยยาอะไรบ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เริ่มมีไข้ ไอเรื้อรัง น้ำหนักลดเมื่อประมาณ 2 เดือนก่อน ตรวจพบเชื้อ เริ่มยามา 1 เดือน กินยาสม่ำเสมอค่ะ เป็น Pyrazinamide, Isoniazid, Rifampicin และ Ethambutol"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

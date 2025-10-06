@@ -1,0 +1,239 @@
+{
+  "case_id": "OSCE-PEDS-CHC-2M-HYDROCELE-20211219",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้วัคซีนและการดูแลสุขภาพเด็กโดยรวม (CHC at age 2 months and hydrocele)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking + Patient Education",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.สุข สวัสดี",
+      "age": {
+        "value": 2,
+        "unit": "months"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพามารับวัคซีนตามนัด expanded program on immunization (EPI)"
+    },
+    "physical_examination": {
+      "weight_kg": 4.8,
+      "length_cm": 57,
+      "ofc_cm": 38,
+      "percentiles": {
+        "weight": "P50",
+        "length": "P50",
+        "ofc": "P50"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 36.7,
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "others within normal limit for age"
+      },
+      "general_appearance": "an active male infant",
+      "heent": "no pale conjunctiva, no icteric sclera, AF 1.5X1.5 cm, PF closed, normal red reflex both eyes",
+      "heart": "within normal limit",
+      "lungs": "within normal limit",
+      "abdomen": "soft, no hepatosplenomegaly, no mass, no umbilical hernia",
+      "extremities": "normal; External genitalia: descended testis both sides, bilateral cystic mass as figure, no tenderness, able to get above the mass",
+      "neuro": "not provided"
+    },
+    "blood_tests": [
+      "ตรวจเลือดและปัสสาวะขณะฝากครรภ์ ผลปกติ",
+      "หลังเกิดเจาะเลือดส้นเท้าผลตรวจปกติ"
+    ],
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": 3000,
+      "delivery": "วิธีธรรมชาติ",
+      "hospital_stay_days": 3,
+      "discharge_weight_g": "not provided",
+      "complications": "ไม่มีภาวะแทรกซ้อนหลังเกิด"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "แข็งแรงดี ไม่มีอาการผิดปกติหลังออกจากโรงพยาบาลตอนแรกเกิด",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "not provided",
+      "social_history": "อยู่บ้านชั้นเดียว แถวชานเมือง ในบ้านมีเปลที่มีรั้วกันสี่ด้าน โดยบุตรนอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกัน",
+      "immunization_history": "มารดาพามารับวัคซีนตามนัด expanded program on immunization (EPI)"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": [
+        "not provided"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "กมลพร สวัสดี",
+      "age": 30,
+      "occupation": "แม่บ้าน",
+      "family_structure": "มารดาเลี้ยงบุตรคนเดียว",
+      "role": "มารดาจำลอง",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "นมแม่",
+      "frequency": "ทุก 2-3 ชั่วโมง",
+      "duration_per_feed": "ครั้งละ 30 นาที",
+      "storage": "not provided",
+      "maternal_breast_condition": "มารดาไม่มีเจ็บหัวนม",
+      "daytime_sleep": "นอนหลับนานครั้งละ 2-4 ชั่วโมง",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "อุจจาระสีเหลืองวันละ 2-3 ครั้ง",
+      "urine_pattern": "ปัสสาวะวันละ 6-7 ครั้ง"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรชายอายุ 2 เดือน พาบุตรมารับวัคซีนตามนัด ขณะนี้นั่งอยู่บนเก้าอี้ในห้องตรวจ รอแพทย์มาตรวจรักษา",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_question": {
+        "question_limit_type": "multiple",
+        "questions": [
+          {
+            "text": "คุณหมอคะ ที่อัณฑะน้องมันผิดปกติไหมคะ",
+            "asked": false
+          },
+          {
+            "text": "คุณหมอคะ ก้อนที่อัณฑะที่ว่าต้องทำอะไรต่อไหมคะ/ต้องรักษาอย่างไรคะ",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาน้องมาด้วยเรื่องอะไรครับ/คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารับวัคซีนตามนัดค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการทั่วไปของทารกวันนี้",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้น้องสบายดีไหม มีไข้หรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "วันนี้สบายดี ไม่มีไข้ค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การให้นมและความถี่",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องกินนมอะไร และบ่อยแค่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัจจุบันกินนมแม่ กินนมทุก 2-3 ชั่วโมง เด็กดูดนมได้ดี กินนมเกลี้ยงเต้า โดยกินครั้งละ 30 นาที ได้ยินเสียงกลืนนมลงคอ มารดาไม่มีเจ็บหัวนม"
+            }
+          ]
+        },
+        {
+          "topic": "การนอน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องนอนเป็นอย่างไรบ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "นอนหลับนานครั้งละ 2-4 ชั่วโมงค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การขับถ่าย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ถ่ายอุจจาระและปัสสาวะเป็นอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายอุจจาระเป็นสีเหลืองวันละ 2-3 ครั้ง ปัสสาวะวันละ 6-7 ครั้งค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "พัฒนาการวัย 2 เดือน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "พัฒนาการเป็นอย่างไรบ้างครับ/คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พัฒนาการตอนนี้คืออะไรบ้างคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้น้องทำอะไรได้บ้าง เช่น ชันคอ หันหาเสียง ยิ้ม หรือมองหน้า"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัจจุบันเด็กเริ่มชันคอ ส่งเสียงอ้อแอ้ หันหาเสียง มองหน้ามารดาและบิดา ยิ้มได้ค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "สภาพแวดล้อมที่บ้าน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ที่บ้านจัดที่นอนน้องอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อยู่บ้านชั้นเดียวแถวชานเมือง มีเปลที่มีรั้วกันสี่ด้าน นอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกันค่ะ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

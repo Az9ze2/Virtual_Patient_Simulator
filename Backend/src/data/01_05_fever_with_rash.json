@@ -1,0 +1,258 @@
+{
+  "case_id": "OSCE-TH-PED-FEVER-RASH-2022-12-11-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แปลผลการตรวจร่างกาย และวินิจฉัยโรคในผู้ป่วยที่มาด้วยไข้ออกผื่น (fever with rash)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "Comprehensive OSCE (Clinical Skills)",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.กานต์ เก่งกล้า",
+      "age": {
+        "value": 4,
+        "unit": "ปี"
+      },
+      "sex": "ชาย",
+      "occupation": "นักเรียนอนุบาล 2",
+      "chief_complaint": "มารดาพามาตรวจด้วยเรื่องมีไข้และผื่น 3 วันก่อนมาโรงพยาบาล"
+    },
+    "physical_examination": {
+      "weight_kg": 16,
+      "length_cm": 102,
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "P50",
+        "length": "P50",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 39.2,
+        "heart_rate_in_beats_per_minute": 130,
+        "respiratory_rate_in_breaths_per_minute": 24,
+        "blood_pressure_in_mmHg": "90/60 mmHg",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "a boy, active",
+      "heent": "no pale conjunctivae, no icteric sclerae, lesions on tongue as shown in figure 1, cervical lymph node not palpable, dry lips and oral mucosa, mild sunken eye ball",
+      "heart": "within normal limit",
+      "lungs": "within normal limit",
+      "abdomen": "soft, no tenderness, no hepatosplenomegaly, no mass",
+      "extremities": "no edema, no deformity, capillary refill time 2 seconds",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": 3000,
+      "delivery": "คลอดครบกำหนดด้วยวิธีธรรมชาติ",
+      "hospital_stay_days": 3,
+      "discharge_weight_g": "not provided",
+      "complications": "ไม่มีภาวะแทรกซ้อนหลังเกิด"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ก่อนหน้านี้แข็งแรงดี ไม่มีโรคประจำตัว ไม่เคยเจ็บป่วยแบบรุนแรงมาก่อน",
+      "past_medication_history": "ไม่ได้ไปพบแพทย์หรือกินยาอื่น ๆ นอกจากยาลดไข้ ก่อนมาโรงพยาบาล",
+      "past_surgical_history": "ไม่เคยผ่าตัด",
+      "allergies": "ไม่แพ้ยา",
+      "current_medications": "ยาลดไข้พาราเซตามอล กินครั้งสุดท้าย 4 ชั่วโมงก่อนมาโรงพยาบาล",
+      "family_history": "ไม่ทราบ; ไม่มีคนในครอบครัวที่มีอาการแบบเดียวกับผู้ป่วย",
+      "social_history": "อยู่บ้านชั้นเดียว แถวชานเมือง; เรียนชั้นอนุบาล 2; ที่โรงเรียน ครูแจ้งเช้านี้ว่ามีเด็กที่มีผื่นแบบเดียวกันหลายคนในห้อง; ไม่มีคนแถวบ้านที่มีอาการแบบเดียวกับผู้ป่วย",
+      "immunization_history": "ได้รับวัคซีนครบตามนัด ล่าสุดตอนอายุ 2 ขวบ ไม่เคยได้รับวัคซีนเสริมที่ต้องซื้อเอง"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 3,
+        "unit": "วัน",
+        "description": "เมื่อเริ่มมีไข้และผื่นครั้งแรก"
+      },
+      "duration": {
+        "value": 3,
+        "unit": "วัน",
+        "description": "ระยะเวลาที่มีอาการตั้งแต่เริ่มจนมาถึงโรงพยาบาล"
+      },
+      "progression": [
+        "มีไข้ตัวรุม ๆ 3 วันก่อนมาโรงพยาบาล ไม่ได้วัดไข้ ไม่มีอาการหนาวสั่น อาการไข้ลดลงหลังเช็ดตัว ไม่ได้ให้ยาลดไข้ อาการไข้เป็น ๆ หาย ๆ ตลอดทั้งวัน",
+        "2 วันก่อนมาโรงพยาบาล ตัวร้อนมากขึ้น ไม่หนาวสั่น มีน้ำมูกใสเป็นทั้งวัน ไม่ไอ ไม่เจ็บคอ ไม่อาเจียน ไม่ปวดท้อง เช็ดตัวและกินยาลดไข้พาราเซตามอล ไข้ลดลงจนตัวเย็น แต่หมดฤทธิ์ยากลับมามีไข้อีก กินยาลดไข้ครั้งสุดท้าย 4 ชั่วโมงก่อนมาโรงพยาบาล",
+        "เริ่มมีผื่นที่มือ ตอนแรกเป็นตุ่มแดงเห็น 2-3 จุดที่ฝ่ามือ 2 ข้าง ไม่เจ็บ ไม่คัน ต่อมาตุ่มเป็นมากขึ้นที่ฝ่ามือ 2 ข้างและรอบปาก และเริ่มมีอาการเจ็บเล็กน้อยที่ตุ่ม",
+        "1 วันก่อนมาโรงพยาบาล เริ่มมีแผลที่ลิ้น 1-2 แผล มีอาการเจ็บ ต่อมาแผลที่ลิ้นมีจำนวนมากขึ้น กินข้าวลดลงเหลือมื้อละ 2-3 คำ เนื่องจากเจ็บปาก กินนมและน้ำได้ลดลง ปัสสาวะครั้งสุดท้าย 4 ชั่วโมงก่อนมาโรงพยาบาล ปัสสาวะสีเหลืองเข้ม ปริมาณน้อยลง",
+        "ไม่มีอาการชัก ไม่ซึม ไม่เหนื่อย ยังพอเล่นได้ตอนไข้ลดลง"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "สุพัตรา เก่งกล้า",
+      "age": 30,
+      "occupation": "แม่บ้าน",
+      "family_structure": "มารดาเลี้ยงบุตรคนเดียว",
+      "role": "มารดาของผู้ป่วย",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "ปกติกินอาหารวันละ 3 มื้อ นมวันละ 2 แก้ว; ช่วงนี้กินข้าวลดลงเหลือมื้อละ 2-3 คำ เพราะเจ็บปาก กินนมและน้ำได้น้อยลง",
+      "frequency": "วันละ 3 มื้อ นมวันละ 2 แก้ว",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ถ่ายอุจจาระปกติ",
+      "urine_pattern": "ปัสสาวะครั้งสุดท้าย 4 ชั่วโมงก่อนมาโรงพยาบาล ปัสสาวะสีเหลืองเข้ม ปริมาณน้อยลง"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรชายอายุ 4 ปี พาบุตรมาตรวจรักษาด้วยอาการไข้ออกผื่น ขณะนี้นั่งอยู่บนเก้าอี้ในห้องตรวจ รอแพทย์มาตรวจรักษา",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_questions": null,
+      "sample_dialogue": [
+        {
+          "topic": "อาการไข้และผื่น",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาน้องมาด้วยอาการอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีไข้และผื่นมา 3 วันค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เริ่มมีไข้ตั้งแต่เมื่อไร วัดไข้ได้กี่องศา"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เริ่มไข้ตัวรุม ๆ 3 วันก่อนมาค่ะ ไม่ได้วัดไข้ แต่เช็ดตัวแล้วดีขึ้น พอหมดฤทธิ์ก็กลับมาเป็น ๆ หาย ๆ ทั้งวัน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีหนาวสั่นไหม ไอ เจ็บคอ อาเจียน ปวดท้อง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่หนาวสั่น ไม่ไอ ไม่เจ็บคอ ไม่อาเจียน ไม่ปวดท้องค่ะ แต่มีน้ำมูกใสทั้งวันตั้งแต่เมื่อวาน"
+            }
+          ]
+        },
+        {
+          "topic": "ลักษณะผื่นและแผลในปาก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ผื่นเริ่มตรงไหนก่อน เจ็บหรือคันไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เริ่มที่ฝ่ามือทั้งสองข้างก่อน เห็นเป็นตุ่มแดง 2-3 จุด ตอนแรกไม่เจ็บไม่คัน ต่อมามากขึ้นที่ฝ่ามือสองข้างและรอบปาก เริ่มเจ็บเล็กน้อยค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีแผลในปากไหม เริ่มเมื่อไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีค่ะ เมื่อวานเริ่มมีแผลที่ลิ้น 1-2 แผล แล้วเพิ่มจำนวนมากขึ้น เจ็บปากค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การรับประทานและปัสสาวะ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ช่วงนี้กินข้าว ดื่มน้ำ และกินนมได้เท่าไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินข้าวลดลงเหลือมื้อละ 2-3 คำ เพราะเจ็บปาก กินนมและน้ำได้น้อยลงค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปัสสาวะครั้งสุดท้ายเมื่อไร สีและปริมาณเป็นอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ครั้งสุดท้าย 4 ชั่วโมงก่อนมาโรงพยาบาล สีเหลืองเข้ม ปริมาณน้อยลงค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการสัมผัสและสิ่งแวดล้อม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ที่บ้านและโรงเรียนมีใครเป็นลักษณะคล้ายกันไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เช้านี้ครูแจ้งว่ามีเด็กที่มีผื่นแบบเดียวกันหลายคนในห้อง แต่หนูจำไม่ได้ว่าเป็นโรคอะไร ที่บ้านและแถวบ้านไม่มีใครเป็นค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "วัคซีนและประวัติเดิม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้รับวัคซีนครบไหม มีโรคประจำตัว แพ้ยา เคยผ่าตัดหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ได้รับวัคซีนครบตามนัด ล่าสุดตอนอายุ 2 ขวบ ไม่แพ้ยา ไม่เคยผ่าตัด ไม่มีโรคประจำตัวค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการตั้งครรภ์และการคลอด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนตั้งครรภ์และคลอดเป็นอย่างไร น้ำหนักแรกเกิดเท่าไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ตอนฝากครรภ์สุขภาพแข็งแรงดี ผลตรวจเลือดปกติ คลอดครบกำหนดด้วยวิธีธรรมชาติ น้ำหนักแรกเกิด 3,000 กรัม นอนโรงพยาบาล 3 วัน ไม่มีภาวะแทรกซ้อนค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การใช้ยา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้ให้ยาหรือตรวจรักษาที่ไหนมาก่อนหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เช็ดตัวและให้ยาลดไข้พาราเซตามอลค่ะ ไข้ลดลงจนตัวเย็น แต่หมดฤทธิ์ยาก็กลับมามีไข้ กินครั้งสุดท้าย 4 ชั่วโมงก่อนมาค่ะ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

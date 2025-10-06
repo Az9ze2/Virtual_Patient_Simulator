@@ -1,0 +1,260 @@
+{
+  "case_id": "CASE-OSCE-PED-CRACKED-NIPPLE-2023-12-10-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้นมแม่ ในมารดาที่มีภาวะหัวนมแตก (cracked nipple)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking + Patient Education",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.ยินดี ปรีดา",
+      "age": {
+        "value": 5,
+        "unit": "days"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "มาตรวจติดตามน้ำหนักตัวตามนัดและขอคำปรึกษา เรื่องการให้นมแม่เนื่องจากมีหัวนมข้างขวาแตก"
+    },
+    "physical_examination": {
+      "weight_kg": 3.2,
+      "length_cm": 50,
+      "ofc_cm": 35,
+      "percentiles": {
+        "weight": "P50-90",
+        "length": "P50-90",
+        "ofc": "P50"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 37,
+        "heart_rate_in_beats_per_minute": 120,
+        "respiratory_rate_in_breaths_per_minute": 45,
+        "blood_pressure_in_mmHg": "BP – normal for age",
+        "oxygen_saturation": "98% (room air)",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "an active male infant, no dysmorphic feature",
+      "heent": "pink conjunctiva, anicteric sclera, flat AF 1X1 cm, PF – 0.5x0.5 cm, present red reflex both eyes",
+      "heart": "regular rhythm, no murmur, normal S1 and S2",
+      "lungs": "clear and equal breath sound both lungs, no retraction",
+      "abdomen": "soft, liver and spleen not palpable, no mass, dried umbilical cord",
+      "extremities": "no deformity, no edema",
+      "neuro": "equal movement, complete Moro reflex, strong sucking reflex"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": 38,
+      "birth_weight_g": 3300,
+      "delivery": "คลอดทางช่องคลอดด้วยวิธีธรรมชาติ",
+      "hospital_stay_days": 2,
+      "discharge_weight_g": 3100,
+      "complications": "ไม่มีภาวะแทรกซ้อนใด ๆ"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ทารกไม่มีโรคประจำตัว ระหว่างฝากครรภ์มารดาสุขภาพแข็งแรงดี ไม่มีโรคประจำตัว",
+      "past_medication_history": "ไม่ได้กินยาอื่นนอกจากวิตามินที่แพทย์สั่ง",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "not provided",
+      "social_history": "อยู่บ้านชั้นเดียว แถวชานเมือง ในบ้านมีเปลที่มีรั้วกันสี่ด้าน โดยบุตรนอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกัน",
+      "immunization_history": "not provided"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "days",
+        "description": "เริ่มมีอาการตั้งแต่คลอดบุตรได้ 2 วัน"
+      },
+      "duration": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "not provided"
+      },
+      "progression": [
+        "not provided"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "ศิริพร ปรีดา",
+      "age": 25,
+      "occupation": "แม่บ้าน",
+      "family_structure": "สามีอายุ 30 ปี ทำอาชีพครู มารดาเลี้ยงบุตรคนเดียว",
+      "role": "มารดาจำลอง",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "ให้นมแม่เพียงอย่างเดียวด้วยการเอาเข้าเต้า",
+      "frequency": "ทุก 3 ชั่วโมง",
+      "duration_per_feed": "15-20 นาที/ ครั้ง",
+      "storage": "เก็บในถุงเก็บน้ำนม ในตู้เย็น 2 ประตู",
+      "maternal_breast_condition": "มารดามีแผลหัวนมแตกที่เต้านมข้างขวาและรู้สึกเจ็บหัวนมข้างขวาเวลาที่ทารกดูดนม แต่ไม่มีเลือดออกซึมจากแผล โดยเริ่มมีอาการตั้งแต่คลอดบุตรได้ 2 วัน ไม่มีอาการคัดตึงเต้า ไม่มีก้อนที่เต้านม ไม่มีอาการบวม/ แดง/ อักเสบของเต้าทั้งสองข้าง",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "นอนหลับนานครั้งละ 3-4 ชั่วโมง มักจะตื่นเอง ไม่ต้องปลุกขึ้นมาป้อนนม",
+      "stool_pattern": "ถ่ายอุจจาระสีเหลืองทอง เนื้อนิ่ม ไม่มีมูกเลือด จำนวน 4-6 ครั้ง/ วัน",
+      "urine_pattern": "ปัสสาวะเป็นสีเหลืองใส ไม่มีตะกอนปน จำนวน 6-8 ครั้ง/ วัน"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรชายอายุ 5 วัน พาบุตรมาตรวจติดตามน้ำหนักตามแพทย์นัดหลังจากกลับบ้านพร้อมมารดาไปได้ 2 วัน ทารกสบายดี ไม่มีอาการผิดปกติใด ๆ ท่านให้นมบุตรโดยการเข้าเต้าอย่างเดียวและมีภาวะหัวนมข้างขวาแตก ขณะนี้นั่งรอพบแพทย์ในห้องตรวจ โดยบุตรอยู่กับบิดาด้านนอก",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_question": {
+        "question_limit_type": "multiple",
+        "questions": [
+          {
+            "text": "น้ำหนักทารกอยู่ในเกณฑ์ปกติหรือไม่",
+            "asked": false
+          },
+          {
+            "text": "วิธีการเข้าเต้าถูกต้องหรือไม่และต้องแก้ไขอย่างไร",
+            "asked": false
+          },
+          {
+            "text": "ต้องดูแลรักษาภาวะหัวนมข้างขวาแตกอย่างไร",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้มีเรื่องอะไรให้ช่วยคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พาลูกมาตรวจติดตามน้ำหนักตามนัดและอยากขอคำปรึกษาเรื่องการให้นมแม่ค่ะ เพราะหนูมีหัวนมข้างขวาแตก"
+            }
+          ]
+        },
+        {
+          "topic": "ข้อมูลทั่วไปของทารก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกชื่ออะไร อายุเท่าไหร่ แล้วคลอดอายุครรภ์กี่สัปดาห์คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ด.ช.ยินดี ปรีดา อายุ 5 วัน คลอดครบกำหนด 38 สัปดาห์ น้ำหนักแรกเกิด 3,300 กรัม คลอดธรรมชาติค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การให้นมและท่าทางการเข้าเต้า",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ป้อนนมหรือให้นมลูกอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ให้นมแม่อย่างเดียว"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ให้บ่อยแค่ไหน ครั้งละนานเท่าไหร่ แล้วรู้สึกอย่างไรหลังลูกดูดเสร็จ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ทุก 3 ชั่วโมง ทารกดูดนาน 15-20 นาทีต่อครั้ง รู้สึกเต้าเบาโล่งหลังลูกดูดอิ่มค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนเข้าเต้าจัดท่าอย่างไร ลูกอ้าปากครอบหัวนมและลานนมไหม มีเสียงตอนดูดหรือเปล่า"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อุ้มลูกนอนขวางตัก มือประคองท้ายทอย ลูกงับเฉพาะหัวนม มักมีเสียงดังเวลาดูดค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการหัวนมแตกของมารดา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เจ็บหัวนมข้างขวาตั้งแต่เมื่อไหร่ มีเลือดออกหรือมีอาการคัดตึง บวม แดงไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เริ่มมีตั้งแต่คลอดได้ 2 วัน เจ็บเวลาลูกดูด ไม่มีเลือดออก ไม่คัดตึง ไม่มีก้อน และไม่มีบวมแดงอักเสบค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การนอนและการขับถ่ายของทารก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกนอนเป็นอย่างไร ต้องปลุกกินนมหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "นอนหลับนานครั้งละ 3-4 ชั่วโมง มักจะตื่นเอง ไม่ต้องปลุกค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปัสสาวะและอุจจาระเป็นอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัสสาวะสีเหลืองใส 6-8 ครั้งต่อวัน อุจจาระสีเหลืองทอง เนื้อนิ่ม 4-6 ครั้งต่อวัน ไม่มีมูกเลือดค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "สภาพแวดล้อมที่บ้าน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ที่บ้านจัดที่นอนลูกอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อยู่บ้านชั้นเดียว แถวชานเมือง มีเปลรั้วสี่ด้าน ลูกนอนบนเปลและบนพื้นปูผ้าห่มสลับกันค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "คำถามจากมารดา (กรณีผู้สอบไม่ได้กล่าวถึง)",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอะไรอยากสอบถามเพิ่มเติมไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "น้ำหนักทารกอยู่ในเกณฑ์ปกติหรือไม่"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

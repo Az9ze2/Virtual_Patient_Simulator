@@ -1,0 +1,272 @@
+{
+  "case_id": "TH-OSCE-PED-FuncConstipation-2560-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติมารดาที่พาบุตรชายอายุ 5 ปี มาพบแพทย์ด้วยเรื่องอุจจาระผิดปกติ    \t(ท้องผูก : Functional constipation)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking",
+    "exam_duration_minutes": 5
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.นนท์",
+      "age": {
+        "value": 5,
+        "unit": "ปี"
+      },
+      "sex": "ชาย",
+      "occupation": "เรียนอยู่ชั้นอนุบาล",
+      "chief_complaint": "มารดาพาบุตรชายอายุ 5 ปี มาพบแพทย์ด้วยเรื่องอุจจาระผิดปกติ"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "not provided",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "not provided",
+      "past_medication_history": "ไปพบแพทย์ที่คลินิก ได้ยามารับประทาน 2-3 วัน กินก่อนนอนวันละครั้ง ดีขึ้นพอหยุดยา กลับมาเป็นอีก",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "not provided",
+      "social_history": "ประมาณ 2-3 เดือนก่อนเดินทางไปต่างจังหวัด หลังจากนั้นไม่ยอมถ่าย 5 วัน มารดาจึงสวนอุจจาระแล้วหลังจากนั้นถ่ายผิดปกติมาตลอด; ไม่ชอบกินข้าว กินข้าวน้อย ชอบกินขนมถุง ขนมซอง ไม่กินผักและผลไม้; กินนม UHT รสจืด วันละ 2-3 กล่อง",
+      "immunization_history": "not provided"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "เดือน",
+        "description": "ถ่ายอุจจาระลำบากมา 2 เดือน"
+      },
+      "duration": {
+        "value": 2,
+        "unit": "เดือน",
+        "description": "ถ่ายอุจจาระลำบากมา 2 เดือน"
+      },
+      "progression": [
+        "ก่อนหน้านี้ถ่ายปกติดี ทุกวัน ถึง วันเว้นวัน",
+        "ประมาณ 2-3 เดือนก่อนเดินทางไปต่างจังหวัด หลังจากนั้นไม่ยอมถ่าย 5 วัน มารดาจึงสวนอุจจาระแล้วหลังจากนั้นถ่ายผิดปกติมาตลอด",
+        "ได้ยามารับประทาน 2-3 วัน กินก่อนนอนวันละครั้ง ดีขึ้นพอหยุดยา กลับมาเป็นอีก",
+        "ปวดท้องเป็นพักๆ ถ่ายแล้วดีขึ้น"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "สมพร",
+      "age": "35",
+      "occupation": "แม่บ้าน",
+      "family_structure": "not provided",
+      "role": "มารดาจำลอง",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "ไม่ชอบกินข้าว กินข้าวน้อย ชอบกินขนมถุง ขนมซอง ไม่กินผักและผลไม้; กินนม UHT รสจืด วันละ 2-3 กล่อง",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ถ่ายสัปดาห์ละ 1-2 ครั้ง; อุจจาระก้อนใหญ่ แข็ง; บางครั้งมีเลือดสดเคลือบอุจจาระหรือหยดตามการหลังการถ่าย; ตอนถ่ายมีเจ็บก้น; ชอบกลั้นอุจจาระ; ไม่มีอุจจาระรดกางเกง; ปวดท้องเป็นพักๆ ถ่ายแล้วดีขึ้น",
+      "urine_pattern": "not provided"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทเป็นมารดาจำลองพาบุตรชายมาพบแพทย์ด้วยเรื่องอุจจาระผิดปกติ ขณะนี้นั่งบนเก้าอี้ที่ห้องตรวจ รอแพทย์ซักประวัติ",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ; หากผู้เข้าสอบถามคำถามลักษณะต่อไปนี้ ลักษณะอุจจาระเป็นอย่างไร ลักษณะการถ่ายอุจาระ (จำนวนครั้งต่อวัน เป็นต้น) ลักษณะเลือดที่ปนออกมากับอุจจาระ เกิดอะไรขึ้นก่อนที่จะถ่ายอุจจาระผิดปกติ อาการร่วมอื่นๆ ลักษณะ/ชนิดของอาหารหรือเครื่องดื่มหรือของขบเคี้ยว ให้มารดาจำลองทำสีหน้าไม่เข้าใจ และขอให้ผู้เข้าสอบยกตัวอย่าง ก่อนที่จะตอบต่อไป; ถ้าผู้เข้าสอบพูดว่า “มีอะไรจะซักถาม หรือไม่” หรือ “มีอะไรจะเล่าให้หมอฟังอีกหรือไม่” ให้ตอบว่า “ไม่มี”",
+      "fallback_question": null,
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาลูกมาด้วยเรื่องอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มาพบแพทย์ด้วยเรื่องอุจจาระผิดปกติ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติอาการถ่ายอุจจาระผิดปกติ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกถ่ายลำบากมานานเท่าไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายอุจจาระลำบากมา 2 เดือน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ถ่ายบ่อยแค่ไหนคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายสัปดาห์ละ 1-2 ครั้ง"
+            }
+          ]
+        },
+        {
+          "topic": "ลักษณะอุจจาระและเลือด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลักษณะอุจจาระเป็นอย่างไรคะ มีเลือดปนไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อุจจาระก้อนใหญ่ แข็ง บางครั้งมีเลือดสดเคลือบอุจจาระหรือหยดตามการหลังการถ่าย ตอนถ่ายมีเจ็บก้น"
+            }
+          ]
+        },
+        {
+          "topic": "พฤติกรรมการกลั้นอุจจาระและการเลอะกางเกง",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีพฤติกรรมกลั้นอุจจาระไหม แล้วมีอุจจาระรดกางเกงบ้างหรือเปล่าคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ชอบกลั้นอุจจาระ ไม่มีอุจจาระรดกางเกง"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีปวดท้องไหมคะ ถ่ายแล้วเป็นอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปวดท้องเป็นพักๆ ถ่ายแล้วดีขึ้น"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการรักษาก่อนมา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ก่อนมาที่นี่เคยไปพบแพทย์หรือได้รับยามาก่อนไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไปพบแพทย์ที่คลินิก ได้ยามารับประทาน 2-3 วัน กินก่อนนอนวันละครั้ง ดีขึ้นพอหยุดยา กลับมาเป็นอีก"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติเริ่มมีอาการและการเดินทาง/การสวนอุจจาระ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เริ่มมีอาการตั้งแต่เมื่อไร มีเหตุการณ์อะไรมาก่อนหรือไม่คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ก่อนหน้านี้ถ่ายปกติดี ทุกวัน ถึง วันเว้นวัน แต่ประมาณ 2-3 เดือนก่อนเดินทางไปต่างจังหวัด หลังจากนั้นไม่ยอมถ่าย 5 วัน มารดาจึงสวนอุจจาระแล้วหลังจากนั้นถ่ายผิดปกติมาตลอด"
+            }
+          ]
+        },
+        {
+          "topic": "อาหารและเครื่องดื่ม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เรื่องอาหารการกินเป็นอย่างไร กินผักผลไม้และนมไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่ชอบกินข้าว กินข้าวน้อย ชอบกินขนมถุง ขนมซอง ไม่กินผักและผลไม้ กินนม UHT รสจืด วันละ 2-3 กล่อง"
+            }
+          ]
+        },
+        {
+          "topic": "พัฒนาการและการเรียน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "การเรียนและพัฒนาการของน้องเป็นอย่างไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เรียนดี พัฒนาการปกติ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติขี้เทาวันแรก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนแรกเกิดถ่ายขี้เทาวันแรกไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายขี้เทาตั้งแต่วันแรก"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

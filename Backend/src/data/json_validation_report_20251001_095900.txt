@@ -1,0 +1,233 @@
+================================================================================
+JSON DATA VALIDATION SUMMARY REPORT
+================================================================================
+Generated: 2025-10-01 09:59:00
+Data Directory: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json
+
+OVERALL STATISTICS:
+  Total Files Processed: 14
+  Files Passed: 8
+  Files Failed: 6
+  Success Rate: 57.1%
+
+FAILED FILES:
+  • 01_06_functional_constipation.json
+    Status: FAILED
+    Errors (4):
+      - Missing required patient_background field: name
+      - Missing required patient_background field: age
+      - Missing required patient_background field: sex
+      - Missing required simulation_view field: simulator_profile
+
+  • 01_07_gastroenteritis_secondary_lactase_def.json
+    Status: FAILED
+    Errors (4):
+      - Missing required patient_background field: name
+      - Missing required patient_background field: age
+      - Missing required patient_background field: sex
+      - Missing required simulation_view field: simulator_profile
+
+  • 01_08_gastroenteritis.json
+    Status: FAILED
+    Errors (11):
+      - Missing required patient_background field: name
+      - Missing required patient_background field: age
+      - Missing required patient_background field: sex
+      - Missing required simulation_view field: simulator_profile
+      - sample_dialogue[0] missing 'topic' or 'dialogue' field
+      - sample_dialogue[1] missing 'topic' or 'dialogue' field
+      - sample_dialogue[2] missing 'topic' or 'dialogue' field
+      - sample_dialogue[3] missing 'topic' or 'dialogue' field
+      - sample_dialogue[4] missing 'topic' or 'dialogue' field
+      - sample_dialogue[5] missing 'topic' or 'dialogue' field
+      - sample_dialogue[6] missing 'topic' or 'dialogue' field
+
+  • 01_10_iron_def.json
+    Status: FAILED
+    Errors (11):
+      - Missing required patient_background field: name
+      - Missing required patient_background field: age
+      - Missing required patient_background field: sex
+      - Missing required simulation_view field: simulator_profile
+      - sample_dialogue[0] missing 'topic' or 'dialogue' field
+      - sample_dialogue[1] missing 'topic' or 'dialogue' field
+      - sample_dialogue[2] missing 'topic' or 'dialogue' field
+      - sample_dialogue[3] missing 'topic' or 'dialogue' field
+      - sample_dialogue[4] missing 'topic' or 'dialogue' field
+      - sample_dialogue[5] missing 'topic' or 'dialogue' field
+      - sample_dialogue[6] missing 'topic' or 'dialogue' field
+
+  • 01_11_latent_TB_infection.json
+    Status: FAILED
+    Errors (4):
+      - Missing required patient_background field: name
+      - Missing required patient_background field: age
+      - Missing required patient_background field: sex
+      - Missing required simulation_view field: simulator_profile
+
+  • 01_14_Blood_in_stool.json
+    Status: FAILED
+    Errors (4):
+      - Missing required patient_background field: name
+      - Missing required patient_background field: age
+      - Missing required patient_background field: sex
+      - Missing required simulation_view field: simulator_profile
+
+FILE SIZE STATISTICS:
+  Average Size: 13.6 KB
+  Smallest File: 10.2 KB
+  Largest File: 17.6 KB
+
+MOST COMMON ERRORS:
+  • Missing required patient_background field: name (6 occurrences)
+  • Missing required patient_background field: age (6 occurrences)
+  • Missing required patient_background field: sex (6 occurrences)
+  • Missing required simulation_view field: simulator_profile (6 occurrences)
+  • sample_dialogue[0] missing 'topic' or 'dialogue' field (2 occurrences)
+
+================================================================================
+================================================================================
+DETAILED VALIDATION RESULTS
+================================================================================
+
+File: 01_01_breast_feeding_problems.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_01_breast_feeding_problems.json
+Status: PASSED
+Size: 14.5 KB
+Validation Time: 0.002s
+----------------------------------------
+
+File: 01_02_CHC_9_months.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_02_CHC_9_months.json
+Status: PASSED
+Size: 13.5 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_03_CHC2mo_Phimosis.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_03_CHC2mo_Phimosis.json
+Status: PASSED
+Size: 14.7 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_04_edema.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_04_edema.json
+Status: PASSED
+Size: 17.6 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_05_fever_with_rash.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_05_fever_with_rash.json
+Status: PASSED
+Size: 16.7 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_06_functional_constipation.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_06_functional_constipation.json
+Status: FAILED
+Size: 12.2 KB
+Validation Time: 0.001s
+Errors (4):
+  - Missing required patient_background field: name
+  - Missing required patient_background field: age
+  - Missing required patient_background field: sex
+  - Missing required simulation_view field: simulator_profile
+----------------------------------------
+
+File: 01_07_gastroenteritis_secondary_lactase_def.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_07_gastroenteritis_secondary_lactase_def.json
+Status: FAILED
+Size: 14.8 KB
+Validation Time: 0.001s
+Errors (4):
+  - Missing required patient_background field: name
+  - Missing required patient_background field: age
+  - Missing required patient_background field: sex
+  - Missing required simulation_view field: simulator_profile
+----------------------------------------
+
+File: 01_08_gastroenteritis.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_08_gastroenteritis.json
+Status: FAILED
+Size: 14.7 KB
+Validation Time: 0.001s
+Errors (11):
+  - Missing required patient_background field: name
+  - Missing required patient_background field: age
+  - Missing required patient_background field: sex
+  - Missing required simulation_view field: simulator_profile
+  - sample_dialogue[0] missing 'topic' or 'dialogue' field
+  - sample_dialogue[1] missing 'topic' or 'dialogue' field
+  - sample_dialogue[2] missing 'topic' or 'dialogue' field
+  - sample_dialogue[3] missing 'topic' or 'dialogue' field
+  - sample_dialogue[4] missing 'topic' or 'dialogue' field
+  - sample_dialogue[5] missing 'topic' or 'dialogue' field
+  - sample_dialogue[6] missing 'topic' or 'dialogue' field
+----------------------------------------
+
+File: 01_09_hydrocele.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_09_hydrocele.json
+Status: PASSED
+Size: 11.0 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_10_iron_def.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_10_iron_def.json
+Status: FAILED
+Size: 12.7 KB
+Validation Time: 0.001s
+Errors (11):
+  - Missing required patient_background field: name
+  - Missing required patient_background field: age
+  - Missing required patient_background field: sex
+  - Missing required simulation_view field: simulator_profile
+  - sample_dialogue[0] missing 'topic' or 'dialogue' field
+  - sample_dialogue[1] missing 'topic' or 'dialogue' field
+  - sample_dialogue[2] missing 'topic' or 'dialogue' field
+  - sample_dialogue[3] missing 'topic' or 'dialogue' field
+  - sample_dialogue[4] missing 'topic' or 'dialogue' field
+  - sample_dialogue[5] missing 'topic' or 'dialogue' field
+  - sample_dialogue[6] missing 'topic' or 'dialogue' field
+----------------------------------------
+
+File: 01_11_latent_TB_infection.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_11_latent_TB_infection.json
+Status: FAILED
+Size: 10.2 KB
+Validation Time: 0.001s
+Errors (4):
+  - Missing required patient_background field: name
+  - Missing required patient_background field: age
+  - Missing required patient_background field: sex
+  - Missing required simulation_view field: simulator_profile
+----------------------------------------
+
+File: 01_12_NeonatalJaundice.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_12_NeonatalJaundice.json
+Status: PASSED
+Size: 12.8 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_13_child_health.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_13_child_health.json
+Status: PASSED
+Size: 11.1 KB
+Validation Time: 0.001s
+----------------------------------------
+
+File: 01_14_Blood_in_stool.json
+Path: C:\Users\acer\Desktop\IRPC_Internship\Virtual_Patient_Simulator\Backend\Extracted_Data_json\01_14_Blood_in_stool.json
+Status: FAILED
+Size: 14.1 KB
+Validation Time: 0.001s
+Errors (4):
+  - Missing required patient_background field: name
+  - Missing required patient_background field: age
+  - Missing required patient_background field: sex
+  - Missing required simulation_view field: simulator_profile
+----------------------------------------

@@ -1,0 +1,269 @@
+{
+  "case_id": "peds-osce-ida-2019-12-12-TH-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ ตรวจร่างกาย ส่งตรวจทางห้องปฏิบัติการพื้นฐาน และให้การวินิจฉัยโรค iron deficiency anemia",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "Comprehensive OSCE (Clinical Skills)",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "เด็กหญิงดาว",
+      "age": {
+        "value": 1,
+        "unit": "ปี"
+      },
+      "sex": "หญิง",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาสังเกตว่าบุตรดูซีด จึงพามาตรวจที่โรงพยาบาล"
+    },
+    "physical_examination": {
+      "weight_kg": 10,
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "P50",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 37.2,
+        "heart_rate_in_beats_per_minute": 100,
+        "respiratory_rate_in_breaths_per_minute": 30,
+        "blood_pressure_in_mmHg": "80/40 mmHg",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "unremarkable",
+      "heent": "pale conjunctivae, no jaundice; no lymphadenopathy",
+      "heart": "regular, no murmur, no cardiomegaly",
+      "lungs": "not provided",
+      "abdomen": "no hepatosplenomegaly, no abdominal mass",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": [
+      {
+        "date": "not provided",
+        "test_name": "CBC",
+        "result": "Hb 7.5 g/dL, Hct 23% (MCV 67 fL, MCH 22 pg, MCHC 33 g/dL, RDW 18%), WBC 9,500/mm3, platelet 650,000/mm3"
+      },
+      {
+        "date": "not provided",
+        "test_name": "PBS",
+        "result": "ดังรูป"
+      },
+      {
+        "date": "not provided",
+        "test_name": "Reticulocyte count",
+        "result": "0.5%"
+      }
+    ],
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "คลอดครบกำหนด รกคลอด",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "ไม่มีอาการตัวเหลือง"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ไม่เคยมีอาการซีดมาก่อน น้ำหนักและความยาวอยู่ในเกณฑ์ปกติมาตลอด มีพัฒนาการปกติสมวัย",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "ไม่มีคนในครอบครัวเป็นโรคเลือด",
+      "social_history": "not provided",
+      "immunization_history": "บุตรได้รับวัคซีนครบทุกครั้งตามแพทย์นัด ไม่เคยได้รับวัคซีนเสริม"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "เดือน",
+        "description": "เมื่อเริ่มสังเกตว่าซีด"
+      },
+      "duration": {
+        "value": 2,
+        "unit": "เดือน",
+        "description": "เป็นต่อเนื่องตั้งแต่เริ่มสังเกต"
+      },
+      "progression": [
+        "ซีดค่อย ๆ มากขึ้นในช่วง 2 เดือน",
+        "ไม่มีไข้",
+        "ไม่มีอาการตัวเหลืองตาเหลือง",
+        "ไม่มีอาการเหนื่อย ไม่งอแง",
+        "น้ำหนักตัวอยู่ในเกณฑ์ปกติมาตลอด",
+        "ท้องไม่โตขึ้น",
+        "ไม่ปวดกระดูก",
+        "ไม่มีถ่ายเป็นเลือด ไม่มีถ่ายดำ",
+        "ปัสสาวะสีเหลืองปกติ",
+        "ไม่มีจุดจ้ำเลือดตามตัว หรือ อาการเลือดออกผิดปกติใด ๆ"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "ชลธิชา",
+      "age": 24,
+      "occupation": "แม่บ้าน",
+      "family_structure": "ผู้ป่วยเป็นบุตรคนแรก",
+      "role": "มารดา",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "กินนมมารดาถึงอายุ 6 เดือน หลังจากนั้นกินนมผสมครั้งละ 8 ออนซ์ 5 ครั้ง/วัน เริ่มกินอาหารเสริมตั้งแต่อายุ 6 เดือน ขณะนี้กินข้าววันละ 2 มื้อ เป็นข้าวบดกับไข่ขาว บุตรไม่ชอบกินเนื้อสัตว์ ตับ ไข่แดงหรือผักใบเขียว",
+      "frequency": "5 ครั้ง/วัน",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ไม่มีถ่ายเป็นเลือด ไม่มีถ่ายดำ",
+      "urine_pattern": "ปัสสาวะสีเหลืองปกติ"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของผู้ป่วยหญิงอายุ 1 ปี ได้พาบุตรมาพบแพทย์ เนื่องจากสังเกตว่าบุตรดูซีด ขณะนี้นั่งอยู่บนเก้าอี้ที่ห้องตรวจ รอแพทย์มาทำการตรวจและรักษาบุตร",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ; ตอบเฉพาะสิ่งที่ถูกถาม; หากถูกถามกว้าง ๆ ให้ย้อนถามว่า “เช่นอะไรบ้างคะ” ก่อนตอบ; หากถูกซักถามนอกเหนือจากนี้ ให้ตอบว่า “ไม่มี” หรือ “ปกติ” หรือ “ไม่ทราบ”",
+      "fallback_question": {
+        "question_limit_type": "multiple",
+        "questions": [
+          {
+            "text": "ลูกเป็นอะไรคะ ซีดจากอะไร",
+            "asked": false
+          },
+          {
+            "text": "ต้องตรวจอะไรเพิ่มเติมไหมคะ",
+            "asked": false
+          },
+          {
+            "text": "ต้องนอนโรงพยาบาลไหมคะ",
+            "asked": false
+          },
+          {
+            "text": "ถ้าต้องกินธาตุเหล็ก ต้องกินนานแค่ไหนคะ",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาน้องมาด้วยเรื่องอะไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "สังเกตว่าลูกดูซีดค่ะ เลยพามาตรวจ"
+            }
+          ]
+        },
+        {
+          "topic": "ระยะเวลาและการดำเนินโรค",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เริ่มสังเกตว่าซีดตั้งแต่เมื่อไหร่ครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ประมาณ 2 เดือนค่ะ เหมือนค่อย ๆ ซีดลง"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วมและสัญญาณอันตราย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "นอกจากซีดแล้วมีอาการอื่นร่วมไหมครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เช่นอะไรบ้างคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีไข้ เหนื่อย ตัวเหลืองตาเหลือง หรือมีเลือดออกผิดปกติไหมครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มีค่ะ ไม่ไข้ ไม่เหนื่อย ไม่เหลือง ไม่มีจุดจ้ำหรือเลือดออกผิดปกติ"
+            }
+          ]
+        },
+        {
+          "topic": "โภชนาการและการกิน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปกติให้นมหรืออาหารเสริมอย่างไรบ้างครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมแม่ถึง 6 เดือน หลังจากนั้นกินนมผสมครั้งละ 8 ออนซ์ วันละ 5 ครั้ง เริ่มอาหารเสริมตั้งแต่ 6 เดือน ตอนนี้กินข้าวบดกับไข่ขาว วันละ 2 มื้อ กินได้มื้อละ 3-4 คำ ไม่ค่อยชอบเนื้อสัตว์ ตับ ไข่แดง หรือผักใบเขียวค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการคลอดและพัฒนาการ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนคลอดครบกำหนดไหม แล้วหลังคลอดมีเหลืองหรือปัญหาอะไรไหมครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "คลอดครบกำหนดค่ะ ไม่มีตัวเหลือง พัฒนาการปกติดีมาตลอด"
+            }
+          ]
+        },
+        {
+          "topic": "วัคซีนและประวัติครอบครัว",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้รับวัคซีนครบตามนัดไหม แล้วมีคนในครอบครัวเป็นโรคเลือดหรือเปล่าครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ได้รับครบทุกครั้งตามแพทย์นัดค่ะ ไม่มีคนในครอบครัวเป็นโรคเลือด และพ่อแม่ตรวจคัดกรองพาหะธาลัสซีเมียปกติค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการระบบทางเดินอาหารและปัสสาวะ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีถ่ายดำ ถ่ายเป็นเลือด หรือปัสสาวะผิดปกติไหมครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มีค่ะ อุจจาระปกติ ไม่ถ่ายดำไม่ถ่ายเป็นเลือด ปัสสาวะสีเหลืองปกติ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

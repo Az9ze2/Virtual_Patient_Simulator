@@ -1,0 +1,290 @@
+{
+  "case_id": "osce_2561_history_acute_viral_gastroenteritis_9m_001",
+  "case_metadata": {
+    "case_title": "การซักประวัติมารดาที่พาบุตรชายวัย 9 เดือน มาพบแพทย์ด้วยเรื่องถ่ายเหลว (Acute viral gastroenteritis with secondary lactase deficiency)",
+    "medical_specialty": "not provided",
+    "exam_type": "History Taking",
+    "exam_duration_minutes": 5
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.รักษ์ รักการเรียน",
+      "age": {
+        "value": 9,
+        "unit": "เดือน"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "พาลูกชายอายุ 9 เดือน มาตรวจด้วยอาการถ่ายเหลวเป็นน้ำ 2 วันก่อนมาโรงพยาบาล"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "เล่นได้ดี ไม่ซึม ร้องกวนงอแงเล็กน้อย",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "not provided",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "แม่เอาน้ำเกลือแร่ที่มีอยู่ที่บ้านให้กินมาก่อน 1 ซอง",
+      "family_history": "not provided",
+      "social_history": "แม่ฝากเลี้ยงที่ nursery",
+      "immunization_history": "บุตรได้รับวัคซีนครบทุกครั้ง ล่าสุดได้รับตอนอายุ 6 เดือน ไม่ได้รับวัคซีนพิเศษ; ได้รับวัคซีนตามนัด ไม่ได้รับวัคซีนโรต้า"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "วัน",
+        "description": "เมื่อ 2 วันก่อนมาโรงพยาบาลเริ่มมีถ่ายเหลวเป็นน้ำ"
+      },
+      "duration": {
+        "value": 2,
+        "unit": "วัน",
+        "description": "ถ่ายเหลวเป็นน้ำต่อเนื่องมา 2 วัน"
+      },
+      "progression": [
+        "มีไข้ต่ำๆ",
+        "อาเจียน 5 ครั้ง ลักษณะเป็นนมที่กินเข้าไป",
+        "ถ่ายเหลวเป็นน้ำปริมาณมาก 4-5 ครั้งต่อวัน",
+        "ไม่มีมูกเลือดปน",
+        "ก่อนหน้าที่จะมีอาการ มีหวัด น้ำมูกใส นำมาก่อน",
+        "เล่นได้ดี ไม่ซึม ร้องกวนงอแงเล็กน้อย ไม่มีชัก",
+        "ปัสสาวะครั้งสุดท้ายเมื่อประมาณ 5 ชั่วโมงที่แล้ว สีเหลืองเข้ม ปริมาณพอควร",
+        "มีปากแห้งเล็กน้อย",
+        "ตอนนี้ก้นเริ่มแดงแล้ว"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "คุณสมฤดี รักการเรียน",
+      "age": "not provided",
+      "occupation": "not provided",
+      "family_structure": "ผู้ป่วยเป็นบุตรคนแรก",
+      "role": "มารดา",
+      "emotional_state": "วิตกกังวล"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "ขณะนี้กินนมชงและข้าวบดวันละ 2 มื้อ; กินนมมารดาถึงอายุ 6 เดือน หลังจากนั้นกินนมชง",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ถ่ายเหลวเป็นน้ำปนกาก ปริมาณมาก 4-5 ครั้งต่อวัน ไม่มีมูกเลือดปน ตอนนี้ก้นเริ่มแดงแล้ว",
+      "urine_pattern": "ปัสสาวะครั้งสุดท้ายเมื่อประมาณ 5 ชั่วโมงที่แล้ว สีเหลืองเข้ม ปริมาณพอควร"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทเป็นมารดาจำลองของผู้ป่วยเด็กชายวัย 9 เดือน ได้พาบุตรมาพบแพทย์ด้วยเรื่องถ่ายเหลวมา 2 วัน ขณะนี้นั่งบนเก้าอี้ที่ห้องตรวจรอแพทย์ ซักประวัติ",
+      "appearance": "ปกติ",
+      "behavior": "แสดงความวิตกกังวล ตลอดการสนทนา",
+      "fallback_question": {
+        "question_limit_type": "single",
+        "questions": [
+          {
+            "text": "ลูกจะเป็นอะไรมากมั๊ยคะ",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาลูกมาด้วยเรื่องอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พาลูกชายอายุ 9 เดือน มาตรวจด้วยอาการถ่ายเหลวเป็นน้ำ 2 วันก่อนมาโรงพยาบาล"
+            }
+          ]
+        },
+        {
+          "topic": "ลักษณะอุจจาระและความถี่",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลักษณะอุจจาระเป็นอย่างไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายเหลวเป็นน้ำปนกาก"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มีมูกเลือดมา 2 วัน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ถ่ายบ่อยแค่ไหน ปริมาณเป็นอย่างไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีถ่ายเหลวเป็นน้ำปริมาณมาก 4-5 ครั้งต่อวัน"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอาการร่วมอื่นๆ เช่น ไข้หรืออาเจียนไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เช่นอะไรบ้างคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีไข้ไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีไข้ต่ำๆ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "อาเจียนไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อาเจียน 5 ครั้ง ลักษณะเป็นนมที่กินเข้าไป"
+            }
+          ]
+        },
+        {
+          "topic": "ปัสสาวะและภาวะขาดน้ำ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปัสสาวะเป็นอย่างไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัสสาวะครั้งสุดท้ายเมื่อประมาณ 5 ชั่วโมงที่แล้ว สีเหลืองเข้ม ปริมาณพอควร"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอาการปากแห้ง ตาโหล หรือซึมไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีปากแห้งเล็กน้อย"
+            }
+          ]
+        },
+        {
+          "topic": "การให้นมและอาหาร",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกได้รับนมและอาหารอย่างไรบ้างคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมมารดาถึงอายุ 6 เดือน หลังจากนั้นกินนมชง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ขณะนี้กินนมชงและข้าวบดวันละ 2 มื้อ"
+            }
+          ]
+        },
+        {
+          "topic": "วัคซีน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้รับวัคซีนตามนัดไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "บุตรได้รับวัคซีนครบทุกครั้ง ล่าสุดได้รับตอนอายุ 6 เดือน ไม่ได้รับวัคซีนพิเศษ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เคยฉีดวัคซีนโรต้าหรือไม่คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่แน่ใจ"
+            }
+          ]
+        },
+        {
+          "topic": "การดูแลก่อนมาโรงพยาบาล",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ก่อนมามีให้ยาหรือทำอะไรบ้างคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "แม่เอาน้ำเกลือแร่ที่มีอยู่ที่บ้านให้กินมาก่อน 1 ซอง"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

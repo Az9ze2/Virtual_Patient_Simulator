@@ -1,0 +1,333 @@
+{
+  "case_id": "TH-OSCE-AGn-6F-2559-HT-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติอาการบวมในผู้ป่วยเด็กหญิง อายุ 6 ปี (acute glomerulonephritis)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking",
+    "exam_duration_minutes": 5
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ญ.มีนา",
+      "age": {
+        "value": 6,
+        "unit": "years"
+      },
+      "sex": "หญิง",
+      "occupation": "นักเรียนประถมศึกษาปีที่ 1",
+      "chief_complaint": "มารดาพามาพบแพทย์ด้วยอาการบวม"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "not provided",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": [
+      "not provided"
+    ],
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": 3000,
+      "delivery": "คลอดปกติครบกำหนดที่โรงพยาบาล",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "สุขภาพแข็งแรง ไม่เคย เจ็บป่วยร้ายแรงใดๆ",
+      "past_medication_history": "2 สัปดาห์ก่อน บุตรสาวมีไข้ ไอ เจ็บคอ 1 วัน ซื้อยามารับประทานเองอยู่ได้ 2 วัน อาการดีขึ้นจึงหยุดยา เป็นยาแก้ไอ ยาลดไข้ รับประทานครั้งละ 1 ช้อนชา วันละ 3 ครั้ง",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "ไม่ได้รับประทานยาใดๆ เป็นประจำ",
+      "family_history": "ไม่มีประวัติโรคไต โรคหัวใจ โรคพันธุกรรมในครอบครัว",
+      "social_history": "เป็นบุตรคนแรก เรียนอยู่ชั้นประถมศึกษาปีที่ 1 โภชนาการ กินข้าว 3 มื้อ รับประทานได้ทุกอย่าง ครบ 5 หมู่ มารดาดูแลตลอด รับประทานอาหารได้ดี เจริญเติบโตสมวัย",
+      "immunization_history": "ฉีดวัคซีนทุกอย่างครบตามที่แพทย์นัด; ได้รับวัคซีนครบ ไม่ได้วัคซีนเสริม"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "days",
+        "description": "2 วันก่อนมาโรงพยาบาล"
+      },
+      "duration": {
+        "value": 2,
+        "unit": "days",
+        "description": "ยังคงบวมเหมือนเดิมตลอดช่วง 2 วัน"
+      },
+      "progression": [
+        "สังเกตเห็นหนังตาทั้งสองข้างบวมหลังตื่นนอนมา 2 วัน",
+        "มีขาบวมทั้งสองข้างจนสวมรองเท้านักเรียนไม่ได้",
+        "เมื่อกลับมาจากโรงเรียนก็ยังคงบวมเหมือนเดิม"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "วิไลวรรณ มีนา",
+      "age": "not provided",
+      "occupation": "แม่บ้าน",
+      "family_structure": "บุตรคนนี้เป็นบุตรคนแรก",
+      "role": "มารดาผู้ป่วย",
+      "emotional_state": "วิตกกังวลบ้าง"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "กินข้าว 3 มื้อ",
+      "frequency": "3 มื้อ/วัน",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "การขับถ่ายอุจจาระปกติ",
+      "urine_pattern": "ปัสสาวะเป็นสีแดงเหมือนสีโค้กหรือสีชา แต่ไม่มีอาการปวดแสบเวลาปัสสาวะ ความถี่และปริมาณปกติ"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทเป็นคุณแม่จำลองพาบุตรสาว อายุ 6 ปี มาพบแพทย์ เนื่องจากบุตรสาวมีอาการบวมที่หนังตาทั้ง 2 ข้างมา 2 วัน ขณะนี้นั่งบนเก้าอี้ ที่ห้องตรวจผู้ป่วยนอก รอแพทย์มาซักประวัติโดยบุตรสาวเล่นอยู่ที่นอกห้องตรวจ",
+      "appearance": "ปกติ",
+      "behavior": "มีความวิตกกังวลบ้างเกี่ยวกับอาการเจ็บป่วยของบุตร; หากถูกถามคำถามลักษณะเช่น ‘บวมมีลักษณะอย่างไร’, ‘ปัสสาวะมีลักษณะอย่างไร’, ‘อาการร่วมอื่นๆ’, ‘ประวัติโรคในครอบครัว’ ให้ทำหน้าสงสัยไม่เข้าใจ และขอให้ผู้เข้าสอบขยายความหรือยกตัวอย่างก่อนตอบ; หากผู้เข้าสอบเปิดโอกาสให้เล่าข้อมูลอื่นเพิ่มเติม ให้ตอบว่า “ไม่มี”; หากถามว่า ก่อนหน้านี้มีอาการไม่สบายอะไรหรือไม่ ให้ตอบเพียงว่า “มี”",
+      "fallback_questions": null,
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาลูกมาด้วยเรื่องอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารดาพามาพบแพทย์ด้วยอาการบวม"
+            }
+          ]
+        },
+        {
+          "topic": "ลักษณะอาการบวม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "บวมมีลักษณะอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ขอโทษค่ะ หมายถึงอย่างไรคะ ช่วยยกตัวอย่างได้ไหม"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "บวมที่บริเวณไหน ช่วงเวลาไหน เป็นมากน้อยแค่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "สังเกตเห็นหนังตาทั้งสองข้างของน้อง บวมหลังตื่นนอน และมีขาบวมทั้งสองข้างจนสวมรองเท้านักเรียนไม่ได้ และเมื่อกลับมาจากโรงเรียนก็ยังคงบวมเหมือนเดิม"
+            }
+          ]
+        },
+        {
+          "topic": "ลักษณะปัสสาวะ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปัสสาวะมีลักษณะอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ขอโทษค่ะ หมายถึงลักษณะสีหรือปริมาณคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "สี ปริมาณ และเจ็บแสบเวลาปัสสาวะหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัสสาวะเป็นสีแดงเหมือนสีโค้กหรือสีชา แต่ไม่มีอาการปวดแสบเวลาปัสสาวะ ความถี่และปริมาณปกติ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วมอื่นๆ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอาการอื่นๆ ร่วมด้วยไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "หมายถึงอาการแบบไหนคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เช่น เหนื่อย หอบ หรือนอนราบไม่ได้ ถ่ายเหลว"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มีอาการอื่นๆ เช่น เหนื่อยหอบหรือนอนราบไม่ได้ การขับถ่ายอุจจาระปกติ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการไม่สบายก่อนหน้า",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ก่อนหน้านี้มีอาการไม่สบายอะไรหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มี"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ช่วยเล่าอาการก่อนหน้านี้ให้ละเอียดหน่อยค่ะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "2 สัปดาห์ก่อน บุตรสาวมีไข้ ไอ เจ็บคอ 1 วัน ซื้อยามารับประทานเองอยู่ได้ 2 วัน อาการดีขึ้นจึงหยุดยา เป็นยาแก้ไอ ยาลดไข้ รับประทานครั้งละ 1 ช้อนชา วันละ 3 ครั้ง"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติยาประจำและการใช้ยา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้มียาที่รับประทานเป็นประจำหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่ได้รับประทานยาใดๆ เป็นประจำ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติครอบครัว",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ในครอบครัวมีโรคอะไรบ้าง เช่น โรคไต โรคหัวใจ หรือโรคพันธุกรรม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มีประวัติโรคไต โรคหัวใจ โรคพันธุกรรมในครอบครัว"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการคลอดและน้ำหนักแรกเกิด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนคลอดเป็นอย่างไร คลอดเมื่อกี่สัปดาห์ และน้ำหนักแรกเกิดเท่าไหร่คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เป็นบุตรคนแรก คลอดปกติครบกำหนดที่โรงพยาบาล น้ำหนักแรกเกิด 3 กิโลกรัม แข็งแรงดีไม่เคยนอนโรงพยาบาล"
+            }
+          ]
+        },
+        {
+          "topic": "วัคซีน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกได้รับวัคซีนครบตามกำหนดไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ฉีดวัคซีนทุกอย่างครบตามที่แพทย์นัด"
+            }
+          ]
+        },
+        {
+          "topic": "โภชนาการและพัฒนาการ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เรื่องการกินและการเจริญเติบโตเป็นอย่างไรคะ ตอนนี้เรียนชั้นอะไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "โภชนาการ กินข้าว 3 มื้อ รับประทานได้ทุกอย่าง ครบ 5 หมู่ มารดาดูแลตลอด รับประทานอาหารได้ดี เจริญเติบโตสมวัย ขณะนี้เรียนอยู่ชั้นประถมศึกษาปีที่ 1"
+            }
+          ]
+        },
+        {
+          "topic": "ความกังวลของมารดา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คุณแม่กังวลอะไรเป็นพิเศษไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีความวิตกกังวลบ้างเกี่ยวกับอาการเจ็บป่วยของบุตร"
+            }
+          ]
+        },
+        {
+          "topic": "ข้อมูลเพิ่มเติม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอะไรอยากเล่าเพิ่มเติมไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มี"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

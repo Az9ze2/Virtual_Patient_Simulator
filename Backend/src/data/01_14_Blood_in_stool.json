@@ -1,0 +1,280 @@
+{
+  "case_id": "PED-INTUSSUSCEPTION-TH-2567-12-15-OSCE-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แจ้งผลการวินิจฉัย และส่งตรวจเพิ่มเติมเพื่อวินิจฉัย เด็กที่มีภาวะลำไส้กลืนกันได้ (intussusception)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking + Diagnosis + Investigation",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.เอก เป็นหนึ่ง",
+      "age": {
+        "value": 1,
+        "unit": "ปี"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพามาตรวจด้วยอาการถ่ายเป็นเลือด 1 ชั่วโมงก่อนมาโรงพยาบาล"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 37.2,
+        "heart_rate_in_beats_per_minute": 130,
+        "respiratory_rate_in_breaths_per_minute": 35,
+        "blood_pressure_in_mmHg": "80/50 mmHg",
+        "oxygen_saturation": "98% (room air)",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "a boy, no dysmorphic feature, intermittent crying",
+      "heent": "no pale conjunctiva, anicteric sclera, flat AF 0.5X0.5 cm (full), PF closed, no wet purpura, no sunken eye ball, dry lips but moist oral mucosa",
+      "heart": "normal",
+      "lungs": "normal",
+      "abdomen": "mild distension, hyperactive bowel sound, liver and spleen not palpable, an ill-defined mass 4 cm in diameter at right upper quadrant, no tenderness, no guarding",
+      "extremities": "no rash, no bruise, no petechiae, CRT < 2 sec",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": 38,
+      "birth_weight_g": 3000,
+      "delivery": "มารดาคลอดด้วยวิธีธรรมชาติ",
+      "hospital_stay_days": 2,
+      "discharge_weight_g": "not provided",
+      "complications": "ไม่มีภาวะแทรกซ้อนใด ๆ"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ผู้ป่วยไม่มีโรคประจำตัวหรือเจ็บป่วยจนต้องนอนโรงพยาบาลตั้งแต่หลังเกิด",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "ไม่มีประวัติแพ้อาหารหรือยา",
+      "current_medications": "ผู้ป่วยยังไม่ได้กินยาอะไรก่อนมาโรงพยาบาล",
+      "family_history": "ไม่มีโรคเลือดในครอบครัว คนในครอบครัวแข็งแรงดี ไม่มีคนที่มีอาการแบบเดียวกับผู้ป่วย",
+      "social_history": "มารดาเลี้ยงบุตรเอง",
+      "immunization_history": "ผู้ป่วยได้รับวัคซีนตามนัดทุกครั้ง ไม่เคยได้วัคซีนเสริม ล่าสุด 1 เดือนก่อน จำชื่อวัคซีนไม่ได้"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 1,
+        "unit": "ชั่วโมง",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": 1,
+        "unit": "ชั่วโมง",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": [
+        "เริ่มอาเจียน 6 ชั่วโมงก่อนมาโรงพยาบาล อาเจียนทั้งหมด 8-10 ครั้ง",
+        "ช่วงแรกอาเจียนเป็นนมและอาหาร ต่อมาเป็นเพียงน้ำสีเหลือง",
+        "มีอาการร้องงอแงเป็นระยะ",
+        "เริ่มถ่ายเป็นมูกเลือดสีแดงสด 1 ชั่วโมงก่อนมาโรงพยาบาล",
+        "ดื่มน้ำได้เล็กน้อย แต่อาหารและนมรับประทานไม่ได้",
+        "ท้องดูโตขึ้นเล็กน้อย",
+        "ไม่มีไข้ ไม่ไอ ไม่มีน้ำมูก"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "สุชาดา เป็นหนึ่ง",
+      "age": 30,
+      "occupation": "แม่บ้าน",
+      "family_structure": "มารดาเลี้ยงบุตรเอง บิดาอายุ 30 ปี ทำอาชีพราชการ เป็นบุตรคนแรก",
+      "role": "มารดาจำลอง",
+      "emotional_state": "กังวลมาก"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "ให้ทานอาหารตามคำแนะนำของโรงพยาบาล เป็นมื้ออาหาร; กินนมชง",
+      "frequency": "กินอาหาร 3 มื้อ/วัน; นมชงวันละ 3 มื้อ ครั้งละ 5-6 ออนซ์",
+      "duration_per_feed": "not provided",
+      "storage": "ไม่ได้มีนมชงค้างเก็บไว้กินข้ามมื้อ ชงนมใหม่ทุกรอบ",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ปกติถ่ายอุจจาระสีเหลือง 1-2 ครั้ง/วัน นิ่มดี",
+      "urine_pattern": "ปกติปัสสาวะสีเหลืองใส 4-5 ครั้ง/วัน"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของ ด.ช.เอก เป็นหนึ่ง อายุ 1 ปี มาตรวจด้วยอาการถ่ายเป็นเลือด 1 ชั่วโมงก่อนมาโรงพยาบาล",
+      "appearance": "ปกติ",
+      "behavior": "กังวลมาก",
+      "fallback_questions": null,
+      "sample_dialogue": [
+        {
+          "topic": "ลักษณะอุจจาระเป็นเลือด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกถ่ายเป็นอย่างไรครับ/คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายเป็นเลือด"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เลือดสีอะไรครับ/คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "สีแดง"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "สีแดงแบบไหนครับ/คะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "สีแดงสด"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "อุจจาระกับเลือดปนกันอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อุจจาระส่วนใหญ่เป็นมูกเลือด มีอุจจาระสีเหลืองเล็กน้อย"
+            }
+          ]
+        },
+        {
+          "topic": "อาการอาเจียนและงอแง",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เริ่มมีอาเจียนตั้งแต่เมื่อไหร่ และอาเจียนกี่ครั้ง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ประมาณ 6 ชั่วโมงก่อนมาโรงพยาบาล อาเจียนทั้งหมด 8-10 ครั้ง"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอาการปวดท้องไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่แน่ใจเหมือนกัน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกงอแงผิดปกติหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีอาการร้องงอแงเป็นระยะ"
+            }
+          ]
+        },
+        {
+          "topic": "การกินอาหารและนม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปกติกินอาหารและนมอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ให้ทานอาหารตามคำแนะนำของโรงพยาบาล เป็นมื้ออาหาร"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "รายละเอียดนมที่ทานอยู่ตอนนี้"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมชงครั้งละ 5-6 ออนซ์ วันละ 3 มื้อ ชงนมใหม่ทุกรอบ ล้างขวดนมด้วยเครื่องหลังใช้ทุกครั้ง"
+            }
+          ]
+        },
+        {
+          "topic": "พฤติกรรมการขับถ่ายและปัสสาวะตามปกติ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปกติถ่ายอุจจาระและปัสสาวะเป็นอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปกติปัสสาวะสีเหลืองใส 4-5 ครั้ง/วัน และถ่ายอุจจาระสีเหลือง 1-2 ครั้ง/วัน นิ่มดี"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ปัสสาวะครั้งสุดท้ายเมื่อไหร่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ประมาณ 3 ชั่วโมงก่อนมาโรงพยาบาล"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการตั้งครรภ์ การคลอด และวัคซีน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คลอดกี่สัปดาห์ น้ำหนักแรกเกิดเท่าไหร่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ครบกำหนด 38 สัปดาห์ น้ำหนัก 3,000 กรัม คลอดธรรมชาติ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "หลังคลอดมีภาวะแทรกซ้อนหรือไม่ นอนโรงพยาบาลกี่วัน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ไม่มีภาวะแทรกซ้อน นอนโรงพยาบาล 2 วัน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้รับวัคซีนครบตามนัดหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ได้รับวัคซีนตามนัดทุกครั้ง ไม่เคยได้วัคซีนเสริม ล่าสุด 1 เดือนก่อน จำชื่อวัคซีนไม่ได้"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

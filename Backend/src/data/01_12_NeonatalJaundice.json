@@ -1,0 +1,231 @@
+{
+  "case_id": "COMOSCE-PED-NNJ-20201210-TH-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ วินิจฉัยโรค และให้คำแนะนำผู้ป่วย Neonatal jaundice",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History taking + Diagnosis + Patient Education",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ญ.ปิ่น แก้วใจ",
+      "age": {
+        "value": 5,
+        "unit": "วัน"
+      },
+      "sex": "หญิง",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพามาตรวจตามนัดเพื่อติดตามอาการตัวเหลือง แต่มีอาการตัวเหลืองมากขึ้น"
+    },
+    "physical_examination": {
+      "weight_kg": 2.65,
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 37,
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "others within normal limit for age"
+      },
+      "general_appearance": "an active female neonate, no dysmorphic feature, Skin : jaundice zone IV",
+      "heent": "no pale conjunctiva, icteric sclera, AF 1X1 cm, PF fingertip, no cephalhematoma, no subgaleal hematoma",
+      "heart": "regular, no murmur, normal S1 and S2",
+      "lungs": "clear and equal both lungs",
+      "abdomen": "soft, liver and spleen not palpable, no mass, no periumbilical redness, no discharger per umbilicus",
+      "extremities": "no deformity, no edema",
+      "neuro": "Moro reflex: presence and equal both sides, no high pitch cry, no retrocollis"
+    },
+    "blood_tests": [
+      {
+        "date": "10 ธันวาคม 2563",
+        "results": "Hct 52%, TB 16 mg/dl, DB 0.4 mg/dl; ทารก: blood group A, Rh positive; DAT negative, IAT negative; Reticulocyte count 5%; G-6-PD level normal"
+      },
+      {
+        "date": "5 ธันวาคม 2563",
+        "results": "Hct 51%, TB 12 mg/dl, DB 0.3 mg/dl"
+      }
+    ],
+    "growth_and_birth_history": {
+      "gestational_age_weeks": 38,
+      "birth_weight_g": 3000,
+      "delivery": "คลอดครบกำหนดที่อายุครรภ์ 38 สัปดาห์ ด้วยวิธีธรรมชาติ ไม่ได้ใช้อุปกรณ์ช่วยคลอด",
+      "hospital_stay_days": 3,
+      "discharge_weight_g": "not provided",
+      "complications": "มีอาการ ตัวเหลืองเล็กน้อย ไม่ได้ส่องไฟหรือถ่ายเลือด"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "not provided",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "ไม่มีอาการตัวเหลือง/ซีด ไม่มีประวัติโรคตับในครอบครัว",
+      "social_history": "มารดาจำลอง อายุ 25 ปี เป็นแม่บ้าน บิดาอายุ 28 ปี ทำอาชีพพนักงานบริษัท",
+      "immunization_history": "not provided"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 3,
+        "unit": "วันหลังคลอด",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": [
+        "ตัวเหลืองเล็กน้อยตอนกลับบ้าน (อายุ 3 วัน)",
+        "ปัจจุบันตัวเหลืองมากขึ้น"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "สุภาพร แก้วใจ",
+      "age": 25,
+      "occupation": "แม่บ้าน",
+      "family_structure": "บิดาอายุ 28 ปี ทำอาชีพพนักงานบริษัท; บุตรสาวชื่อ ด.ญ.ปิ่น แก้วใจ อายุ 5 วัน เป็นลูกคนแรก",
+      "role": "มารดาของทารก",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "นมแม่อย่างเดียว",
+      "frequency": "ทุก 1-2 ชั่วโมง",
+      "duration_per_feed": "กินนมครั้งละ 10 นาที โดยให้กินข้างละ 5 นาที ทั้ง 2 ข้าง",
+      "storage": "not provided",
+      "maternal_breast_condition": "ระหว่างที่มารดาให้นม ไม่มีน้ำนมไหลจากเต้านมอีกข้าง ตอนที่มารดาให้นมเสร็จแต่ละครั้งรู้สึกเต้านมยังคัด มารดาไม่เจ็บเต้านมหรือหัวนม",
+      "daytime_sleep": "นอนหลับนานครั้งละ 1-2 ชั่วโมง",
+      "nighttime_sleep": "นอนหลับนานครั้งละ 1-2 ชั่วโมง",
+      "stool_pattern": "ถ่ายอุจจาระเป็นสีเหลืองวันละ 3 ครั้ง",
+      "urine_pattern": "ปัสสาวะวันละ 4-5 ครั้ง สีเหลืองเข้ม"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรหญิงอายุ 5 วัน พาบุตรมาพบแพทย์ตามนัด แต่มีอาการตัวเหลืองมากขึ้น ขณะนี้นั่งอยู่บนเก้าอี้ในห้องตรวจ รอแพทย์มาทำการตรวจรักษา",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_question": {
+        "question_limit_type": "multiple",
+        "questions": [
+          {
+            "text": "การนำเด็กไปตากแดดช่วยเรื่องตัวเหลืองหรือไม่",
+            "asked": false
+          },
+          {
+            "text": "ควรกินน้ำหลังกินนมหรือไม่",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาน้องมาด้วยเรื่องอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มาตรวจตามนัดเพื่อติดตามอาการตัวเหลือง แต่รู้สึกว่าตัวเหลืองมากขึ้นค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการคลอดและน้ำหนักแรกเกิด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องคลอดกี่สัปดาห์และคลอดแบบไหนคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "คลอดครบกำหนดที่อายุครรภ์ 38 สัปดาห์ ด้วยวิธีธรรมชาติ ไม่ได้ใช้อุปกรณ์ช่วยคลอดค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้ำหนักแรกเกิดเท่าไร และนอนโรงพยาบาลกี่วัน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "น้ำหนักแรกเกิด 3,000 กรัม นอนโรงพยาบาล 3 วัน ก่อนกลับบ้านตอนอายุ 3 วัน ตอนกลับมีตัวเหลืองเล็กน้อยค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การกินนมและการขับถ่าย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้น้องกินนมอะไรบ้างและบ่อยแค่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัจจุบันกินนมแม่อย่างเดียวทุก 1-2 ชั่วโมง ไม่ได้กินนมผสมหรือน้ำหลังกินนมค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "แต่ละครั้งดูดนมนานเท่าไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมครั้งละ 10 นาที โดยให้กินข้างละ 5 นาที ทั้ง 2 ข้างค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีน้ำนมไหลจากอีกข้างไหม เจ็บหัวนมหรือเต้านมไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ระหว่างให้นมไม่มีน้ำนมไหลจากเต้านมอีกข้าง และไม่เจ็บเต้านมหรือหัวนม แต่หลังให้นมยังรู้สึกเต้านมคัดค่ะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "การขับถ่ายเป็นอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายอุจจาระเป็นสีเหลืองวันละ 3 ครั้ง ปัสสาวะวันละ 4-5 ครั้ง สีเหลืองเข้มค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการอื่นๆ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอาเจียน ซึม ร้องเสียงแหลมหรือคอเกร็งไหมคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เด็กไม่อาเจียน ไม่ซึม ไม่ร้องเสียงแหลม ไม่มีคอเกร็งแอ่นค่ะ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

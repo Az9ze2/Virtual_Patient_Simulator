@@ -1,0 +1,225 @@
+{
+  "case_id": "OSCE-PED-EPI-20191212-TH-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติประกอบการให้คำแนะนำเกี่ยวกับการให้วัคซีนตาม Expanded Program of Immunization (EPI) และการดูแลสุขภาพเด็กโดยรวม",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "Comprehensive OSCE (Clinical Skills)",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.แดง ใจดี",
+      "age": {
+        "value": 4,
+        "unit": "เดือน"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพามาตรวจสุขภาพและฉีดวัคซีนตามนัด วันนี้มีน้ำมูกเล็กน้อย ไม่มีไข้"
+    },
+    "physical_examination": {
+      "weight_kg": 6,
+      "length_cm": 66,
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "P50",
+        "length": "P50",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "อื่นๆ อยู่ในเกณฑ์ปกติ",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": 2700,
+      "delivery": "คลอดครบกำหนด",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "ไม่มี"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ไม่มีโรคประจำตัวใดๆ",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "สามีชื่อ นายดำ ใจดี อายุ 32 ปี อาชีพค้าขาย สุขภาพแข็งแรง",
+      "social_history": "พักอาศัยอยู่บ้านจัดสรร 2 ชั้นแถวชานเมือง ไม่ติดถนนใหญ่ และไม่ใกล้แหล่งน้ำ ปกติบุตรนอนบนเตียงเดียวกับบิดามารดา",
+      "immunization_history": "วัคซีนที่ได้รับครั้งก่อน มีอาการตัวรุมๆ เล็กน้อยหลังฉีด 1 วัน ไม่เคยได้รับวัคซีนเสริม"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "วันนี้เด็กชายแดง ใจดี มีน้ำมูกเล็กน้อย ไม่มีไข้ ไม่งอแง"
+      },
+      "duration": {
+        "value": "not provided",
+        "unit": "not provided",
+        "description": "not provided"
+      },
+      "progression": [
+        "วันนี้มีน้ำมูกเล็กน้อย",
+        "ไม่มีไข้",
+        "ไม่งอแง"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "นางสาวกมลพร ใจดี",
+      "age": 28,
+      "occupation": "แม่บ้าน",
+      "family_structure": "อยู่กับสามี นายดำ ใจดี อายุ 32 ปี อาชีพค้าขาย สุขภาพแข็งแรง และบุตรชายคนแรก พักอาศัยอยู่บ้านจัดสรร 2 ชั้นแถวชานเมือง ไม่ติดถนนใหญ่ และไม่ใกล้แหล่งน้ำ ปกติบุตรนอนบนเตียงเดียวกับบิดามารดา",
+      "role": "มารดาจำลอง",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "กินนมแม่เพียงอย่างเดียว",
+      "frequency": "ทุก 3-4 ชั่วโมง",
+      "duration_per_feed": "ครั้งละประมาณครึ่งชั่วโมง",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ขับถ่าย 5-6 ครั้งต่อวัน",
+      "urine_pattern": "not provided"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของเด็กชายอายุ 4 เดือน ได้พาบุตรมาตรวจสุขภาพและฉีดวัคซีนตามนัด ขณะนี้นั่งอยู่บนเก้าอี้ที่ห้องตรวจ รอแพทย์มาทำการตรวจและแนะนำ",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_question": {
+        "question_limit_type": "multiple",
+        "questions": [
+          {
+            "text": "วันนี้ลูกมีน้ำมูก สามารถฉีดวัคซีนได้หรือไม่",
+            "asked": false
+          },
+          {
+            "text": "ลูกมีพัฒนาการปกติหรือไม่",
+            "asked": false
+          },
+          {
+            "text": "วันนี้คุณหมอฉีดวัคซีนอะไร และต้องปฏิบัติตัวอย่างไรเมื่อกลับบ้าน",
+            "asked": false
+          },
+          {
+            "text": "ให้ลูกกินนมชงและน้ำส้มเสริมได้หรือไม่",
+            "asked": false
+          },
+          {
+            "text": "จะเริ่มอาหารเสริมเมื่อไรดี",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาลูกมาด้วยเรื่องอะไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พามาตรวจสุขภาพและฉีดวัคซีนตามนัดค่ะ วันนี้ลูกมีน้ำมูกเล็กน้อยแต่ไม่มีไข้"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการคลอดและสุขภาพโดยรวม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คลอดครบกำหนดไหม น้ำหนักแรกคลอดเท่าไร"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "คลอดครบกำหนด แข็งแรงดี น้ำหนักแรกคลอด 2,700 กรัมค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การให้นมและความถี่",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้ลูกได้กินอะไรและบ่อยแค่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมแม่เพียงอย่างเดียว ทุก 3-4 ชั่วโมง ครั้งละนานครึ่งชั่วโมง ยังไม่ได้กินอาหารเสริมค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "การขับถ่ายและการนอน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกขับถ่ายเป็นอย่างไร นอนหลับดีไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ขับถ่าย 5-6 ครั้งต่อวัน นอนหลับได้ ไม่ร้องกวนค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "พัฒนาการของเด็ก",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้ลูกทำอะไรได้บ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พลิกคว่ำได้เอง แต่ยังไม่พลิกหงาย ชันคอได้นาน คว้าของได้ ส่งเสียงอ้อแอ้ ยิ้มกับคนที่มาคุยด้วยค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการรับวัคซีนที่ผ่านมา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "หลังฉีดวัคซีนครั้งก่อนมีอาการผิดปกติไหม และเคยได้รับวัคซีนเสริมหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มีตัวรุมๆ เล็กน้อยหลังฉีด 1 วัน ไม่เคยได้รับวัคซีนเสริมค่ะ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

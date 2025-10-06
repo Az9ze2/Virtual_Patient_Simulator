@@ -1,0 +1,232 @@
+{
+  "case_id": "ถ่ายเหลว 8 เดือน OSCE 2558",
+  "case_metadata": {
+    "case_title": "การซักประวัติมารดาที่พาบุตรชายวัย 8 เดือน มาพบแพทย์ด้วยเรื่องถ่ายเหลวมา 5 วัน (Acute viral gastroenteritis with secondary lactase deficiency)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking",
+    "exam_duration_minutes": 5
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ช.รักษ์ รักการเรียน",
+      "age": {
+        "value": 8,
+        "unit": "เดือน"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพาบุตรชายวัย 8 เดือน มาพบแพทย์เนื่องจากมีอาการถ่ายเหลวมา 5 วัน"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "not provided",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "not provided",
+      "past_medication_history": "6 วันก่อนมาโรงพยาบาล ได้ยาลดไข้ ลดน้ำมูกและยาแก้อาเจียน จากคลินิก",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "ได้รับผงเกลือแร่",
+      "family_history": "not provided",
+      "social_history": "not provided",
+      "immunization_history": "บุตรได้รับวัคซีนครบทุกครั้ง ล่าสุดได้รับตอนอายุ 6 เดือน ไม่ได้รับวัคซีนพิเศษ"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 5,
+        "unit": "วัน",
+        "description": "เริ่มมีอาการถ่ายเหลว 5 วันก่อนมาโรงพยาบาล"
+      },
+      "duration": {
+        "value": 5,
+        "unit": "วัน",
+        "description": "ถ่ายเหลวมา 5 วัน"
+      },
+      "progression": [
+        "7 วันก่อนมาโรงพยาบาล บุตรชายมีอาการเป็นหวัดน้ำมูกใส มีไข้ต่ำ ๆ",
+        "6 วันก่อนมาโรงพยาบาล เริ่มมีอาเจียนเป็นเศษอาหาร และนมที่กินเข้าไปไม่มีน้ำสีเหลืองหรือสีเขียวปน ไม่มีอาเจียนเป็นเลือด มารดาพาไปคลินิกได้ยาลดไข้ ลดน้ำมูกและยาแก้อาเจียน แพทย์แจ้งว่าเป็นไข้หวัด หลังได้ยาลดไข้ ไข้ไม่มีแล้ว",
+        "5 วันก่อนมาโรงพยาบาล มีอาการถ่ายเหลว เป็นน้ำปนกาก ไม่มีมูกเลือดปน ปริมาณมากพอควร ถ่ายประมาณ 5 ครั้งต่อวัน ไม่มีไข้ มารดาพาไปคลินิกเดิมได้ผงเกลือแร่ ขณะที่อยู่บ้าน รับประทานผงเกลือแร่ได้ รับประทานน้ำ นมและอาหารได้ตามปกติ ยังคงถ่ายเหลวอยู่ทุกวัน วันละ 3-4 ครั้ง ก้นเริ่มแดง",
+        "2 วันก่อนมาโรงพยาบาล ยังถ่ายเหลวอยู่ทุกวัน วันละ 3-4 ครั้ง มีท้องอืด ผายลมบ่อย อุจจาระมีกลิ่นเหม็นเปรี้ยว ถ่ายเป็นฟองและก้นแดง รับประทานอาหารได้ลดลง แต่รับประทานน้ำและนมได้ มีซึมลงเล็กน้อย ปากแห้ง งอแง ปัสสาวะสีเข้มและออกน้อยลง ไม่ทราบเวลาที่ปัสสาวะครั้งสุดท้าย"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "พิมพ์ใจ รักการเรียน",
+      "age": "32",
+      "occupation": "not provided",
+      "family_structure": "not provided",
+      "role": "มารดาจำลอง",
+      "emotional_state": "วิตกกังวล"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "กินนมมารดาถึงอายุ 2 เดือน หลังจากนั้นกินนมผสม",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "ถ่ายเหลวเป็นน้ำปนกาก ไม่มีมูกเลือดมา 5 วัน ตอนนี้ก้นเริ่มแดงแล้ว; อุจจาระมีกลิ่นเหม็นเปรี้ยว ถ่ายเป็นฟอง",
+      "urine_pattern": "ปัสสาวะสีเข้มและออกน้อยลง ไม่ทราบเวลาที่ปัสสาวะครั้งสุดท้าย"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทเป็นมารดาจำลองของผู้ป่วยชายวัย 8 เดือน ได้พาบุตรมาพบแพทย์ด้วยเรื่องถ่ายเหลวมา 5 วัน ขณะนี้นั่งบนเก้าอี้ที่ห้องตรวจรอแพทย์ซักประวัติ",
+      "appearance": "ปกติ",
+      "behavior": "แสดงความวิตกกังวล ตลอดการสนทนา",
+      "fallback_questions": null,
+      "sample_dialogue": [
+        {
+          "topic": "การแนะนำตัวและเหตุผลมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พามาด้วยเรื่องอะไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารดาพาบุตรชายวัย 8 เดือน มาพบแพทย์เนื่องจากมีอาการถ่ายเหลวมา 5 วัน"
+            }
+          ]
+        },
+        {
+          "topic": "ลักษณะอุจจาระ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลักษณะอุจจาระเป็นอย่างไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ถ่ายเหลวเป็นน้ำปนกาก ไม่มีมูกเลือดมา 5 วัน ตอนนี้ก้นเริ่มแดงแล้ว"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วมและพัฒนาการของอาการ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอาการร่วมอื่นๆ ไหมครับ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เช่นอะไรบ้างคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ก่อนหน้านี้มีไอ น้ำมูก หรือไข้ไหม แล้วมีอาเจียนหรือเปล่า"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "7 วันก่อน มีหวัดน้ำมูกใส มีไข้ต่ำ ๆ 6 วันก่อน เริ่มมีอาเจียนเป็นเศษอาหารและนม ไม่มีน้ำสีเหลืองหรือสีเขียวปน ไม่อาเจียนเป็นเลือด ไปคลินิกได้ยาลดไข้ ลดน้ำมูก ยาแก้อาเจียน หลังได้ยาลดไข้ ไข้ไม่มีแล้ว"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนเริ่มถ่ายเหลวเป็นอย่างไร ความถี่ประมาณกี่ครั้ง มีไข้ไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "เริ่มถ่ายเหลวเมื่อ 5 วันก่อน เป็นน้ำปนกาก ไม่มีมูกเลือด ปริมาณมากพอควร ประมาณวันละ 5 ครั้ง ไม่มีไข้"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ช่วง 2-3 วันที่ผ่านมาเป็นอย่างไรบ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ยังถ่ายเหลวอยู่ทุกวัน วันละ 3-4 ครั้ง มีท้องอืด ผายลมบ่อย อุจจาระมีกลิ่นเหม็นเปรี้ยว ถ่ายเป็นฟอง ก้นแดง รับประทานอาหารได้ลดลง แต่ดื่มน้ำและนมได้ มีซึมลงเล็กน้อย ปากแห้ง งอแง ปัสสาวะสีเข้มและออกน้อยลง ไม่ทราบเวลาที่ปัสสาวะครั้งสุดท้าย"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการได้รับสารน้ำและยา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้ให้ยาหรือสารน้ำอะไรบ้างที่บ้าน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ที่คลินิกให้ผงเกลือแร่ กลับบ้านก็ดื่มผงเกลือแร่ได้ ดื่มน้ำ นม และอาหารได้ตามปกติ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติการกินนมและอาหาร",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ลูกกินนมและอาหารอย่างไรบ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมมารดาถึงอายุ 2 เดือน หลังจากนั้นกินนมผสม เริ่มกินอาหารเสริมตอนอายุ 6 เดือน ขณะนี้กินข้าววันละ 2 มื้อ"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติวัคซีน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ได้รับวัคซีนครบไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "บุตรได้รับวัคซีนครบทุกครั้ง ล่าสุดได้รับตอนอายุ 6 เดือน ไม่ได้รับวัคซีนพิเศษ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

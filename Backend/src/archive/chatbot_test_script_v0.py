@@ -1,0 +1,286 @@
+#!/usr/bin/env python3
+"""
+Simplified Thai Medical Chatbot Test Script
+Basic functionality with token usage tracking
+
+Usage:
+    python chatbot_test_script.py
+
+Requirements:
+    - .env file with OPENAI_API_KEY
+    - breast_feeding.json in the same directory
+"""
+
+import json
+import time
+import sys
+import os
+from typing import Dict, Any, Tuple
+from dotenv import load_dotenv
+
+# LangChain imports
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+import openai
+
+class SimpleChatbotTester:
+    """Simplified chatbot tester with token tracking"""
+    
+    def __init__(self):
+        """Initialize the chatbot tester using environment variables"""
+        # Load environment variables from .env file
+        load_dotenv()
+        
+        # Get API key from environment
+        self.api_key = os.getenv('OPENAI_API_KEY')
+        if not self.api_key:
+            print("❌ OPENAI_API_KEY not found in environment variables")
+            print("Please check your .env file")
+            sys.exit(1)
+        self.llm = ChatOpenAI(
+            model_name="gpt-5",
+            openai_api_key=self.api_key,
+            temperature=0.7
+        )
+        
+        # Message history for conversation context
+        self.message_history = []
+        
+        # Token tracking
+        self.total_tokens = 0
+        self.input_tokens = 0
+        self.output_tokens = 0
+        
+        print("✓ Initialized GPT-5-Mini model")
+    
+    def load_case_data(self, json_file_path: str) -> Dict[str, Any]:
+        """Load case data from breast_feeding.json"""
+        try:
+            with open(json_file_path, 'r', encoding='utf-8') as f:
+                case_data = json.load(f)
+            print(f"📋 Loaded case: {case_data['case_metadata']['case_title']}")
+            return case_data
+        except FileNotFoundError:
+            print(f"✗ File not found: {json_file_path}")
+            sys.exit(1)
+        except json.JSONDecodeError:
+            print(f"✗ Invalid JSON format in: {json_file_path}")
+            sys.exit(1)
+    
+    def setup_conversation(self, case_data: Dict[str, Any]) -> str:
+        """Set up the conversation with enhanced Thai prompt structure"""
+        mother_profile = case_data['simulation_view']['mother_profile']
+        simulation_instructions = case_data['simulation_view']['simulation_instructions']
+        
+        # Extract child information from examiner_view (safe to use for basic demographics)
+        examiner_view = case_data.get('examiner_view', {})
+        patient_bg = examiner_view.get('patient_background', {})
+        child_name = patient_bg.get('child_name', 'ด.ช.ยินดี ปรีดา')
+        child_age = patient_bg.get('child_age_days_or_months', '5 วัน')
+        
+        # Get questions to ask examiner
+        questions_to_ask = simulation_instructions.get('questions_to_ask_examiner', [])
+        question_list = ""
+        for q in questions_to_ask:
+            question_list += f"→ {q.get('questions', '')}\n"
+        
+        # Build enhanced Thai prompt structure
+        system_prompt = f"""
+        # กฏเกณฑ์การตอบ
+        - ตอบเป็นภาษาไทยเท่านั้น
+        - ตอบไม่เกิน 1 ประโยคต่อคำถาม ถ้ามีหลายข้อมูล ให้รอหมอถามทีละประเด็น
+        ตัวอย่าง:
+        หมอ: อาการเป็นยังไงครับ
+        แม่: เจ็บหัวนมขวาค่ะ
+
+        หมอ: มีไข้ไหมครับ
+        แม่: ไม่มีค่ะ
+
+        หมอ: แล้วลูกเป็นยังไงบ้างครับ
+        แม่: ลูกกินนมปกติดีค่ะ
+
+        - ตอบคำถามให้สั้น กระชับ ตรงประเด็น ห้ามตอบเป็นรายการยาวๆ
+        - ห้ามอธิบายหลายอาการพร้อมกัน ถ้าไม่ได้ถูกถามโดยตรง
+        - ไม่พูดถึงข้อมูลภายใน: (examiner_view)
+        - คุณไม่ใช่ผู้เชี่ยวชาญทางการแพทย์ ดังนั้นไม่ควรให้คำแนะนำทางการแพทย์ใดๆ
+        - ไม่ใช้คำศัพท์การแพทย์ที่ซับซ้อน
+
+        # บทบาทของคุณ
+        {mother_profile.get('name', 'วาสนา ปรีดา')} ({mother_profile.get('age', 25)} ปี, {mother_profile.get('occupation', 'แม่บ้าน')}) แม่ของ {child_name} อายุ {child_age}
+
+        # มาโรงพยาบาลเพราะ
+        {simulation_instructions.get('scenario', 'ตรวจติดตามน้ำหนักลูกและปรึกษาเรื่องการให้นม')}
+
+        # ลักษณะนิสัย
+        - {mother_profile.get('emotional_state', 'กังวลเรื่องลูกแต่ไม่เครียดมาก')}
+
+        # ข้อมูลพื้นฐานที่คุณรู้ (ตอบเฉพาะถ้าถูกถาม)
+        - เจ็บหัวนมขวา 2–3 วัน เจ็บเวลาให้นม
+        - ไม่มีไข้ (บอกต่อเมื่อถูกถามเรื่องไข้)
+        - ไม่มีเลือดซึม (บอกต่อเมื่อถูกถามเรื่องเลือด)
+        - ลูกกินนม ขับถ่ายและนอนปกติ (บอกต่อเมื่อถูกถามเรื่องลูก)
+
+
+        
+
+        เมื่อเริ่มบทสนทนา ให้นักศึกษาเป็นฝ่ายเริ่มถามคำถามก่อน"""
+        
+        # Add system message to history
+        system_message = SystemMessage(content=system_prompt)
+        self.message_history = [system_message]
+        
+        return system_prompt
+    
+    def chat_turn(self, student_message: str) -> Tuple[str, float]:
+        """Process one turn of conversation with token tracking"""
+        start_time = time.time()
+        
+        try:
+            # Add student message to history
+            human_message = HumanMessage(content=student_message)
+            self.message_history.append(human_message)
+            
+            # Keep last 15 messages to maintain context but avoid too long prompts
+            messages_to_send = self.message_history[-15:]
+            
+            # Generate response
+            response = self.llm.generate([messages_to_send])
+            
+            # Extract token usage information
+            if hasattr(response, 'llm_output') and response.llm_output:
+                token_usage = response.llm_output.get('token_usage', {})
+                if token_usage:
+                    self.input_tokens += token_usage.get('prompt_tokens', 0)
+                    self.output_tokens += token_usage.get('completion_tokens', 0)
+                    self.total_tokens += token_usage.get('total_tokens', 0)
+            
+            # Get the actual response text
+            patient_response = response.generations[0][0].text
+            
+            # Add AI response to history
+            ai_message = AIMessage(content=patient_response)
+            self.message_history.append(ai_message)
+            
+            response_time = time.time() - start_time
+            return patient_response, response_time
+            
+        except Exception as e:
+            error_msg = f"ขอโทษค่ะ เกิดข้อผิดพลาด: {str(e)}"
+            return error_msg, 0.0
+    
+    def interactive_chat(self, case_data: Dict[str, Any]):
+        """Start interactive chat session"""
+        print("\n" + "="*60)
+        print("🏥 Thai Medical OSCE Chatbot Test")
+        print(f"📝 Case: {case_data['case_metadata']['case_title']}")
+        print(f"🤖 Model: GPT-5-Mini")
+        print("="*60)
+        
+        # Setup conversation
+        system_prompt = self.setup_conversation(case_data)
+        
+        mother_profile = case_data['simulation_view']['mother_profile']
+        
+        print(f"\n📋 Simulation Setup:")
+        print(f"👤 Role: {mother_profile['name']} ({mother_profile['role']})")
+        print(f"😊 Emotional State: {mother_profile['emotional_state']}")
+        
+        print(f"\n💬 เริ่มการสนทนา (พิมพ์ 'quit' เพื่อจบ):")
+        
+        while True:
+            try:
+                # Get student input
+                student_input = input("\n🧑‍⚕️ นักศึกษา: ").strip()
+                
+                if student_input.lower() in ['quit', 'exit', 'q']:
+                    break
+                
+                if not student_input:
+                    continue
+                
+                # Generate response
+                print("\n🤔 กำลังคิด...", end="", flush=True)
+                patient_response, response_time = self.chat_turn(student_input)
+                print(f"\r{' ' * 15}\r", end="")  # Clear thinking message
+                
+                # Show response
+                print(f"👩‍⚕️ มารดา: {patient_response}")
+                print(f"⏱️  เวลาตอบ: {response_time:.2f}s")
+                
+            except KeyboardInterrupt:
+                print("\n👋 การสนทนาถูกยกเลิก")
+                break
+            except Exception as e:
+                print(f"\n❌ เกิดข้อผิดพลาด: {str(e)}")
+        
+        # Show final summary
+        self.show_session_summary()
+    
+    def show_session_summary(self):
+        """Show session summary with token usage"""
+        print("\n" + "="*60)
+        print("📊 สรุปการใช้งาน")
+        print("="*60)
+        
+        print(f"🔢 Token Usage:")
+        print(f"   📥 Input Tokens: {self.input_tokens:,}")
+        print(f"   📤 Output Tokens: {self.output_tokens:,}")
+        print(f"   📊 Total Tokens: {self.total_tokens:,}")
+        
+        # Calculate conversation stats
+        total_messages = len([msg for msg in self.message_history if not isinstance(msg, SystemMessage)])
+        student_messages = len([msg for msg in self.message_history if isinstance(msg, HumanMessage)])
+        patient_responses = len([msg for msg in self.message_history if isinstance(msg, AIMessage)])
+        
+        print(f"\n💬 Conversation Stats:")
+        print(f"   📝 Total Messages: {total_messages}")
+        print(f"   🧑‍⚕️ Student Questions: {student_messages}")
+        print(f"   👩‍⚕️ Patient Responses: {patient_responses}")
+        
+        # Estimate cost (official GPT-5-Mini rates)
+        input_cost = (self.input_tokens / 1000000) * 0.25  # $0.25 per 1M input tokens
+        output_cost = (self.output_tokens / 1000000) * 2.00  # $2.00 per 1M output tokens
+        total_cost = input_cost + output_cost
+        total_cost_thb = total_cost * 35  # Approximate conversion to THB
+        
+        print(f"\n💰 Actual Cost (USD) - GPT-5-Mini:")
+        print(f"   📥 Input Cost: ${input_cost:.6f} ($0.25 per 1M tokens)")
+        print(f"   📤 Output Cost: ${output_cost:.6f} ($2.00 per 1M tokens)")
+        print(f"   💳 Total Cost: ${total_cost:.6f}")
+        print(f"   💵 Estimated Cost (THB): ~{total_cost_thb:.2f} บาท")
+
+def main():
+    """Main function"""
+    # Check if breast_feeding.json exists
+    json_file_path = "breast_feeding.json"
+    if not os.path.exists(json_file_path):
+        print(f"❌ File not found: {json_file_path}")
+        print("Please make sure breast_feeding.json is in the current directory")
+        sys.exit(1)
+    
+    # Check if .env file exists
+    if not os.path.exists('.env'):
+        print("❌ .env file not found")
+        print("Please create a .env file with your OPENAI_API_KEY")
+        print("\nExample .env file content:")
+        print("OPENAI_API_KEY=your-api-key-here")
+        sys.exit(1)
+    
+    try:
+        # Initialize tester (will load environment variables)
+        tester = SimpleChatbotTester()
+        
+        # Load case data
+        case_data = tester.load_case_data(json_file_path)
+        
+        # Start interactive chat
+        tester.interactive_chat(case_data)
+        
+    except KeyboardInterrupt:
+        print("\n👋 ขอบคุณที่ทดสอบ chatbot!")
+    except Exception as e:
+        print(f"\n❌ เกิดข้อผิดพลาด: {str(e)}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

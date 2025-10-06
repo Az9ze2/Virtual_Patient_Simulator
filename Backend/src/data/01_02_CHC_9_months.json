@@ -1,0 +1,265 @@
+{
+  "case_id": "OSCE-CHC-9mo-Anemia-2024-12-15-TH-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้วัคซีนและการดูแลสุขภาพเด็กโดยรวม (CHC at age 9 months and anemia)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "Comprehensive OSCE (Clinical Skills)",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "ด.ญ.ดาว สกาวใจ",
+      "age": {
+        "value": 9,
+        "unit": "เดือน"
+      },
+      "sex": "หญิง",
+      "occupation": "not provided",
+      "chief_complaint": "มารดาพามารับวัคซีน MMR ตามนัด เด็กสบายดี"
+    },
+    "physical_examination": {
+      "weight_kg": 8.2,
+      "length_cm": 70,
+      "ofc_cm": 44,
+      "percentiles": {
+        "weight": "P50",
+        "length": "P50",
+        "ofc": "P50"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 36.7,
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "others within normal limit for age"
+      },
+      "general_appearance": "an active female infant, no dysmorphic feature",
+      "heent": "no pale conjunctivae, no icteric sclerae, Anterior fontanelle 1X1 cm, Posterior fontanelle closed, normal red reflex both eyes",
+      "heart": "regular rhythm, no murmur, normal S1 and S2",
+      "lungs": "clear and equal breath sound both lungs, no retraction",
+      "abdomen": "soft, liver and spleen not palpable, no mass, no umbilical hernia",
+      "extremities": "no deformity, no edema",
+      "neuro": "not provided"
+    },
+    "blood_tests": [
+      {
+        "date": "not provided",
+        "result": "Hb 10 g/dL, Hct 30%"
+      }
+    ],
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": 3000,
+      "delivery": "คลอดครบกำหนดด้วยวิธีธรรมชาติ",
+      "hospital_stay_days": 3,
+      "discharge_weight_g": "not provided",
+      "complications": "ไม่มีภาวะแทรกซ้อนหลังเกิด"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "แข็งแรงดี หลังออกจากโรงพยาบาลตอนแรกเกิดไม่มีอาการผิดปกติ",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "not provided",
+      "social_history": "อยู่บ้านชั้นเดียว แถวชานเมือง ในบ้านมีเปลที่มีรั้วกันสี่ด้าน โดยบุตรนอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกัน มีย่ามาช่วยเลี้ยงบุตรตอนกลางวัน",
+      "immunization_history": "มารดาพามารับวัคซีน MMR ตามนัด"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": "not provided",
+        "unit": "not provided"
+      },
+      "duration": {
+        "value": "not provided",
+        "unit": "not provided"
+      },
+      "progression": [
+        "วันนี้สบายดี ไม่มีไข้",
+        "ไม่มีอาการผิดปกติ"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "กมลชนก สกาวใจ",
+      "age": 25,
+      "occupation": "ทำงานบริษัท",
+      "family_structure": "สามีอายุ 30 ปี ทำอาชีพครู มีย่ามาช่วยเลี้ยงบุตรตอนกลางวัน เป็นลูกคนแรก",
+      "role": "มารดา",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "นมแม่บีบเก็บไว้ และดูดเต้าตอนกลางคืน 1 มื้อ; อาหารเสริม 2 มื้อ (ข้าวบดกล้วย)",
+      "frequency": "ทุก 6-8 ชั่วโมง",
+      "duration_per_feed": "not provided",
+      "storage": "นมแม่บีบเก็บไว้",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "นอนหลับกลางวัน 1 ครั้ง นาน 2 ชั่วโมง",
+      "nighttime_sleep": "8-10 ชั่วโมง",
+      "stool_pattern": "ถ่ายอุจจาระเป็นสีเหลืองวันละ 1-2 ครั้ง",
+      "urine_pattern": "ปัสสาวะวันละ 5-6 ครั้ง"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรสาวอายุ 9 เดือน พาบุตรมารับวัคซีนตามนัด รอแพทย์มาทำการตรวจรักษา",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "fallback_questions": {
+        "question_limit_type": "single",
+        "questions": [
+          {
+            "text": "คุณหมอคะ ผลเลือดของน้องผิดปกติไหมคะ",
+            "asked": false
+          },
+          {
+            "text": "คุณหมอคะ ผลเลือดแบบนี้ต้องทำอะไรต่อไหมคะ",
+            "asked": false
+          }
+        ]
+      },
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้พาน้องมาด้วยเรื่องอะไรคะ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "มารับวัคซีน MMR ตามนัด วันนี้สบายดี ไม่มีไข้"
+            }
+          ]
+        },
+        {
+          "topic": "ข้อมูลทั่วไปของครอบครัวและผู้ดูแล",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องชื่ออะไร อายุเท่าไหร่คะ ใครเป็นผู้ดูแลหลัก"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ด.ญ.ดาว สกาวใจ อายุ 9 เดือน เป็นลูกคนแรก มีย่ามาช่วยเลี้ยงตอนกลางวัน"
+            }
+          ]
+        },
+        {
+          "topic": "การกินนมและอาหารเสริม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้น้องกินนมอะไร ปริมาณและความถี่เท่าไหร่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "กินนมแม่ทุก 6-8 ชั่วโมง ครั้งละ 6 ออนซ์ (นมแม่บีบเก็บไว้) และกินนมแม่จากเต้านม 1 มื้อตอนกลางคืน กินอาหารเสริม 2 มื้อ แต่กินได้มื้อละ 3-5 คำ เป็นข้าวบดกล้วย"
+            }
+          ]
+        },
+        {
+          "topic": "การนอนและการขับถ่าย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "การนอนกลางวันกลางคืนเป็นอย่างไร ถ่ายอุจจาระและปัสสาวะบ่อยแค่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "นอนหลับกลางวัน 1 ครั้ง นาน 2 ชั่วโมง กลางคืนนอนได้นาน 8-10 ชั่วโมง ถ่ายอุจจาระเป็นสีเหลืองวันละ 1-2 ครั้ง ปัสสาวะวันละ 5-6 ครั้ง"
+            }
+          ]
+        },
+        {
+          "topic": "พัฒนาการ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "พัฒนาการเป็นอย่างไร/ ดีหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "พัฒนาการตอนนี้คืออะไรบ้าง"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เด็กสามารถทำอะไรได้บ้างแล้ว"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "คุณหมอหมายถึงอะไรบ้างคะ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "คลานได้หรือยัง จับของได้หรือไม่ ส่งเสียงหรือมีการเกาะยืนไหม"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ปัจจุบันเด็กคลานได้และเริ่มเกาะยืน ส่งเสียงหม่ำ ๆ ปาปา ใช้นิ้วมือหยิบสิ่งของได้ เล่นจ๊ะเอ๋ได้"
+            }
+          ]
+        },
+        {
+          "topic": "สิ่งแวดล้อมและความปลอดภัย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "น้องนอนที่ไหน มีอุปกรณ์ป้องกันการพลัดตกหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "อยู่บ้านชั้นเดียว แถวชานเมือง ในบ้านมีเปลที่มีรั้วกันสี่ด้าน โดยบุตรนอนบนเปลและบนพื้นที่ปูด้วยผ้าห่มสลับกัน"
+            }
+          ]
+        },
+        {
+          "topic": "แจ้งผลตรวจร่างกาย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ผลตรวจร่างกายวันนี้ น้ำหนัก 8.2 กก. ส่วนยาว 70 ซม. เส้นรอบศีรษะ 44 ซม. อยู่ที่ P50 ทั้งหมด สัญญาณชีพปกติ ตรวจศีรษะตา หัวใจ ปอด ท้อง แขนขา ปกติ"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ค่ะ"
+            }
+          ]
+        },
+        {
+          "topic": "ผลตรวจเลือด",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ผลเลือด Hb 10 g/dL, Hct 30%"
+            },
+            {
+              "type": "answer",
+              "role": "mother",
+              "text": "ค่ะ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

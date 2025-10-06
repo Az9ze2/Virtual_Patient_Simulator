@@ -1,0 +1,112 @@
+{
+  "case_id": "BF_CRACKED_NIPPLE_2566",
+  "case_metadata": {
+    "case_title": "การซักประวัติ แจ้งผลการตรวจร่างกาย และให้คำแนะนำเกี่ยวกับการให้นมแม่ในมารดาที่มีภาวะหัวนมแตก (cracked nipple)",
+    "medical_specialty": "กุมารเวชศาสตร์",
+    "exam_type": "History Taking + Patient Education",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "child_name": "ด.ช.ยินดี ปรีดา",
+      "child_age_days_or_months": "5 วัน",
+      "child_sex": "ชาย",
+      "patient_occupation": "แม่บ้าน",
+      "chief_complaint": "มารดาพาบุตรมาตรวจติดตามน้ำหนักตัวและขอคำปรึกษา เรื่องการให้นมแม่เนื่องจากมีหัวนมข้างขวาแตก"
+    },
+    "physical_examination": {
+      "weight_kg": 3.2,
+      "length_cm": 50,
+      "ofc_cm": 35,
+      "percentiles": {
+        "weight": "P50-90",
+        "length": "P50-90",
+        "ofc": "P50"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 37,
+        "heart_rate_in_beats_per_minute": 120,
+        "respiratory_rate_in_breaths_per_minute": 45,
+        "blood_pressure_in_mmHg": "normal for age",
+        "oxygen_saturation": "98% (room air)",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "an active male infant, no dysmorphic feature",
+      "heent": "pink conjunctiva, anicteric sclera, flat AF 1X1 cm, PF – 0.5x0.5 cm, present red reflex both eyes",
+      "heart": "regular rhythm, no murmur, normal S1 and S2",
+      "lungs": "clear and equal breath sound both lungs, no retraction",
+      "abdomen": "soft, liver and spleen not palpable, no mass, dried umbilical cord",
+      "extremities": "no deformity, no edema",
+      "neuro": "equal movement, complete Moro reflex, strong sucking reflex"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": 38,
+      "birth_weight_g": 3300,
+      "delivery": "คลอดทางช่องคลอดด้วยวิธีธรรมชาติ",
+      "hospital_stay_days": 2,
+      "discharge_weight_g": 3100,
+      "complications": "ไม่มีภาวะแทรกซ้อน"
+    }
+  },
+  "simulation_view": {
+    "mother_profile": {
+      "name": "วาสนา ปรีดา",
+      "age": 25,
+      "occupation": "แม่บ้าน",
+      "family_structure": "สามีอายุ 30 ปี ทำอาชีพครู มารดาเลี้ยงบุตรคนเดียว",
+      "role": "มารดาจำลอง",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "นมแม่เพียงอย่างเดียว",
+      "frequency": "ทุก 3 ชั่วโมง",
+      "duration_per_feed": "15-20 นาที",
+      "storage": "เก็บในถุงเก็บน้ำนม ในตู้เย็น 2 ประตู",
+      "maternal_breast_condition": "หัวนมข้างขวาแตก มีอาการเจ็บ แต่ไม่มีเลือดออกซึม ไม่มีอาการคัดตึงเต้า ไม่มีอาการบวม/แดง/อักเสบ",
+      "daytime_sleep": "3-4 ชั่วโมง/ครั้ง",
+      "nighttime_sleep": "3-4 ชั่วโมง/ครั้ง (ตื่นเอง ไม่ต้องปลุก)",
+      "stool_pattern": "ถ่ายอุจจาระสีเหลืองทอง เนื้อนิ่ม ไม่มีมูกเลือด 4-6 ครั้ง/วัน",
+      "urine_pattern": "ปัสสาวะสีเหลืองใส ไม่มีตะกอนปน 6-8 ครั้ง/วัน"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นมารดาจำลองของบุตรชายอายุ 5 วัน พาบุตรมาตรวจติดตามน้ำหนักตามแพทย์นัด มีภาวะหัวนมข้างขวาแตก",
+      "appearance": "ปกติ",
+      "behavior": "ปกติ",
+      "questions_to_ask_examiner": [
+        {
+          "questions": "น้ำหนักทารกอยู่ในเกณฑ์ปกติหรือไม่",
+          "condition": "หากผู้เข้าสอบยังไม่ได้พูดถึงน้ำหนัก"
+        },
+        {
+          "questions": "วิธีการเข้าเต้าถูกต้องหรือไม่และต้องแก้ไขอย่างไร",
+          "condition": "หากผู้เข้าสอบยังไม่ได้อธิบายวิธีการเข้าเต้า"
+        },
+        {
+          "questions": "ต้องดูแลรักษาภาวะหัวนมข้างขวาแตกอย่างไร",
+          "condition": "หากผู้เข้าสอบยังไม่ได้พูดถึงการดูแลหัวนมแตก"
+        }
+      ],
+      "sample_dialogue": [
+        {
+          "topic": "การให้นม",
+          "dialogue": [
+            {"type": "question", "role": "examiner", "text": "ป้อนนมหรือให้นมลูกอย่างไร"},
+            {"type": "answer", "role": "mother", "text": "ให้นมแม่อย่างเดียว"},
+            {"type": "question", "role": "examiner", "text": "ให้นมบ่อยแค่ไหนคะ"},
+            {"type": "answer", "role": "mother", "text": "ทุก 3 ชั่วโมง ทารกดูดนาน 15-20 นาที"}
+          ]
+        },
+        {
+          "topic": "ความกังวล",
+          "dialogue": [
+            {"type": "question", "role": "examiner", "text": "มีอะไรถามเพิ่มเติมหรือไม่"},
+            {"type": "answer", "role": "mother", "text": "น้ำหนักทารกอยู่ในเกณฑ์ปกติหรือไม่"},
+            {"type": "answer", "role": "mother", "text": "วิธีการเข้าเต้าถูกต้องหรือไม่และต้องแก้ไขอย่างไร"},
+            {"type": "answer", "role": "mother", "text": "ต้องดูแลรักษาภาวะหัวนมข้างขวาแตกอย่างไร"}
+          ]
+        }
+      ]
+    }
+  }
+}
