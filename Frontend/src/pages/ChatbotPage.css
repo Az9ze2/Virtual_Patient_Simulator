@@ -5,9 +5,10 @@
   background-color: var(--bg-primary);
 }
 
+/* ============ HEADER WITH GRADIENT ============ */
 .chatbot-header {
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--accent-light));
+  border-bottom: 1px solid var(--accent-primary);
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
@@ -16,7 +17,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .header-left,
@@ -38,11 +40,13 @@
   gap: 0.25rem;
 }
 
+/* ============ SESSION TITLE WITH ANIMATION ============ */
 .session-title {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+  animation: fadeIn 0.6s ease;
 }
 
 .session-meta {
@@ -57,6 +61,7 @@
   overflow: hidden;
 }
 
+/* ============ UPDATED: FULL-PAGE CHAT LAYOUT ============ */
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 400px;
@@ -66,12 +71,14 @@
   margin: 0 auto;
 }
 
+/* ============ NEW: FULL HEIGHT COLUMNS ============ */
 .chat-column,
 .info-column {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 100px);
+  min-height: 600px;
 }
 
 .chat-column {
@@ -80,6 +87,264 @@
 
 .info-column {
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+}
+
+/* ============ MAGIC BENTO CARD WITH SPOTLIGHT ============ */
+.magic-bento-card {
+  background: var(--bg-secondary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  /* ============ NEW: FULL HEIGHT FOR CHAT ============ */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.magic-bento-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle 120px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(14, 165, 233, 0.12),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.magic-bento-card:hover::before {
+  opacity: 1;
+}
+
+.magic-bento-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.15);
+}
+
+.magic-bento-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============ NEW: CHAT CONTAINER FILLS CARD ============ */
+.chat-interface-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chat-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border-radius: 0.75rem;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+}
+
+/* ============ NEW: ANIMATED CHAT MESSAGES ============ */
+.chat-message {
+  animation: slideInLeft 0.4s ease;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--bg-secondary);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.chat-message:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.chat-message.user {
+  animation: slideInRight 0.4s ease;
+  background: linear-gradient(135deg, var(--accent-light), var(--bg-secondary));
+  border-left: 3px solid var(--accent-primary);
+  margin-left: auto;
+  max-width: 80%;
+}
+
+.chat-message.assistant {
+  border-left: 3px solid var(--medical-cyan);
+  max-width: 85%;
+}
+
+/* ============ NEW: EMPTY STATE ANIMATION ============ */
+.chat-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1rem;
+  color: var(--text-muted);
+  animation: fadeIn 0.8s ease;
+}
+
+.chat-empty-state-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-light), var(--accent-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-primary);
+  animation: float 3s ease-in-out infinite, glowPulse 3s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
+}
+
+/* ============ NEW: TYPING INDICATOR ============ */
+.typing-indicator {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.75rem;
+  width: fit-content;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.3s ease;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  animation: typingBounce 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ============ NEW: INPUT WRAPPER WITH GLOW ============ */
+.chat-input-wrapper {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.chat-input-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.chat-input-wrapper:focus-within::after {
+  opacity: 0.2;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  resize: none;
+  min-height: 60px;
+  max-height: 150px;
+  font-family: inherit;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.chat-send-button {
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.chat-send-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.chat-send-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.chat-send-button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.chat-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Confirmation Modal */
@@ -87,21 +352,96 @@
   max-width: 500px;
 }
 
+/* ============ WARNING ICON WITH PULSE ============ */
 .warning-icon {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #fef3c7;
+  background: linear-gradient(135deg, #fef3c7, #fde047);
   color: var(--warning);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0.5rem;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .text-muted {
   color: var(--text-muted);
   font-size: 0.875rem;
+}
+
+/* ============ FOLDER INPUT ANIMATION ============ */
+.folder-input-container {
+  border: 2px dashed var(--border-color);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.folder-input-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    transparent,
+    rgba(14, 165, 233, 0.05),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.folder-input-container:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-light);
+  transform: scale(1.02);
+}
+
+.folder-input-container:hover::before {
+  transform: translateX(100%);
+}
+
+.folder-input-container.active {
+  border-color: var(--accent-primary);
+  background: var(--accent-light);
+  animation: folderOpen 0.5s ease;
+}
+
+/* ============ NEW: PATIENT INFO CARD ANIMATIONS ============ */
+.patient-info-card {
+  animation: slideUp 0.5s ease;
+}
+
+.patient-info-item {
+  padding: 0.75rem;
+  background: var(--bg-tertiary);
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.patient-info-item:hover {
+  background: var(--accent-light);
+  border-left-color: var(--accent-primary);
+  transform: translateX(4px);
+}
+
+/* ============ NEW: DIAGNOSIS SECTION ANIMATIONS ============ */
+.diagnosis-textarea {
+  transition: all 0.3s ease;
+}
+
+.diagnosis-textarea:focus {
+  transform: scale(1.01);
 }
 
 /* Responsive */
@@ -131,6 +471,7 @@
   .chat-column,
   .info-column {
     height: auto;
+    min-height: 400px;
   }
 
   .info-column {
@@ -153,5 +494,10 @@
 
   .btn-icon span {
     display: none;
+  }
+
+  .chat-message.user,
+  .chat-message.assistant {
+    max-width: 95%;
   }
 }

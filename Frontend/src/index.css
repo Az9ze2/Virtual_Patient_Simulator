@@ -16,20 +16,28 @@ body {
 }
 
 :root {
-  /* Light mode colors */
-  --bg-primary: #f8fafc;
+  /* ============ UPDATED: BRIGHTER MEDICAL THEME COLORS ============ */
+  /* Light mode colors - Medical Blue Theme */
+  --bg-primary: #f0f9ff;
   --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border-color: #e2e8f0;
-  --accent-primary: #3b82f6;
-  --accent-hover: #2563eb;
-  --accent-light: #dbeafe;
+  --bg-tertiary: #e0f2fe;
+  --text-primary: #0c4a6e;
+  --text-secondary: #0369a1;
+  /* ============ UPDATED: BRIGHTER MUTED TEXT ============ */
+  --text-muted: #0891b2;
+  --border-color: #bae6fd;
+  --accent-primary: #0ea5e9;
+  --accent-hover: #0284c7;
+  /* ============ UPDATED: BRIGHTER ACCENT LIGHT ============ */
+  --accent-light: #bae6fd;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
+  --medical-cyan: #06b6d4;
+  --medical-purple: #8b5cf6;
+  /* ============ NEW: BRIGHT ACCENT COLOR ============ */
+  --accent-bright: #38bdf8;
+  --text-bright: #0284c7;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -37,19 +45,24 @@ body {
 }
 
 [data-theme="dark"] {
+  /* ============ UPDATED: DARK MODE MEDICAL THEME ============ */
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
   --bg-tertiary: #334155;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
+  --text-muted: #94a3b8;
   --border-color: #334155;
-  --accent-primary: #3b82f6;
-  --accent-hover: #60a5fa;
+  --accent-primary: #0ea5e9;
+  --accent-hover: #06b6d4;
   --accent-light: #1e3a8a;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
+  --medical-cyan: #06b6d4;
+  --medical-purple: #8b5cf6;
+  --accent-bright: #38bdf8;
+  --text-bright: #60a5fa;
 }
 
 code {
@@ -75,11 +88,11 @@ code {
   background: var(--text-secondary);
 }
 
-/* Animations */
+/* ============ ENHANCED ANIMATIONS ============ */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -107,12 +120,176 @@ code {
   }
 }
 
+/* ============ TYPEWRITER ANIMATION ============ */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+/* ============ SHINE ANIMATION FOR BUTTONS ============ */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(45deg);
+  }
+}
+
+/* ============ FOLDER OPEN ANIMATION ============ */
+@keyframes folderOpen {
+  0% {
+    transform: rotateX(0deg) scale(1);
+  }
+  50% {
+    transform: rotateX(-10deg) scale(1.05);
+  }
+  100% {
+    transform: rotateX(0deg) scale(1.02);
+  }
+}
+
+/* ============ SLIDE IN FROM LEFT ============ */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ============ SCALE IN ============ */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============ GLOW PULSE ============ */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--accent-primary), 0 0 10px var(--accent-primary);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--accent-primary), 0 0 30px var(--accent-primary);
+  }
+}
+
+/* ============ NEW: BOUNCE IN ============ */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============ NEW: FLOAT ============ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ============ NEW: ROTATE GLOW ============ */
+@keyframes rotateGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ NEW: SLIDE UP ============ */
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============ NEW: SHIMMER ============ */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* ============ NEW: WAVE ============ */
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-5px) scaleY(1.1);
+  }
+}
+
 .fade-in {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
 .slide-in {
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+/* ============ ANIMATED LIST CLASS ============ */
+.animate-list-item {
+  animation: slideInLeft 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* ============ SCALE ANIMATION CLASS ============ */
+.scale-in {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+/* ============ NEW: BOUNCE IN CLASS ============ */
+.bounce-in {
+  animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* ============ NEW: FLOAT CLASS ============ */
+.float {
+  animation: float 3s ease-in-out infinite;
 }
 
 /* Utility classes */
@@ -122,6 +299,7 @@ code {
   padding: 0 1.5rem;
 }
 
+/* ============ ENHANCED BUTTON WITH SHINE EFFECT ============ */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -129,11 +307,33 @@ code {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
 }
 
 .btn:disabled {
@@ -142,14 +342,15 @@ code {
 }
 
 .btn-primary {
-  background-color: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
   color: white;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent-primary));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
 }
 
 .btn-secondary {
@@ -181,18 +382,49 @@ code {
   border-color: var(--text-secondary);
 }
 
+/* ============ CARD WITH HOVER GLOW ============ */
 .card {
   background-color: var(--bg-secondary);
   border-radius: 0.75rem;
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .card:hover {
   box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  border-color: var(--accent-primary);
+}
+
+/* ============ MAGIC BENTO SPOTLIGHT EFFECT ============ */
+.card.magic-bento {
+  background: var(--bg-secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+.card.magic-bento::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle 100px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(14, 165, 233, 0.15),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card.magic-bento:hover::before {
+  opacity: 1;
 }
 
 .input {
@@ -279,7 +511,7 @@ code {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-xl);
-  animation: slideIn 0.3s ease-out;
+  animation: scaleIn 0.3s ease-out;
 }
 
 /* Loading spinner */

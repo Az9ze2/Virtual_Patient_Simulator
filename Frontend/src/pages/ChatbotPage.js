@@ -1,123 +1,247 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import ChatInterface from '../components/chat/ChatInterface';
-import PatientInfo from '../components/chat/PatientInfo';
-import DiagnosisSection from '../components/chat/DiagnosisSection';
-import SessionTimer from '../components/chat/SessionTimer';
-import { ArrowLeft, StopCircle, AlertTriangle } from 'lucide-react';
-import './ChatbotPage.css';
+import StartSessionModal from '../components/modals/StartSessionModal';
+import UploadDocumentModal from '../components/modals/UploadDocumentModal';
+import SettingsModal from '../components/modals/SettingsModal';
+import { Activity, Upload, Settings, Clock, Users, TrendingUp } from 'lucide-react';
+import './HomePage.css';
 
-const ChatbotPage = () => {
-  const navigate = useNavigate();
-  const { sessionData, endSession, settings } = useApp();
-  const [showEndConfirm, setShowEndConfirm] = useState(false);
-  const [diagnosis, setDiagnosis] = useState('');
-  const [treatmentPlan, setTreatmentPlan] = useState('');
+// ============ NEW: COUNTUP ANIMATION COMPONENT ============
+const CountUp = ({ end, duration = 2000, suffix = '' }) => {
+  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    // Redirect if no active session
-    if (!sessionData) {
-      navigate('/');
-    }
-  }, [sessionData, navigate]);
+    let startTime;
+    let animationFrame;
 
-  const handleGoBack = () => {
-    if (window.confirm('Are you sure you want to leave? Your progress will be saved.')) {
-      navigate('/');
-    }
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - percentage, 4);
+      setCount(Math.floor(easeOutQuart * end));
+
+      if (percentage < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  return <>{count}{suffix}</>;
+};
+
+const HomePage = () => {
+  const navigate = useNavigate();
+  const { sessionData, theme } = useApp();
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  
+  // ============ TYPEWRITER EFFECT STATE ============
+  const [displayedTitle, setDisplayedTitle] = useState('');
+  const [titleComplete, setTitleComplete] = useState(false);
+  const fullTitle = 'Thai Language-Based Virtual Patient Simulator';
+
+  // Mock statistics
+  const stats = {
+    recentSessions: 5,
+    avgTime: 12,
+    totalCases: 14
   };
 
-  const handleEndSession = () => {
-    setShowEndConfirm(true);
+  // ============ TYPEWRITER ANIMATION EFFECT ============
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingSpeed = 50; // milliseconds per character
+
+    const typingInterval = setInterval(() => {
+      if (currentIndex <= fullTitle.length) {
+        setDisplayedTitle(fullTitle.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        setTitleComplete(true);
+        clearInterval(typingInterval);
+      }
+    }, typingSpeed);
+
+    return () => clearInterval(typingInterval);
+  }, []);
+
+  const handleStartSession = (sessionInfo) => {
+    setShowStartModal(false);
+    navigate('/chatbot');
   };
 
-  const confirmEndSession = () => {
-    const completedSession = endSession();
-    navigate('/summary', { state: { sessionData: completedSession, diagnosis, treatmentPlan } });
+  const handleUploadComplete = (caseData) => {
+    setShowUploadModal(false);
+    navigate('/chatbot');
   };
-
-  if (!sessionData) {
-    return null;
-  }
 
   return (
-    <div className="chatbot-page">
-      {/* Header */}
-      <header className="chatbot-header">
-        <div className="header-left">
-          <button className="btn btn-outline btn-icon" onClick={handleGoBack}>
-            <ArrowLeft size={20} />
-            Go Back
-          </button>
-          <div className="session-info">
-            <h2 className="session-title">Virtual Patient Session</h2>
-            <p className="session-meta">
-              {sessionData.caseData?.title || 'Active Session'}
-            </p>
-          </div>
-        </div>
-        <div className="header-right">
-          {settings.showTimer && <SessionTimer startTime={sessionData.startTime} />}
-          <button className="btn btn-danger btn-icon" onClick={handleEndSession}>
-            <StopCircle size={20} />
-            End Session
-          </button>
-        </div>
-      </header>
+    <div className="home-page">
+      <div className="container">
+        <div className="home-content">
+          {/* Header */}
+          <header className="home-header fade-in">
+            <div className="logo-section">
+              <div className="logo-icon">
+                <Activity size={48} strokeWidth={2.5} />
+              </div>
+              <div className="title-section">
+                {/* ============ TYPEWRITER TITLE ============ */}
+                <h1 className={`main-title ${!titleComplete ? 'typewriter' : 'typewriter-complete'}`}>
+                  {displayedTitle}
+                </h1>
+                <h2 className="thai-title">
+                  ระบบจำลองผู้ป่วยด้วยโมเดลภาษาไทย
+                </h2>
+                <p className="subtitle">
+                  Practice clinical interviewing with AI-powered virtual patients
+                </p>
+              </div>
+            </div>
+          </header>
 
-      {/* Main Content */}
-      <div className="chatbot-content">
-        <div className="content-grid">
-          {/* Left: Chat Interface */}
-          <div className="chat-column">
-            <ChatInterface />
+          {/* Main Action Cards */}
+          <div className="action-cards">
+            {/* ============ CARDS WITH STAGGER ANIMATION ============ */}
+            <div 
+              className="action-card primary-card fade-in"
+              style={{ animationDelay: '0.2s' }}
+              onClick={() => setShowStartModal(true)}
+            >
+              <div className="card-icon">
+                <Activity size={32} />
+              </div>
+              <h3 className="card-title">Start Interview Session</h3>
+              <p className="card-description">
+                Begin your practice with pre-loaded patient cases
+              </p>
+              <div className="card-footer">
+                <span className="card-badge">{stats.totalCases} Cases Available</span>
+              </div>
+            </div>
+
+            <div 
+              className="action-card secondary-card fade-in"
+              style={{ animationDelay: '0.4s' }}
+              onClick={() => setShowUploadModal(true)}
+            >
+              <div className="card-icon">
+                <Upload size={32} />
+              </div>
+              <h3 className="card-title">Upload Document</h3>
+              <p className="card-description">
+                Add custom patient case from your documents
+              </p>
+              <div className="card-footer">
+                <span className="card-badge">DOCX, PDF Supported</span>
+              </div>
+            </div>
+
+            <div 
+              className="action-card tertiary-card fade-in"
+              style={{ animationDelay: '0.6s' }}
+              onClick={() => setShowSettingsModal(true)}
+            >
+              <div className="card-icon">
+                <Settings size={32} />
+              </div>
+              <h3 className="card-title">Settings</h3>
+              <p className="card-description">
+                Configure AI model and interface preferences
+              </p>
+              <div className="card-footer">
+                <span className="card-badge">Customize Experience</span>
+              </div>
+            </div>
           </div>
 
-          {/* Right: Patient Info & Diagnosis */}
-          <div className="info-column">
-            <PatientInfo caseData={sessionData.caseData} />
-            <DiagnosisSection 
-              diagnosis={diagnosis}
-              setDiagnosis={setDiagnosis}
-              treatmentPlan={treatmentPlan}
-              setTreatmentPlan={setTreatmentPlan}
-            />
+          {/* ============ UPDATED: Statistics Section with CountUp ============ */}
+          <div className="stats-section fade-in" style={{ animationDelay: '0.8s' }}>
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Users size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">
+                  <CountUp end={stats.recentSessions} duration={2000} />
+                </div>
+                <div className="stat-label">Recent Sessions</div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <Clock size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">
+                  <CountUp end={stats.avgTime} duration={2000} suffix=" min" />
+                </div>
+                <div className="stat-label">Average Duration</div>
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">
+                <TrendingUp size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">
+                  <CountUp end={stats.totalCases} duration={2000} />
+                </div>
+                <div className="stat-label">Total Cases</div>
+              </div>
+            </div>
           </div>
+
+          {/* Resume Session Banner */}
+          {sessionData && (
+            <div className="resume-banner fade-in">
+              <div className="resume-content">
+                <Activity size={20} />
+                <span>You have an active session in progress</span>
+              </div>
+              <button 
+                className="btn btn-primary"
+                onClick={() => navigate('/chatbot')}
+              >
+                Resume Session
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* End Session Confirmation Modal */}
-      {showEndConfirm && (
-        <div className="modal-overlay" onClick={() => setShowEndConfirm(false)}>
-          <div className="modal confirm-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title-section">
-                <div className="warning-icon">
-                  <AlertTriangle size={24} />
-                </div>
-                <h2 className="modal-title">End Session?</h2>
-              </div>
-            </div>
-            <div className="modal-body">
-              <p>Are you sure you want to end this session?</p>
-              <p className="text-muted">
-                Your conversation and diagnosis will be saved, and you'll be taken to the summary page.
-              </p>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-outline" onClick={() => setShowEndConfirm(false)}>
-                Cancel
-              </button>
-              <button className="btn btn-danger" onClick={confirmEndSession}>
-                Yes, End Session
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Modals */}
+      {showStartModal && (
+        <StartSessionModal
+          onClose={() => setShowStartModal(false)}
+          onStart={handleStartSession}
+        />
+      )}
+
+      {showUploadModal && (
+        <UploadDocumentModal
+          onClose={() => setShowUploadModal(false)}
+          onComplete={handleUploadComplete}
+        />
+      )}
+
+      {showSettingsModal && (
+        <SettingsModal
+          onClose={() => setShowSettingsModal(false)}
+        />
       )}
     </div>
   );
 };
 
-export default ChatbotPage;
+export default HomePage;

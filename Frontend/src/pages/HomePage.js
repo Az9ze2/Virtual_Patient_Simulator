@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import StartSessionModal from '../components/modals/StartSessionModal';
@@ -7,12 +7,50 @@ import SettingsModal from '../components/modals/SettingsModal';
 import { Activity, Upload, Settings, Clock, Users, TrendingUp } from 'lucide-react';
 import './HomePage.css';
 
+// ============ NEW: COUNTUP ANIMATION COMPONENT ============
+const CountUp = ({ end, duration = 3500, suffix = '' }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTime;
+    let animationFrame;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      
+      // Easing function for smooth animation
+      const easeOutQuart = 1 - Math.pow(1 - percentage, 4);
+      setCount(Math.floor(easeOutQuart * end));
+
+      if (percentage < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  return <>{count}{suffix}</>;
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const { sessionData, theme } = useApp();
   const [showStartModal, setShowStartModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  
+  // ============ TYPEWRITER EFFECT STATE ============
+  const [displayedTitle, setDisplayedTitle] = useState('');
+  const [titleComplete, setTitleComplete] = useState(false);
+  const fullTitle = 'Thai Language-Based Virtual Patient Simulator';
+
+  const [displayedTitle1, setDisplayedTitle1] = useState('');
+  const [titleComplete1, setTitleComplete1] = useState(false);
+  const thaiTitle = 'ระบบจำลองผู้ป่วยด้วยโมเดลภาษาไทย';
 
   // Mock statistics
   const stats = {
@@ -20,6 +58,42 @@ const HomePage = () => {
     avgTime: 12,
     totalCases: 14
   };
+
+  // ============ TYPEWRITER ANIMATION EFFECT ============
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingSpeed = 30; // milliseconds per character
+
+    const typingInterval = setInterval(() => {
+      if (currentIndex <= fullTitle.length) {
+        setDisplayedTitle(fullTitle.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        setTitleComplete(true);
+        clearInterval(typingInterval);
+      }
+    }, typingSpeed);
+
+    return () => clearInterval(typingInterval);
+  }, []);
+
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingSpeed = 50; // milliseconds per character
+
+    const typingInterval = setInterval(() => {
+      if (currentIndex <= thaiTitle.length) {
+        setDisplayedTitle1(thaiTitle.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        setTitleComplete1(true);
+        clearInterval(typingInterval);
+      }
+    }, typingSpeed);
+
+    return () => clearInterval(typingInterval);
+  }, []);
+  
 
   const handleStartSession = (sessionInfo) => {
     setShowStartModal(false);
@@ -42,11 +116,12 @@ const HomePage = () => {
                 <Activity size={48} strokeWidth={2.5} />
               </div>
               <div className="title-section">
-                <h1 className="main-title">
-                  Thai Language-Based Virtual Patient Simulator
+                {/* ============ TYPEWRITER TITLE ============ */}
+                <h1 className={`main-title ${!titleComplete ? 'typewriter' : 'typewriter-complete'}`}>
+                  {displayedTitle}
                 </h1>
-                <h2 className="thai-title">
-                  ระบบจำลองผู้ป่วยด้วยโมเดลภาษา
+                <h2 className={`thai-title ${!titleComplete1 ? 'typewriter' : 'typewriter-complete'}`}>
+                  {displayedTitle1}
                 </h2>
                 <p className="subtitle">
                   Practice clinical interviewing with AI-powered virtual patients
@@ -57,9 +132,10 @@ const HomePage = () => {
 
           {/* Main Action Cards */}
           <div className="action-cards">
+            {/* ============ CARDS WITH STAGGER ANIMATION ============ */}
             <div 
               className="action-card primary-card fade-in"
-              style={{ animationDelay: '0.1s' }}
+              style={{ animationDelay: '0.2s' }}
               onClick={() => setShowStartModal(true)}
             >
               <div className="card-icon">
@@ -76,7 +152,7 @@ const HomePage = () => {
 
             <div 
               className="action-card secondary-card fade-in"
-              style={{ animationDelay: '0.2s' }}
+              style={{ animationDelay: '0.4s' }}
               onClick={() => setShowUploadModal(true)}
             >
               <div className="card-icon">
@@ -93,7 +169,7 @@ const HomePage = () => {
 
             <div 
               className="action-card tertiary-card fade-in"
-              style={{ animationDelay: '0.3s' }}
+              style={{ animationDelay: '0.6s' }}
               onClick={() => setShowSettingsModal(true)}
             >
               <div className="card-icon">
@@ -109,14 +185,16 @@ const HomePage = () => {
             </div>
           </div>
 
-          {/* Statistics Section */}
-          <div className="stats-section fade-in" style={{ animationDelay: '0.4s' }}>
+          {/* ============ UPDATED: Statistics Section with CountUp ============ */}
+          <div className="stats-section fade-in" style={{ animationDelay: '0.8s' }}>
             <div className="stat-card">
               <div className="stat-icon">
                 <Users size={24} />
               </div>
               <div className="stat-content">
-                <div className="stat-value">{stats.recentSessions}</div>
+                <div className="stat-value">
+                  <CountUp end={stats.recentSessions} duration={2000} />
+                </div>
                 <div className="stat-label">Recent Sessions</div>
               </div>
             </div>
@@ -126,7 +204,9 @@ const HomePage = () => {
                 <Clock size={24} />
               </div>
               <div className="stat-content">
-                <div className="stat-value">{stats.avgTime} min</div>
+                <div className="stat-value">
+                  <CountUp end={stats.avgTime} duration={2000} suffix=" min" />
+                </div>
                 <div className="stat-label">Average Duration</div>
               </div>
             </div>
@@ -136,7 +216,9 @@ const HomePage = () => {
                 <TrendingUp size={24} />
               </div>
               <div className="stat-content">
-                <div className="stat-value">{stats.totalCases}</div>
+                <div className="stat-value">
+                  <CountUp end={stats.totalCases} duration={2000} />
+                </div>
                 <div className="stat-label">Total Cases</div>
               </div>
             </div>
