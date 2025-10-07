@@ -22,5 +22,5 @@ function App() {
     </AppProvider>
   );
 }
-//Komraputy//
+
 export default App;

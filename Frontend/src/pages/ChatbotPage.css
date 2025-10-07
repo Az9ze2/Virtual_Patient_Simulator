@@ -5,9 +5,10 @@
   background-color: var(--bg-primary);
 }
 
+/* ============ UPDATED: HEADER WITH GRADIENT ============ */
 .chatbot-header {
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(135deg, var(--bg-secondary), var(--accent-light));
+  border-bottom: 1px solid var(--accent-primary);
   padding: 1rem 2rem;
   display: flex;
   align-items: center;
@@ -16,7 +17,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .header-left,
@@ -38,11 +40,13 @@
   gap: 0.25rem;
 }
 
+/* ============ UPDATED: SESSION TITLE WITH ANIMATION ============ */
 .session-title {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+  animation: fadeIn 0.6s ease;
 }
 
 .session-meta {
@@ -82,26 +86,156 @@
   overflow-y: auto;
 }
 
+/* ============ NEW: MAGIC BENTO CARD WITH SPOTLIGHT ============ */
+.magic-bento-card {
+  background: var(--bg-secondary);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.magic-bento-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle 120px at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(14, 165, 233, 0.12),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.magic-bento-card:hover::before {
+  opacity: 1;
+}
+
+.magic-bento-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.15);
+}
+
+.magic-bento-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============ NEW: ANIMATED CHAT MESSAGES ============ */
+.chat-message {
+  animation: slideInLeft 0.4s ease;
+}
+
+.chat-message.user {
+  animation: slideInRight 0.4s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Confirmation Modal */
 .confirm-modal {
   max-width: 500px;
 }
 
+/* ============ UPDATED: WARNING ICON WITH PULSE ============ */
 .warning-icon {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #fef3c7;
+  background: linear-gradient(135deg, #fef3c7, #fde047);
   color: var(--warning);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0.5rem;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .text-muted {
   color: var(--text-muted);
   font-size: 0.875rem;
+}
+
+/* ============ NEW: FOLDER INPUT ANIMATION ============ */
+.folder-input-container {
+  border: 2px dashed var(--border-color);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.folder-input-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    transparent,
+    rgba(14, 165, 233, 0.05),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.folder-input-container:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-light);
+  transform: scale(1.02);
+}
+
+.folder-input-container:hover::before {
+  transform: translateX(100%);
+}
+
+.folder-input-container.active {
+  border-color: var(--accent-primary);
+  background: var(--accent-light);
+  animation: folderOpen 0.5s ease;
+}
+
+/* ============ NEW: INPUT FIELD WITH FOCUS GLOW ============ */
+.chat-input-wrapper {
+  position: relative;
+}
+
+.chat-input-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.chat-input-wrapper:focus-within::after {
+  opacity: 0.2;
 }
 
 /* Responsive */
