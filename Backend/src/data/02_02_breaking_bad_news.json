@@ -1,0 +1,228 @@
+{
+  "case_id": "TH-FM-OSCE-BBN-Lung-20221211-55M",
+  "case_metadata": {
+    "case_title": "ทักษะการสื่อสารทางเวชปฏิบัติ หัวข้อการแจ้งข่าวร้าย (Breaking bad news)",
+    "medical_specialty": "เวชศาสตร์ครอบครัว",
+    "exam_type": "Comprehensive OscE (Clinical Skills)",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "not provided",
+      "age": {
+        "value": 55,
+        "unit": "ปี"
+      },
+      "sex": "ชาย",
+      "occupation": "รับจ้าง",
+      "chief_complaint": "มาพบแพทย์เพื่อรอรับฟังผลเอกซเรย์ปอด ไอปนเลือดมา 2 สัปดาห์"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "not provided",
+        "heart_rate_in_beats_per_minute": "not provided",
+        "respiratory_rate_in_breaths_per_minute": "not provided",
+        "blood_pressure_in_mmHg": "not provided",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "สีหน้ากังวล",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ปฏิเสธประวัติโรคประจำตัว; ไม่เคยตรวจสุขภาพหรือเอกซเรย์ปอดมาก่อน",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "not provided",
+      "social_history": "การศึกษาจบชั้น ม.6 อาชีพรับจ้าง สมรสแล้ว ภูมิลำเนา อ.เมือง จ.เซียงใหม่ สูบบุหรี่ทุกวัน วันละ 20 มวน เป็นเวลา 40 ปี ไม่มีประวัติสัมผัสวัณโรค",
+      "immunization_history": "not provided"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 2,
+        "unit": "สัปดาห์",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": 2,
+        "unit": "สัปดาห์",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": [
+        "ไอแห้ง ๆ มา 2 เดือน",
+        "เริ่มไอมีเลือดปนมา 2 สัปดาห์",
+        "น้ำหนักลด 10 กก. ใน 2 เดือน",
+        "อาการไอรบกวนการใช้ชีวิตประจำวัน",
+        "นอนหลับได้ยาก"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "นายสมชาย ศรีวงศ์",
+      "age": 55,
+      "occupation": "รับจ้าง",
+      "family_structure": "สมรสแล้ว มีบุตรชาย 1 คนอายุ 30 ปี ภรรยาอายุเท่ากัน อาชีพรับจ้าง",
+      "role": "ผู้ป่วยจำลอง",
+      "emotional_state": "กังวลมาก"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "not provided",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "not provided",
+      "urine_pattern": "not provided"
+    },
+    "simulation_instructions": {
+      "scenario": "ท่านสวมบทบาทเป็นผู้ป่วยจำลองมาพบแพทย์เพื่อรอรับฟังผลเอกซเรย์ปอด ขณะนี้รอแพทย์มาแจ้งข้อมูลและแนวทางการรักษา",
+      "appearance": "ปกติ",
+      "behavior": "สีหน้ากังวล รู้สึกตกใจเมื่อทราบว่ามีก้อนในปอด ก้มหน้านิ่งเมื่อต้องรับฟังข้อมูลต่อ และตอบเบา ๆ เมื่อถูกถามว่า “พร้อมจะรับฟังข้อมูลหรือไม่”",
+      "fallback_question": null,
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้มาพบแพทย์ด้วยเรื่องอะไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "มารอฟังผลเอกซเรย์ปอดครับ"
+            }
+          ]
+        },
+        {
+          "topic": "อาการปัจจุบัน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ช่วงนี้มีอาการอะไรบ้าง และเป็นมานานเท่าไร"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ไอเรื้อรังเป็นลักษณะไอแห้ง ๆ มา 2 เดือน เริ่มไอมีเลือดปนมา 2 สัปดาห์ ไม่มีไข้ ไม่เหนื่อย น้ำหนักลด 10 กก. ใน 2 เดือน อาการไอรบกวนการใช้ชีวิตประจำวัน นอนหลับได้ยาก ไม่มีประวัติสัมผัสวัณโรค"
+            }
+          ]
+        },
+        {
+          "topic": "การขออนุญาตแจ้งข้อมูล",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "พร้อมจะรับฟังข้อมูลหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "พร้อม"
+            }
+          ]
+        },
+        {
+          "topic": "แจ้งผลเอกซเรย์และปฏิกิริยาผู้ป่วย",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ผลเอกซเรย์พบก้อนที่ปอดข้างซ้าย สงสัยเป็นมะเร็งปอด"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ก้อนนี้เป็นมะเร็งจริง ๆ ใช่หรือไม่"
+            }
+          ]
+        },
+        {
+          "topic": "ความกังวล ความคิด และความคาดหวัง",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้กังวลเรื่องใดมากที่สุด"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "กังวลว่าจะเป็นมะเร็งปอดจริง ๆ เนื่องจากเพื่อนเสียชีวิตจากมะเร็งปอดและมีอาการคล้ายตน ห่วงภรรยาและบุตรชาย เพราะเป็นหัวหน้าครอบครัว"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "หลังทราบว่ามีก้อนในปอด คาดหวังเรื่องการรักษาอย่างไร"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "อยากรู้ว่าก้อนนี้เป็นอะไร จะรักษาให้หายได้หรือไม่ ไม่ว่าจะเป็นอะไรก็ตาม คาดหวังให้รักษาได้ เพื่อให้อยู่กับครอบครัวได้นานที่สุด"
+            }
+          ]
+        },
+        {
+          "topic": "แนวทางการส่งตรวจเพิ่มเติมเพื่อวินิจฉัยโรค",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ผมจะอธิบายแนวทางการส่งตรวจเพิ่มเติมเพื่อวินิจฉัยโรค"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ครับ"
+            }
+          ]
+        },
+        {
+          "topic": "การปิดการสนทนา",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีอะไรอยากสอบถามเพิ่มเติมหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ไม่มี"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

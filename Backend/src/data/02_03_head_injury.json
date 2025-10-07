@@ -1,0 +1,237 @@
+{
+  "case_id": "OSCE-HeadInjury-TH-20221211-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ ตรวจร่างกาย และส่งตรวจเพิ่มเติมในผู้ป่วยบาดเจ็บที่ศีรษะ (head injury)",
+    "medical_specialty": "ศัลยศาสตร์",
+    "exam_type": "Comprehensive OSCE (Clinical Skills)",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "not provided",
+      "age": {
+        "value": 25,
+        "unit": "ปี"
+      },
+      "sex": "ชาย",
+      "occupation": "ช่างทาสี",
+      "chief_complaint": "ตกจากนั่งร้านสูง 2 เมตรและศีรษะกระแทก มีอาการปวดศีรษะ"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 37.3,
+        "heart_rate_in_beats_per_minute": 90,
+        "respiratory_rate_in_breaths_per_minute": 14,
+        "blood_pressure_in_mmHg": "110/60 mmHg",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "รูสึกตัวดี พูดคุยได้",
+      "heent": "แผล laceration ยาว 3 cm. และหัวโน บริเวณศีรษะด้านขวา; รอยช้ำบริเวณหลังกกหูด้านขวา (battle sign)",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "not provided",
+      "extremities": "ไม่พบ deformity ของ extremities",
+      "neuro": "Glasgow coma scale (GCS) 15, ไม่พบ neurological deficit"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ไม่มีโรคประจำตัว",
+      "past_medication_history": "not provided",
+      "past_surgical_history": "not provided",
+      "allergies": "not provided",
+      "current_medications": "ไม่มียาที่รับประทานเป็นประจำ",
+      "family_history": "not provided",
+      "social_history": "ไม่สูบบุหรี่ ไม่ดื่มสุรา ไม่ใช้ยาสมุนไพร/ สารเสพติด ที่อยู่จังหวัดเชียงใหม่",
+      "immunization_history": "not provided"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 30,
+        "unit": "นาที",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": 30,
+        "unit": "นาที",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": [
+        "เกิดอุบัติเหตุพลาดตกจากนั่งร้าน สูงประมาณ 2 เมตร ศีรษะกระแทกพื้น",
+        "สลบไปไม่ทราบว่านานเท่าไหร่",
+        "ฟื้นสติมีอาการปวดศีรษะ ปวดที่บริเวณศีรษะซีกขวากับท้ายทอย",
+        "มีคลื่นไส้ แต่ไม่อาเจียน",
+        "มองเห็นปกติ ไม่เห็นภาพซ้อน",
+        "ไม่อ่อนแรง",
+        "ไม่มีเลือดหรือน้ำออกจากจมูกและหู",
+        "ไม่ปวดคอ ก้มคอได้",
+        "จำเหตุการณ์ขณะเกิดเหตุไม่ได้"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "สมชาย ใจดี",
+      "age": "not provided",
+      "occupation": "ช่างทาสี",
+      "family_structure": "not provided",
+      "role": "ผู้ป่วย",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "not provided",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "not provided",
+      "urine_pattern": "not provided"
+    },
+    "simulation_instructions": {
+      "scenario": "มาที่ห้องฉุกเฉินจากอุบัติเหตุตกนั่งร้านสูง 2 เมตรและศีรษะกระแทก ขณะนี้นอนบนเตียงตรวจรอแพทย์มาตรวจรักษา",
+      "appearance": "แต่งกายปกติ ศีรษะด้านขวาติดผ้าก๊อซเปื้อนเลือดและตกแต่งรอยช้ำบริเวณหลังกกหูด้านขวา (battle sign)",
+      "behavior": "นิ่ง ๆ ตอบเฉพาะเท่าที่ผู้เข้าสอบถาม",
+      "fallback_question": null,
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้เกิดอะไรขึ้น ทำไมมาที่ห้องฉุกเฉิน"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ตกจากนั่งร้านสูงประมาณ 2 เมตร ศีรษะกระแทกพื้น"
+            }
+          ]
+        },
+        {
+          "topic": "เวลาและระยะเวลาตั้งแต่อุบัติเหตุ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "อุบัติเหตุเกิดเมื่อไหร่ครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "เมื่อ 30 นาทีก่อน"
+            }
+          ]
+        },
+        {
+          "topic": "กลไกการบาดเจ็บและการหมดสติ/ความจำ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "หลังตกลงมาหมดสติไหม จำเหตุการณ์ได้หรือเปล่า"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "สลบไปไม่ทราบว่านานเท่าไหร่ จำเหตุการณ์ไม่ได้ จำได้ล่าสุดคืออยู่บนนั่งร้าน รู้สึกตัวอีกทีอยู่บนรถฉุกเฉิน"
+            }
+          ]
+        },
+        {
+          "topic": "อาการปัจจุบัน",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ตอนนี้มีอาการอะไรบ้าง"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ปวดศีรษะ ปวดบริเวณศีรษะซีกขวากับท้ายทอย มีคลื่นไส้แต่ไม่อาเจียน"
+            }
+          ]
+        },
+        {
+          "topic": "อาการทางระบบประสาท",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มองเห็นเป็นอย่างไร เห็นภาพซ้อนไหม แขนขาอ่อนแรงไหม"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "มองเห็นปกติ ไม่เห็นภาพซ้อน ไม่อ่อนแรง"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วมอื่น ๆ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีเลือดหรือน้ำออกจากจมูกหรือหูไหม ปวดคอหรือเปล่า ก้มคอได้ไหม"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ไม่มีเลือดหรือน้ำออกจากจมูกและหู ไม่ปวดคอ ก้มคอได้"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติสุขภาพ โรคประจำตัว และพฤติกรรมสุขภาพ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีโรคประจำตัวหรือทานยาประจำไหม สูบบุหรี่หรือดื่มสุราหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ไม่มีโรคประจำตัว ไม่มียาที่รับประทานเป็นประจำ ไม่สูบบุหรี่ ไม่ดื่มสุรา ไม่ใช้ยาสมุนไพร/สารเสพติด"
+            }
+          ]
+        },
+        {
+          "topic": "อาชีพและที่อยู่",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ทำงานอะไร พักอยู่ที่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "อาชีพช่างทาสี ที่อยู่จังหวัดเชียงใหม่"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
