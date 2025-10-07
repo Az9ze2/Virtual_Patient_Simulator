@@ -8,7 +8,7 @@ import { Activity, Upload, Settings, Clock, Users, TrendingUp } from 'lucide-rea
 import './HomePage.css';
 
 // ============ NEW: COUNTUP ANIMATION COMPONENT ============
-const CountUp = ({ end, duration = 3500, suffix = '' }) => {
+const CountUp = ({ end, duration = 2000, suffix = '' }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -48,10 +48,6 @@ const HomePage = () => {
   const [titleComplete, setTitleComplete] = useState(false);
   const fullTitle = 'Thai Language-Based Virtual Patient Simulator';
 
-  const [displayedTitle1, setDisplayedTitle1] = useState('');
-  const [titleComplete1, setTitleComplete1] = useState(false);
-  const thaiTitle = 'ระบบจำลองผู้ป่วยด้วยโมเดลภาษาไทย';
-
   // Mock statistics
   const stats = {
     recentSessions: 5,
@@ -62,7 +58,7 @@ const HomePage = () => {
   // ============ TYPEWRITER ANIMATION EFFECT ============
   useEffect(() => {
     let currentIndex = 0;
-    const typingSpeed = 30; // milliseconds per character
+    const typingSpeed = 50; // milliseconds per character
 
     const typingInterval = setInterval(() => {
       if (currentIndex <= fullTitle.length) {
@@ -76,24 +72,6 @@ const HomePage = () => {
 
     return () => clearInterval(typingInterval);
   }, []);
-
-  useEffect(() => {
-    let currentIndex = 0;
-    const typingSpeed = 50; // milliseconds per character
-
-    const typingInterval = setInterval(() => {
-      if (currentIndex <= thaiTitle.length) {
-        setDisplayedTitle1(thaiTitle.slice(0, currentIndex));
-        currentIndex++;
-      } else {
-        setTitleComplete1(true);
-        clearInterval(typingInterval);
-      }
-    }, typingSpeed);
-
-    return () => clearInterval(typingInterval);
-  }, []);
-  
 
   const handleStartSession = (sessionInfo) => {
     setShowStartModal(false);
@@ -120,8 +98,8 @@ const HomePage = () => {
                 <h1 className={`main-title ${!titleComplete ? 'typewriter' : 'typewriter-complete'}`}>
                   {displayedTitle}
                 </h1>
-                <h2 className={`thai-title ${!titleComplete1 ? 'typewriter' : 'typewriter-complete'}`}>
-                  {displayedTitle1}
+                <h2 className="thai-title">
+                  ระบบจำลองผู้ป่วยด้วยโมเดลภาษาไทย
                 </h2>
                 <p className="subtitle">
                   Practice clinical interviewing with AI-powered virtual patients
