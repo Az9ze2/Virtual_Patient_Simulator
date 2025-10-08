@@ -1,25 +1,12 @@
-import React from 'react';
-import { User, Calendar, Stethoscope, Activity, FileText } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Stethoscope, Activity, FileText, ChevronDown } from 'lucide-react';
 import './PatientInfo.css';
 
 const PatientInfo = ({ caseData }) => {
-  if (!caseData || !caseData.examiner_view) {
-    return (
-      <div className="patient-info-card">
-        <div className="card-header">
-          <h3 className="card-title">
-            <FileText size={20} />
-            Patient Information
-          </h3>
-        </div>
-        <div className="empty-state">
-          <p>No patient data available</p>
-        </div>
-      </div>
-    );
-  }
+  const [showDetails, setShowDetails] = useState(false);
 
-  const { patient_background, physical_examination } = caseData.examiner_view;
+  const hasData = caseData && caseData.examiner_view;
+  const { patient_background, physical_examination } = hasData ? caseData.examiner_view : {};
 
   const formatAge = (age) => {
     if (typeof age === 'object' && age.value && age.unit) {
@@ -29,109 +16,128 @@ const PatientInfo = ({ caseData }) => {
   };
 
   return (
-    <div className="patient-info-card">
+    <div
+      className="patient-info-card"
+      onMouseEnter={() => hasData && setShowDetails(true)}
+      onMouseLeave={() => hasData && setShowDetails(false)}
+      style={{ cursor: hasData ? 'pointer' : 'default' }}
+    >
       <div className="card-header">
         <h3 className="card-title">
           <FileText size={20} />
           Patient Information
         </h3>
       </div>
-
-      <div className="info-section">
-        <h4 className="section-title">
-          <User size={18} />
-          Demographics
-        </h4>
-        <div className="info-grid">
-          <div className="info-item">
-            <span className="info-label">Name</span>
-            <span className="info-value">{patient_background?.name || 'N/A'}</span>
-          </div>
-          <div className="info-item">
-            <span className="info-label">Age</span>
-            <span className="info-value">{formatAge(patient_background?.age) || 'N/A'}</span>
-          </div>
-          <div className="info-item">
-            <span className="info-label">Sex</span>
-            <span className="info-value">{patient_background?.sex || 'N/A'}</span>
-          </div>
+      {!hasData ? (
+        <div className="empty-state">
+          <p>No patient data available</p>
         </div>
-      </div>
-
-      <div className="info-section">
-        <h4 className="section-title">
-          <Stethoscope size={18} />
-          Chief Complaint
-        </h4>
-        <p className="complaint-text">
-          {patient_background?.chief_complaint || 'No chief complaint recorded'}
-        </p>
-      </div>
-
-      {physical_examination && (
-        <div className="info-section">
-          <h4 className="section-title">
-            <Activity size={18} />
-            Physical Examination
-          </h4>
-          
-          {physical_examination.vital_signs && (
-            <div className="vital-signs">
-              <div className="vital-item">
-                <span className="vital-label">Temperature</span>
-                <span className="vital-value">
-                  {physical_examination.vital_signs.body_temperature_in_celsius}°C
-                </span>
-              </div>
-              <div className="vital-item">
-                <span className="vital-label">Heart Rate</span>
-                <span className="vital-value">
-                  {physical_examination.vital_signs.heart_rate_in_beats_per_minute} bpm
-                </span>
-              </div>
-              <div className="vital-item">
-                <span className="vital-label">RR</span>
-                <span className="vital-value">
-                  {physical_examination.vital_signs.respiratory_rate_in_breaths_per_minute} /min
-                </span>
-              </div>
-              <div className="vital-item">
-                <span className="vital-label">O2 Sat</span>
-                <span className="vital-value">
-                  {physical_examination.vital_signs.oxygen_saturation || 'N/A'}
-                </span>
-              </div>
+      ) : (
+        <>
+          {!showDetails ? (
+            <div className="empty-state">
+              <p>Patient data available</p>
+              <span className="hold-hint">
+                <ChevronDown className="arrow-animate" size={28} />
+                Hold here for more information
+              </span>
             </div>
-          )}
-
-          {physical_examination.weight_kg && (
-            <div className="measurement-grid">
-              <div className="measurement-item">
-                <span className="measurement-label">Weight</span>
-                <span className="measurement-value">{physical_examination.weight_kg} kg</span>
+          ) : (
+            <div className="patient-details fade-in">
+              <div className="info-section">
+                <h4 className="section-title">
+                  <User size={18} />
+                  Demographics
+                </h4>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <span className="info-label">Name</span>
+                    <span className="info-value">{patient_background?.name || 'N/A'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Age</span>
+                    <span className="info-value">{formatAge(patient_background?.age) || 'N/A'}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Sex</span>
+                    <span className="info-value">{patient_background?.sex || 'N/A'}</span>
+                  </div>
+                </div>
               </div>
-              {physical_examination.length_cm && (
-                <div className="measurement-item">
-                  <span className="measurement-label">Length</span>
-                  <span className="measurement-value">{physical_examination.length_cm} cm</span>
+              <div className="info-section">
+                <h4 className="section-title">
+                  <Stethoscope size={18} />
+                  Chief Complaint
+                </h4>
+                <p className="complaint-text">
+                  {patient_background?.chief_complaint || 'No chief complaint recorded'}
+                </p>
+              </div>
+              {physical_examination && (
+                <div className="info-section">
+                  <h4 className="section-title">
+                    <Activity size={18} />
+                    Physical Examination
+                  </h4>
+                  {physical_examination.vital_signs && (
+                    <div className="vital-signs">
+                      <div className="vital-item">
+                        <span className="vital-label">Temperature</span>
+                        <span className="vital-value">
+                          {physical_examination.vital_signs.body_temperature_in_celsius}°C
+                        </span>
+                      </div>
+                      <div className="vital-item">
+                        <span className="vital-label">Heart Rate</span>
+                        <span className="vital-value">
+                          {physical_examination.vital_signs.heart_rate_in_beats_per_minute} bpm
+                        </span>
+                      </div>
+                      <div className="vital-item">
+                        <span className="vital-label">RR</span>
+                        <span className="vital-value">
+                          {physical_examination.vital_signs.respiratory_rate_in_breaths_per_minute} /min
+                        </span>
+                      </div>
+                      <div className="vital-item">
+                        <span className="vital-label">O2 Sat</span>
+                        <span className="vital-value">
+                          {physical_examination.vital_signs.oxygen_saturation || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {physical_examination.weight_kg && (
+                    <div className="measurement-grid">
+                      <div className="measurement-item">
+                        <span className="measurement-label">Weight</span>
+                        <span className="measurement-value">{physical_examination.weight_kg} kg</span>
+                      </div>
+                      {physical_examination.length_cm && (
+                        <div className="measurement-item">
+                          <span className="measurement-label">Length</span>
+                          <span className="measurement-value">{physical_examination.length_cm} cm</span>
+                        </div>
+                      )}
+                      {physical_examination.ofc_cm && (
+                        <div className="measurement-item">
+                          <span className="measurement-label">OFC</span>
+                          <span className="measurement-value">{physical_examination.ofc_cm} cm</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {physical_examination.general_appearance && (
+                    <div className="exam-detail">
+                      <span className="detail-label">General:</span>
+                      <span className="detail-text">{physical_examination.general_appearance}</span>
+                    </div>
+                  )}
                 </div>
               )}
-              {physical_examination.ofc_cm && (
-                <div className="measurement-item">
-                  <span className="measurement-label">OFC</span>
-                  <span className="measurement-value">{physical_examination.ofc_cm} cm</span>
-                </div>
-              )}
             </div>
           )}
-
-          {physical_examination.general_appearance && (
-            <div className="exam-detail">
-              <span className="detail-label">General:</span>
-              <span className="detail-text">{physical_examination.general_appearance}</span>
-            </div>
-          )}
-        </div>
+        </>
       )}
     </div>
   );

@@ -165,6 +165,16 @@
   line-height: 1.5;
 }
 
+/* Animations */
+.fade-in {
+  animation: fadeInPatientInfo 0.4s;
+}
+
+@keyframes fadeInPatientInfo {
+  from { opacity: 0; transform: translateY(10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
   .vital-signs {
