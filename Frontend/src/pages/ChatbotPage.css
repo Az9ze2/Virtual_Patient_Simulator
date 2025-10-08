@@ -59,6 +59,8 @@
   flex: 1;
   padding: 1.5rem;
   overflow: hidden;
+  /* FIXED: Ensure full viewport height minus header */
+  height: calc(100vh - 130px);
 }
 
 /* ============ UPDATED: FULL-PAGE CHAT LAYOUT ============ */
@@ -71,14 +73,15 @@
   margin: 0 auto;
 }
 
-/* ============ NEW: FULL HEIGHT COLUMNS ============ */
+/* ============ FIXED: FULL HEIGHT COLUMNS ============ */
 .chat-column,
 .info-column {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  height: calc(100vh - 130px);
-  min-height: 600px;
+  /* FIXED: Use 100% of parent height */
+  height: 100%;
+  min-height: 0; /* Important for flexbox overflow */
 }
 
 .chat-column {
@@ -100,10 +103,40 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  /* ============ NEW: FULL HEIGHT FOR CHAT ============ */
-  /* flex: 1;
+  /* ============ FIXED: FULL HEIGHT FOR CHAT ============ */
+  flex: 1; /* Takes full available space */
   display: flex;
-  flex-direction: column; */
+  flex-direction: column;
+  max-height: 974px;  /*fixed height Chat column*/
+  /*
+  min-height: 0px;  // Important for overflow */
+}
+
+/* 
+  ============ HEIGHT ADJUSTMENT GUIDE ============
+  To change individual box heights in the info column:
+  
+  1. For PatientInfo card (first card in info-column):
+     Add: .info-column .magic-bento-card:nth-child(1) { flex: 0 0 300px; }
+     Change 300px to your desired fixed height
+  
+  2. For DiagnosisSection card (second card in info-column):
+     Add: .info-column .magic-bento-card:nth-child(2) { flex: 1; }
+     Or use: flex: 0 0 400px; for fixed height
+  
+  3. For chat column to be taller/shorter:
+     Adjust the grid-template-columns ratio:
+     Current: grid-template-columns: 1fr 400px;
+     Make chat bigger: grid-template-columns: 2fr 350px;
+     Make info panel bigger: grid-template-columns: 1fr 500px;
+*/
+
+.info-column .magic-bento-card:nth-child(1) {
+  flex: 0 0 200px; /*fixed height Patient info column*/
+}
+
+.info-column .magic-bento-card:nth-child(2) {
+  flex: 0 0 750px; /*fixed height Diagnosis column*/
 }
 
 .magic-bento-card::before {
@@ -138,27 +171,28 @@
   z-index: 1;
 }
 
-/* ============ NEW: CHAT CONTAINER FILLS CARD ============ */
+/* ============ FIXED: CHAT CONTAINER FILLS CARD ============ */
 .chat-interface-wrapper {
-  flex: 1;
+  flex: 1; /* Takes all available space */
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-height: 0; /* Critical for overflow to work */
+  height: 100%;
 }
 
 .chat-messages-container {
-  flex: 1;
+  flex: 1; /* Takes all available space */
   overflow-y: auto;
   margin-bottom: 1rem;
   padding: 1rem;
   background: var(--bg-tertiary);
   border-radius: 0.75rem;
-  min-height: 0;
+  min-height: 0; /* Critical for overflow */
   scrollbar-width: thin;
   scrollbar-color: var(--accent-primary) var(--bg-tertiary);
 }
 
-/* ============ NEW: ANIMATED CHAT MESSAGES ============ */
+/* ============ ANIMATED CHAT MESSAGES ============ */
 .chat-message {
   animation: slideInLeft 0.4s ease;
   margin-bottom: 1rem;
@@ -187,7 +221,7 @@
   max-width: 85%;
 }
 
-/* ============ NEW: EMPTY STATE ANIMATION ============ */
+/* ============ EMPTY STATE ANIMATION ============ */
 .chat-empty-state {
   display: flex;
   flex-direction: column;
@@ -212,7 +246,7 @@
   box-shadow: 0 10px 30px rgba(14, 165, 233, 0.3);
 }
 
-/* ============ NEW: TYPING INDICATOR ============ */
+/* ============ TYPING INDICATOR ============ */
 .typing-indicator {
   display: flex;
   gap: 0.5rem;
@@ -260,12 +294,13 @@
   }
 }
 
-/* ============ NEW: INPUT WRAPPER WITH GLOW ============ */
+/* ============ INPUT WRAPPER WITH GLOW ============ */
 .chat-input-wrapper {
   position: relative;
   display: flex;
   gap: 0.75rem;
   align-items: flex-end;
+  flex-shrink: 0; /* Prevents input from shrinking */
 }
 
 .chat-input-wrapper::after {
@@ -415,7 +450,7 @@
   animation: folderOpen 0.5s ease;
 }
 
-/* ============ NEW: PATIENT INFO CARD ANIMATIONS ============ */
+/* ============ PATIENT INFO CARD ANIMATIONS ============ */
 .patient-info-card {
   animation: slideUp 0.5s ease;
 }
@@ -435,13 +470,32 @@
   transform: translateX(4px);
 }
 
-/* ============ NEW: DIAGNOSIS SECTION ANIMATIONS ============ */
+/* ============ DIAGNOSIS SECTION ANIMATIONS ============ */
 .diagnosis-textarea {
   transition: all 0.3s ease;
 }
 
 .diagnosis-textarea:focus {
   transform: scale(1.01);
+}
+
+/* ============ TIME WARNING STYLES ============ */
+.time-warning {
+  background: linear-gradient(135deg, #fef3c7, #fde047);
+  color: #92400e;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.time-expired {
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+  color: #991b1b;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  animation: pulse 1s ease-in-out infinite;
 }
 
 /* Responsive */
