@@ -1,0 +1,1952 @@
+{
+  "test_metadata": {
+    "timestamp": "2025-10-08T09:21:41.374761",
+    "total_cases_tested": 17,
+    "models_tested": [
+      "gpt-4.1-mini"
+    ],
+    "memory_modes_tested": [
+      "summarize"
+    ]
+  },
+  "overall_statistics": {
+    "total_cases_tested": 17,
+    "successful_tests": 17,
+    "success_rate": 1.0,
+    "total_responses": 119,
+    "valid_responses": 118,
+    "overall_validation_rate": 0.9915966386554622,
+    "total_tokens_used": 83032,
+    "total_test_time_seconds": 244.92747712135315,
+    "average_time_per_case": 14.407498654197244,
+    "average_tokens_per_case": 4884.235294117647
+  },
+  "case_type_breakdown": {
+    "01": {
+      "total_cases": 14,
+      "successful_cases": 14,
+      "total_responses": 98,
+      "valid_responses": 97,
+      "validation_rate": 0.9897959183673469,
+      "average_tokens": 4191.214285714285,
+      "average_time": 14.811293125152588
+    },
+    "02": {
+      "total_cases": 3,
+      "successful_cases": 3,
+      "total_responses": 21,
+      "valid_responses": 21,
+      "validation_rate": 1.0,
+      "average_tokens": 8118.333333333333,
+      "average_time": 12.52312445640564
+    }
+  },
+  "detailed_results": [
+    {
+      "case_file": "data\\01_01_breast_feeding_problems.json",
+      "case_name": "01_01_breast_feeding_problems.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:17:32.124739",
+      "case_type": "01",
+      "total_time": 21.200066804885864,
+      "total_tokens": 4740,
+      "input_tokens": 4616,
+      "output_tokens": 124,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ คุณหมอคะ วันนี้พาลูกมายินดีมาตรวจน้ำหนักตามนัดค่ะ",
+          "response_time": 3.663402557373047,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกสบายดีค่ะ ไม่มีไข้หรืออาการผิดปกติอะไรเลยค่ะ",
+          "response_time": 2.3574628829956055,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ลูกเพิ่งเกิดมาได้ 5 วันเองค่ะ ตอนนี้ก็ยังปกติดีค่ะ",
+          "response_time": 1.7666854858398438,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีค่ะ ลูกดูแข็งแรงดี ไม่มีอาการอื่นเลยค่ะ",
+          "response_time": 1.507627248764038,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "พาลูกมาหลังคลอดแล้วครั้งหนึ่งค่ะ วันนี้มาตรวจติดตามน้ำหนักตามนัดค่ะ",
+          "response_time": 1.9044218063354492,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "น้ำหนักทารกอยู่ในเกณฑ์ปกติหรือไม่คะ?",
+          "response_time": 5.220188617706299,
+          "validation": {
+            "is_valid": false,
+            "issues": [
+              "No appropriate case type indicators found for type 01"
+            ],
+            "case_type_match": false,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 1.2782185077667236,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 6,
+        "validation_rate": 0.8571428571428571
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_02_CHC_9_months.json",
+      "case_name": "01_02_CHC_9_months.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:17:53.586713",
+      "case_type": "01",
+      "total_time": 12.219846487045288,
+      "total_tokens": 3868,
+      "input_tokens": 3738,
+      "output_tokens": 130,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ ยินดีที่ได้มาโรงพยาบาลวันนี้นะคะ",
+          "response_time": 1.1153671741485596,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกไม่มีอาการอะไรค่ะ แค่มาตรวจและรับวัคซีนตามนัดนะคะ",
+          "response_time": 1.1432559490203857,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ลูกไม่มีอาการอะไรเลยค่ะ แค่มาตรวจสุขภาพและรับวัคซีนตามนัดค่ะ",
+          "response_time": 0.9155237674713135,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีอาการอื่นๆ ค่ะ ลูกดูปกติดีมากค่ะ",
+          "response_time": 0.9755771160125732,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "เคยพาลูกไปหาคุณหมอเพื่อตรวจตามนัดและรับวัคซีนค่ะ ยังไม่เคยมีปัญหาอะไรนะคะ",
+          "response_time": 1.0404725074768066,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 2.8879032135009766,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 0.6387009620666504,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_03_CHC2mo_Phimosis.json",
+      "case_name": "01_03_CHC2mo_Phimosis.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:18:06.033455",
+      "case_type": "01",
+      "total_time": 12.17411470413208,
+      "total_tokens": 4190,
+      "input_tokens": 4066,
+      "output_tokens": 124,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?",
+          "response_time": 0.8109424114227295,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกไม่มีไข้หรืออาการผิดปกติค่ะ แค่หนังหุ้มปลายอวัยวะเพศเขายังไม่เปิดเท่านั้นค่ะ",
+          "response_time": 1.0376465320587158,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ก็สังเกตมาตั้งแต่แรกเกิดค่ะ ยังไม่เคยเปิดเลยค่ะ",
+          "response_time": 1.145158052444458,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีค่ะ ลูกดูปกติดี กินนมและขับถ่ายตามปกติค่ะ",
+          "response_time": 0.8079109191894531,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพามาหมอเรื่องนี้เลยค่ะ วันนี้พามาฉีดวัคซีนตามนัดค่ะ",
+          "response_time": 1.0698459148406982,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 2.873847723007202,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ขอบคุณค่ะ",
+          "response_time": 0.9268004894256592,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_04_edema.json",
+      "case_name": "01_04_edema.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:18:18.470296",
+      "case_type": "01",
+      "total_time": 12.552872896194458,
+      "total_tokens": 4199,
+      "input_tokens": 4074,
+      "output_tokens": 125,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ วันนี้พาลูกมาหาคุณหมอเพราะตาบวมทั้งสองข้างค่ะ",
+          "response_time": 1.5029802322387695,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกบวมที่หนังตาทั้งสองข้างมาสองวันแล้วค่ะ แต่ยังไม่มีไข้หรืออาการอื่นค่ะ",
+          "response_time": 1.2939651012420654,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "เริ่มบวมตั้งแต่สองวันที่แล้วค่ะ ยังไม่เคยเป็นมาก่อนด้วยค่ะ",
+          "response_time": 0.7443373203277588,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีไข้หรืออาการเจ็บตานะคะ แค่บวมเฉยๆ ค่ะ",
+          "response_time": 1.0091242790222168,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพาไปหาหมอเรื่องนี้เลยค่ะ วันนี้เป็นครั้งแรกค่ะ",
+          "response_time": 0.7174508571624756,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 3.013141393661499,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 0.7697200775146484,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_05_fever_with_rash.json",
+      "case_name": "01_05_fever_with_rash.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:18:31.259691",
+      "case_type": "01",
+      "total_time": 12.91824984550476,
+      "total_tokens": 3909,
+      "input_tokens": 3814,
+      "output_tokens": 95,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ ยินดีที่ได้มาพบคุณหมอนะคะ",
+          "response_time": 1.1566076278686523,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกมีไข้และเริ่มมีผื่นขึ้นตามตัวค่ะ",
+          "response_time": 1.0952117443084717,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ประมาณสองวันค่ะ เริ่มมีไข้ก่อนแล้วผื่นจึงตามมาค่ะ",
+          "response_time": 0.8693702220916748,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ลูกมีอาการงอแงและซึมลงเล็กน้อยค่ะ",
+          "response_time": 0.7614023685455322,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพามาหาหมอเรื่องนี้มาก่อนค่ะ",
+          "response_time": 0.7734596729278564,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 3.913595676422119,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ขอบคุณค่ะ",
+          "response_time": 0.8459739685058594,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_06_functional_constipation.json",
+      "case_name": "01_06_functional_constipation.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:18:44.457045",
+      "case_type": "01",
+      "total_time": 13.822923183441162,
+      "total_tokens": 3764,
+      "input_tokens": 3665,
+      "output_tokens": 99,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ ยินดีที่ได้พบค่ะ",
+          "response_time": 0.8105053901672363,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกชายมีปัญหาเรื่องอุจจาระผิดปกติค่ะ",
+          "response_time": 1.4505455493927002,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ประมาณสามวันแล้วค่ะ เริ่มมีอาการท้องเสียบ่อยขึ้นค่ะ",
+          "response_time": 0.7870800495147705,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ลูกมีอาการปวดท้องบ้างและงอแงค่ะ",
+          "response_time": 0.777496337890625,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพาไปหาหมอเรื่องนี้เลยค่ะ เพิ่งเริ่มมีอาการค่ะ",
+          "response_time": 0.9469897747039795,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 4.596617221832275,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณเช่นกันค่ะ",
+          "response_time": 0.9506571292877197,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_07_gastroenteritis_secondary_lactase_def.json",
+      "case_name": "01_07_gastroenteritis_secondary_lactase_def.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:18:58.535944",
+      "case_type": "01",
+      "total_time": 14.71271800994873,
+      "total_tokens": 4015,
+      "input_tokens": 3888,
+      "output_tokens": 127,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ แม่พามาพบแพทย์เรื่องลูกถ่ายเหลวมา 5 วันค่ะ",
+          "response_time": 2.232217788696289,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกถ่ายเหลวบ่อยขึ้นค่ะ แล้วก็ดูซึมๆ กว่าเดิมนิดหน่อยค่ะ",
+          "response_time": 1.405308723449707,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ประมาณ 5 วันแล้วค่ะ ตั้งแต่วันแรกที่ถ่ายเหลวก็ยังไม่ดีขึ้นเลยค่ะ",
+          "response_time": 1.000190019607544,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ลูกมีไข้เล็กน้อยค่ะ แล้วก็บางครั้งร้องงอแงมากกว่าปกติค่ะ",
+          "response_time": 1.2857294082641602,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่ได้พาไปหาหมอเลยค่ะ วันนี้พามาตรวจครั้งแรกค่ะ",
+          "response_time": 1.5289855003356934,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 3.025278091430664,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ขอบคุณค่ะ",
+          "response_time": 0.7326931953430176,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_08_gastroenteritis.json",
+      "case_name": "01_08_gastroenteritis.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:19:13.489206",
+      "case_type": "01",
+      "total_time": 13.273616075515747,
+      "total_tokens": 4674,
+      "input_tokens": 4560,
+      "output_tokens": 114,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ คุณหมอ วันนี้หนูพาลูกมาด้วยค่ะ ลูกถ่ายเหลวมา 2 วันแล้วค่ะ",
+          "response_time": 1.9529852867126465,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกมีอาการงอแง กินนมได้น้อยกว่าปกติค่ะ",
+          "response_time": 1.970477819442749,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ประมาณสองวันค่ะ ตั้งแต่ถ่ายเหลวครั้งแรกค่ะ",
+          "response_time": 0.7782869338989258,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ลูกมีไข้เล็กน้อยค่ะ แต่ยังไม่มีอาเจียนหรือลมพิษค่ะ",
+          "response_time": 0.92236328125,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพาไปหาหมอเรื่องนี้เลยค่ะ",
+          "response_time": 0.9940013885498047,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 2.3507144451141357,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 0.8014926910400391,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_09_hydrocele.json",
+      "case_name": "01_09_hydrocele.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:19:27.007433",
+      "case_type": "01",
+      "total_time": 17.05650043487549,
+      "total_tokens": 4452,
+      "input_tokens": 4311,
+      "output_tokens": 141,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ คุณหมอคะ วันนี้พาน้องสุขมารับวัคซีนตามนัดค่ะ",
+          "response_time": 1.8090882301330566,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "น้องสุขไม่มีไข้หรือไอเลยค่ะ แต่บางครั้งร้องงอแงไม่รู้สาเหตุค่ะ",
+          "response_time": 1.5593838691711426,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ประมาณสองสามวันค่ะ แต่ก็ยังดูแข็งแรงดีนะคะ",
+          "response_time": 1.7964444160461426,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "น้องไม่มีน้ำมูกหรือท้องเสียค่ะ แค่ร้องบ่อยกว่าปกติเท่านั้นค่ะ",
+          "response_time": 1.3452856540679932,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ยังไม่เคยพาน้องไปหาหมอที่อื่นเลยค่ะ วันนี้เพิ่งมาตรวจครั้งแรกค่ะ",
+          "response_time": 1.529705286026001,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "คุณหมอคะ ที่อัณฑะน้องมันผิดปกติไหมคะ",
+          "response_time": 4.078598737716675,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 1.4361896514892578,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_10_iron_def-ข้อสอบ_ฝึก_SP.json",
+      "case_name": "01_10_iron_def-ข้อสอบ_ฝึก_SP.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:19:44.313606",
+      "case_type": "01",
+      "total_time": 17.07557439804077,
+      "total_tokens": 4182,
+      "input_tokens": 4066,
+      "output_tokens": 116,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ มีอะไรให้ช่วยไหมคะ?",
+          "response_time": 1.8275389671325684,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกสาวดูซีดๆ ค่ะ เลยพามาตรวจค่ะ",
+          "response_time": 1.4099276065826416,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "สังเกตเห็นว่าซีดประมาณสองสามวันมานี้ค่ะ",
+          "response_time": 1.7742948532104492,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีไข้หรือไอค่ะ แต่ลูกดูเหนื่อยง่ายกว่าปกติค่ะ",
+          "response_time": 1.454193353652954,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "เพิ่งพามาตรวจครั้งแรกเลยค่ะ ยังไม่เคยไปหาหมอเรื่องนี้มาก่อนค่ะ",
+          "response_time": 1.4632129669189453,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ลูกเป็นอะไรคะ ซีดจากอะไร",
+          "response_time": 3.846163034439087,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ยินดีค่ะ ถ้ามีอะไรสงสัยจะถามเพิ่มนะคะ",
+          "response_time": 1.7981839179992676,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_11_latent_TB_infection.json",
+      "case_name": "01_11_latent_TB_infection.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:20:01.631740",
+      "case_type": "01",
+      "total_time": 12.533055305480957,
+      "total_tokens": 3921,
+      "input_tokens": 3822,
+      "output_tokens": 99,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ ยินดีที่ได้พบค่ะ",
+          "response_time": 0.9977612495422363,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ลูกสาวไม่มีอาการอะไรค่ะ แค่พามาตรวจดูความปลอดภัยเท่านั้นค่ะ",
+          "response_time": 1.0079874992370605,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ลูกไม่มีอาการเลยค่ะ แค่กังวลเรื่องการติดเชื้อจากแม่ค่ะ",
+          "response_time": 1.2811410427093506,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีค่ะ ลูกยังดูปกติดีอยู่ค่ะ",
+          "response_time": 1.0305416584014893,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "เคยพาไปตรวจสุขภาพประจำปีค่ะ แต่ยังไม่เคยตรวจวัณโรคเลยค่ะ",
+          "response_time": 1.0909051895141602,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 3.037503719329834,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 0.5850315093994141,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_12_NeonatalJaundice.json",
+      "case_name": "01_12_NeonatalJaundice.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:20:14.484689",
+      "case_type": "01",
+      "total_time": 15.924683094024658,
+      "total_tokens": 4177,
+      "input_tokens": 4023,
+      "output_tokens": 154,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ ยินดีที่ได้พบค่ะ วันนี้ลูกสาวตัวเหลืองมากขึ้นใช่ไหมคะ?",
+          "response_time": 1.7641358375549316,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "ตอนนี้ลูกดูตัวเหลืองมากขึ้นค่ะ ยังไม่มีอาการอื่นที่สังเกตเห็นนะคะ",
+          "response_time": 1.3965609073638916,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "ตัวเหลืองเริ่มเห็นชัดตั้งแต่สองวันที่ผ่านมา แล้วก็ยิ่งชัดขึ้นค่ะ",
+          "response_time": 1.476283311843872,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีอาการอื่นค่ะ ลูกดูปกติดี กินนมได้ตามปกติค่ะ",
+          "response_time": 1.6024951934814453,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "พาไปตรวจสุขภาพแรกเกิดตามนัดแล้วค่ะ วันนี้มาพบแพทย์เพราะตัวเหลืองมากขึ้นค่ะ",
+          "response_time": 1.5025055408477783,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "การนำเด็กไปตากแดดช่วยเรื่องตัวเหลืองหรือไม่คะ?",
+          "response_time": 3.079857349395752,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ยินดีค่ะ มีอะไรสงสัยเพิ่มเติมถามได้เลยนะคะ",
+          "response_time": 1.6009063720703125,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_13_child_health.json",
+      "case_name": "01_13_child_health.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:20:30.651545",
+      "case_type": "01",
+      "total_time": 18.629380702972412,
+      "total_tokens": 4581,
+      "input_tokens": 4434,
+      "output_tokens": 147,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ ยินดีที่ได้มาพบคุณหมอในวันนี้นะคะ",
+          "response_time": 2.132188081741333,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "วันนี้ลูกมีน้ำมูกนิดหน่อยค่ะ เลยพามาตรวจและฉีดวัคซีนตามนัดค่ะ",
+          "response_time": 2.0790250301361084,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "น้ำมูกเริ่มมีประมาณสองวันค่ะ ยังไม่ไอหรือไข้ค่ะ",
+          "response_time": 1.9631433486938477,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "ไม่มีค่ะ ลูกยังดูสดใส กินนมได้ปกติดีค่ะ",
+          "response_time": 1.3773484230041504,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ไม่เคยพาลูกไปหาหมอที่ไหนนอกจากมาตรวจตามนัดนี้ค่ะ",
+          "response_time": 2.0177760124206543,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "วันนี้ลูกมีน้ำมูก สามารถฉีดวัคซีนได้หรือไม่คะ?",
+          "response_time": 3.5501604080200195,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ยินดีค่ะ ถ้ามีคำถามเพิ่มเติมบอกได้นะคะ",
+          "response_time": 2.007298231124878,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\01_14_Blood_in_stool.json",
+      "case_name": "01_14_Blood_in_stool.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:20:49.527852",
+      "case_type": "01",
+      "total_time": 13.264501810073853,
+      "total_tokens": 4005,
+      "input_tokens": 3843,
+      "output_tokens": 162,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีค่ะ คุณหมอ ดิฉันพาเอกมาโรงพยาบาลเพราะเขาถ่ายเป็นเลือดค่ะ กังวลมากเลยค่ะ",
+          "response_time": 1.1794662475585938,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรหรือเปล่าครับ",
+          "response": "เอกถ่ายเป็นเลือดเมื่อประมาณชั่วโมงที่แล้วค่ะ ยังดูงอแงและซึมๆ อยู่ค่ะ",
+          "response_time": 0.9212784767150879,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเป็นมานานแค่ไหนแล้วครับ",
+          "response": "เพิ่งเริ่มถ่ายเป็นเลือดเมื่อชั่วโมงก่อนมานี้เองค่ะ ก่อนหน้านั้นปกติดีค่ะ",
+          "response_time": 0.9738073348999023,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ร่วมด้วยไหมครับ",
+          "response": "เอกมีอาการงอแงและซึมๆ นิดหน่อยค่ะ แต่ไม่มีไข้หรืออาเจียนนะคะ",
+          "response_time": 1.0831468105316162,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยไปหาหมอมาก่อนไหมครับ",
+          "response": "ไม่เคยพาเอกไปหาหมอเพราะเรื่องถ่ายเป็นเลือดมาก่อนค่ะ วันนี้เป็นครั้งแรกเลยค่ะ",
+          "response_time": 0.8122081756591797,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีคำถามอะไรเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมค่ะ",
+          "response_time": 3.658454418182373,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ค่ะ ขอบคุณมากค่ะ",
+          "response_time": 1.1349828243255615,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\02_01_blood_in_stool.json",
+      "case_name": "02_01_blood_in_stool.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:21:03.034597",
+      "case_type": "02",
+      "total_time": 11.52770209312439,
+      "total_tokens": 9595,
+      "input_tokens": 9503,
+      "output_tokens": 92,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีครับคุณหมอ",
+          "response_time": 0.9787898063659668,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรครับ",
+          "response": "ผมถ่ายเป็นเลือดมาประมาณ 3 เดือนครับ เป็น ๆ หาย ๆ ครับ",
+          "response_time": 0.8632383346557617,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเริ่มเมื่อไหร่ครับ",
+          "response": "ประมาณ 3 เดือนก่อนมาครับ",
+          "response_time": 0.8963749408721924,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ด้วยไหมครับ",
+          "response": "มีอาการท้องผูกสลับท้องเสีย แล้วก็ก้อนอุจจาระเล็กลงครับ",
+          "response_time": 1.2082579135894775,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยรักษามาก่อนไหมครับ",
+          "response": "ปฏิเสธครับ ยังไม่เคยรักษาที่ไหนมาก่อน",
+          "response_time": 0.892458438873291,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีอะไรอยากถามเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมครับ",
+          "response_time": 2.436647653579712,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ยินดีครับคุณหมอ",
+          "response_time": 0.7495415210723877,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\02_02_breaking_bad_news.json",
+      "case_name": "02_02_breaking_bad_news.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:21:14.852940",
+      "case_type": "02",
+      "total_time": 14.19371509552002,
+      "total_tokens": 7378,
+      "input_tokens": 7245,
+      "output_tokens": 133,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีครับ รอคุณหมอมาช่วยแจ้งผลนะครับ",
+          "response_time": 2.8595705032348633,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรครับ",
+          "response": "ผมไอแห้งๆ มาสองเดือน แล้วสองสัปดาห์นี้เริ่มมีเลือดปนมา น้ำหนักก็ลดไปเยอะครับ",
+          "response_time": 0.9506168365478516,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเริ่มเมื่อไหร่ครับ",
+          "response": "เริ่มไอมาประมาณสองเดือนครับ แต่เลือดปนมาในเสมหะประมาณสองสัปดาห์ครับ",
+          "response_time": 0.9835586547851562,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ด้วยไหมครับ",
+          "response": "ผมนอนไม่ค่อยหลับ อาการไอมันรบกวนมากครับ",
+          "response_time": 0.9827585220336914,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยรักษามาก่อนไหมครับ",
+          "response": "ผมไม่เคยตรวจสุขภาพหรือเอกซเรย์ปอดมาก่อนเลยครับ",
+          "response_time": 0.8418676853179932,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีอะไรอยากถามเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพื่มเติมครับ",
+          "response_time": 3.3375940322875977,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ครับผม ขอบคุณมากครับ",
+          "response_time": 0.7357323169708252,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    },
+    {
+      "case_file": "data\\02_03_head_injury.json",
+      "case_name": "02_03_head_injury.json",
+      "model": "gpt-4.1-mini",
+      "memory_mode": "summarize",
+      "timestamp": "2025-10-08T09:21:29.276769",
+      "case_type": "02",
+      "total_time": 11.84795618057251,
+      "total_tokens": 7382,
+      "input_tokens": 7237,
+      "output_tokens": 145,
+      "conversation": [
+        {
+          "turn": 1,
+          "input": "สวัสดีครับ",
+          "response": "สวัสดีครับ",
+          "response_time": 0.7676506042480469,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 2,
+          "input": "วันนี้มีอาการอะไรครับ",
+          "response": "ผมตกนั่งร้านสูงประมาณ 2 เมตร ศีรษะกระแทกพื้นครับ ตอนนี้ปวดศีรษะซีกขวากับท้ายทอย มีคลื่นไส้แต่ยังไม่อาเจียนครับ",
+          "response_time": 1.1970975399017334,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 3,
+          "input": "อาการเริ่มเมื่อไหร่ครับ",
+          "response": "เกิดอุบัติเหตุเมื่อประมาณ 30 นาทีที่แล้วครับ",
+          "response_time": 0.9801592826843262,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 4,
+          "input": "มีอาการอื่นๆ ด้วยไหมครับ",
+          "response": "ผมสลบไปพักหนึ่ง ตอนฟื้นมีคลื่นไส้ แต่ยังไม่อาเจียนครับ มองเห็นปกติ ไม่มีอ่อนแรงหรือเลือดออกจากจมูกกับหูครับ",
+          "response_time": 1.3789622783660889,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 5,
+          "input": "เคยรักษามาก่อนไหมครับ",
+          "response": "ไม่มีโรคประจำตัวครับ และไม่ได้รักษาอะไรเป็นประจำครับ",
+          "response_time": 0.7676916122436523,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 6,
+          "input": "มีอะไรอยากถามเพิ่มเติมไหมครับ",
+          "response": "ไม่มีคำถามเพิ่มเติมครับ",
+          "response_time": 2.4981296062469482,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        },
+        {
+          "turn": 7,
+          "input": "ขอบคุณครับ",
+          "response": "ครับผม",
+          "response_time": 0.7555849552154541,
+          "validation": {
+            "is_valid": true,
+            "issues": [],
+            "case_type_match": true,
+            "no_medical_advice": true,
+            "appropriate_language": true
+          }
+        }
+      ],
+      "validation_summary": {
+        "total_responses": 7,
+        "valid_responses": 7,
+        "validation_rate": 1.0
+      },
+      "errors": [],
+      "status": "completed"
+    }
+  ]
+}
