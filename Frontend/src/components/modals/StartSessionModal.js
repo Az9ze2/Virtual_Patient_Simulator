@@ -42,7 +42,7 @@ const MOCK_CASES = [
     title: 'Fever in Newborn',
     titleThai: 'ไข้ในทารกแรกเกิด',
     specialty: 'Pediatrics',
-    duration: 15,
+    duration: 10,
     description: 'Newborn with fever evaluation'
   },
   {
@@ -95,7 +95,7 @@ const StartSessionModal = ({ onClose, onStart }) => {
       },
       {
         root: caseListRef.current,
-        rootMargin: '-5px 0px -20px 0px',
+        rootMargin: '-1px 0px -20px 0px',
         threshold: 0.1
       }
     );
