@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Settings as SettingsIcon, Palette, Sun, Moon, Cpu, Sliders, Save, AlertTriangle } from 'lucide-react';
+import { X, Settings as SettingsIcon, Palette, Sun, Moon, Cpu, Sliders, Save, AlertTriangle, RotateCcw } from 'lucide-react';
 import './Modal.css';
+
+// Default settings configuration
+const DEFAULT_SETTINGS = {
+  model: 'gpt-4.1-mini',
+  memoryMode: 'summarize',
+  examMode: false,
+  temperature: 0.7,
+  topP: 0.85,
+  frequencyPenalty: 0.6,
+  presencePenalty: 0.9,
+  maxDuration: 15,
+  autoSave: true,
+  showTimer: true
+};
+
+const DEFAULT_THEME = 'light';
 
 const SettingsModal = ({ onClose }) => {
   const { theme, toggleTheme, settings, updateSettings } = useApp();
@@ -10,6 +26,7 @@ const SettingsModal = ({ onClose }) => {
   const [localTheme, setLocalTheme] = useState(theme); // Track theme locally
   const [saved, setSaved] = useState(false);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  const [showResetWarning, setShowResetWarning] = useState(false);
 
   // Check if there are unsaved changes
   const hasChanges = () => {
@@ -37,6 +54,21 @@ const SettingsModal = ({ onClose }) => {
     
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleResetToDefault = () => {
+    setShowResetWarning(true);
+  };
+
+  const confirmReset = () => {
+    setLocalSettings(DEFAULT_SETTINGS);
+    setLocalTheme(DEFAULT_THEME);
+    setSaved(false);
+    setShowResetWarning(false);
+  };
+
+  const cancelReset = () => {
+    setShowResetWarning(false);
   };
 
   const handleCancel = () => {
@@ -365,6 +397,10 @@ const SettingsModal = ({ onClose }) => {
           </div>
 
           <div className="modal-footer">
+            <button className="btn btn-outline" onClick={handleResetToDefault} style={{ marginRight: 'auto' }}>
+              <RotateCcw size={18} />
+              Reset to Default
+            </button>
             <button className="btn btn-outline" onClick={handleCancel}>
               Cancel
             </button>
@@ -399,6 +435,36 @@ const SettingsModal = ({ onClose }) => {
               </button>
               <button className="btn btn-danger" onClick={confirmDiscard}>
                 Yes, Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset to Default Warning Modal */}
+      {showResetWarning && (
+        <div className="modal-overlay" style={{ zIndex: 1001 }}>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px' }}>
+            <div className="modal-header">
+              <div className="modal-title-section">
+                <div className="warning-icon" style={{ background: 'linear-gradient(135deg, #fef3c7, #fde047)' }}>
+                  <RotateCcw size={24} />
+                </div>
+                <h2 className="modal-title">Reset to Default?</h2>
+              </div>
+            </div>
+            
+            <div className="modal-body">
+              <p>This will reset all settings to their default values. This action cannot be undone.</p>
+            </div>
+
+            <div className="modal-footer">
+              <button className="btn btn-outline" onClick={cancelReset}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={confirmReset}>
+                <RotateCcw size={18} />
+                Yes, Reset
               </button>
             </div>
           </div>
