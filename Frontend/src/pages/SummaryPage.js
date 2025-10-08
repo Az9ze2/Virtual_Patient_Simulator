@@ -194,10 +194,10 @@ const SummaryPage = () => {
               <Home size={20} />
               Go Home
             </button>
-            <button className="btn btn-outline btn-large" onClick={() => navigate('/')}>
+            {/* <button className="btn btn-outline btn-large" onClick={() => navigate('/')}>
               <Play size={20} />
               Start New Session
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
