@@ -36,32 +36,28 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Mock API call - replace with actual backend call
-      // const response = await axios.post('/api/chat', {
-      //   sessionId: sessionData.sessionId,
-      //   message: userMessage,
-      //   caseData: sessionData.caseData
-      // });
+      // Real API call
+      const response = await axios.post('/api/chat', {
+        sessionId: sessionData.sessionId,
+        message: userMessage,
+        caseData: sessionData.caseData
+      });
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Use backend response
+      const assistantReply = response.data.reply || 'ขอโทษค่ะ ไม่พบข้อมูลตอบกลับ';
 
-      // Mock response
-      const mockResponse = generateMockResponse(userMessage);
-
-      // Add assistant message
       addMessage({
         role: 'assistant',
-        content: mockResponse,
+        content: assistantReply,
         timestamp: Date.now()
       });
 
-      // Update token usage (mock)
+      // Update token usage (optional, depends on backend)
       updateSession({
         tokenUsage: {
           input: (sessionData.tokenUsage?.input || 0) + Math.floor(userMessage.length / 4),
-          output: (sessionData.tokenUsage?.output || 0) + Math.floor(mockResponse.length / 4),
-          total: (sessionData.tokenUsage?.total || 0) + Math.floor((userMessage.length + mockResponse.length) / 4)
+          output: (sessionData.tokenUsage?.output || 0) + Math.floor(assistantReply.length / 4),
+          total: (sessionData.tokenUsage?.total || 0) + Math.floor((userMessage.length + assistantReply.length) / 4)
         }
       });
 
