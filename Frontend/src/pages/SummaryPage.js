@@ -27,7 +27,7 @@ const SummaryPage = () => {
 
   const duration = sessionData.duration || (sessionData.endTime - sessionData.startTime);
   const durationHours = Math.floor(duration / 3600000);
-  const durationMinutes = Math.floor(duration / 60000) % 60000;
+  const durationMinutes = Math.floor(duration / 60000) % 60;
   const durationSeconds = Math.floor((duration % 60000) / 1000);
   const messageCount = sessionData.messages?.length || 0;
   const studentMessages = sessionData.messages?.filter(m => m.role === 'user').length || 0;
