@@ -1,3 +1,8 @@
+@media (display-mode: fullscreen) {
+  .content-grid {
+    padding-top: 5rem;
+  }
+}
 .chatbot-page {
   min-height: 100vh;
   display: flex;
