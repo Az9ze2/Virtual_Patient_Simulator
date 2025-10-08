@@ -1,6 +1,12 @@
+/* Add extra top padding in fullscreen mode */
+@media (display-mode: fullscreen) {
+  .home-page {
+    padding-top: 10rem !important;
+  }
+}
 .home-page {
   min-height: 100vh;
-  padding: 2rem 0;
+  padding: 5rem 0 2rem 0;
   /* ============ GRADIENT BACKGROUND ============ */
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-light) 100%);
 }
