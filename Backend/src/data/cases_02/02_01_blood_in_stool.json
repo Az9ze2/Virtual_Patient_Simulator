@@ -1,0 +1,261 @@
+{
+  "case_id": "osce-rectal-bleeding-TH-20221211-c5-001",
+  "case_metadata": {
+    "case_title": "การซักประวัติ ตรวจร่างกายและให้การวินิจฉัยผู้ป่วยถ่ายมีเสือดปน",
+    "medical_specialty": "ศัลยศาสตร์",
+    "exam_type": "History taking + Physical examination + Diagnosis",
+    "exam_duration_minutes": 10
+  },
+  "examiner_view": {
+    "patient_background": {
+      "name": "not provided",
+      "age": {
+        "value": 45,
+        "unit": "ปี"
+      },
+      "sex": "ชาย",
+      "occupation": "not provided",
+      "chief_complaint": "ถ่ายเป็นเลือด"
+    },
+    "physical_examination": {
+      "weight_kg": "not provided",
+      "length_cm": "not provided",
+      "ofc_cm": "not provided",
+      "percentiles": {
+        "weight": "not provided",
+        "length": "not provided",
+        "ofc": "not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": 36.5,
+        "heart_rate_in_beats_per_minute": 75,
+        "respiratory_rate_in_breaths_per_minute": 16,
+        "blood_pressure_in_mmHg": "115/75 mmHg",
+        "oxygen_saturation": "not provided",
+        "other_vital_signs": "not provided"
+      },
+      "general_appearance": "ปกติ",
+      "heent": "not provided",
+      "heart": "not provided",
+      "lungs": "not provided",
+      "abdomen": "กดหน้าท้องไม่เจ็บ",
+      "extremities": "not provided",
+      "neuro": "not provided"
+    },
+    "blood_tests": "not provided",
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "not provided",
+      "birth_weight_g": "not provided",
+      "delivery": "not provided",
+      "hospital_stay_days": "not provided",
+      "discharge_weight_g": "not provided",
+      "complications": "not provided"
+    },
+    "patient_illness_history": {
+      "past_medical_history": "ปฏิเสธโรคประจำตัว",
+      "past_medication_history": "ปฏิเสธประวัติการทานยากันเลือดแข็งตัว",
+      "past_surgical_history": "ปฏิเสธประวัติการผ่าตัด และฉายรังสีรักษา",
+      "allergies": "not provided",
+      "current_medications": "not provided",
+      "family_history": "ปฏิเสธโรคมะเร็งลำไส้หรือมะเร็งอื่น ๆ ในครอบครัว",
+      "social_history": "ปฏิเสธการดื่มสุราและสูบบุหรี่ รับประทานอาหารปกติ",
+      "immunization_history": "not provided"
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": 3,
+        "unit": "months",
+        "description": "3 เดือนก่อนมาโรงพยาบาลมีอาการถ่ายเป็นเลือด เป็น ๆ หาย ๆ"
+      },
+      "duration": {
+        "value": 3,
+        "unit": "months",
+        "description": "มีอาการต่อเนื่องรวมประมาณ 3 เดือน"
+      },
+      "progression": [
+        "ช่วงแรกเป็นมูกเลือดเคลือบอุจจาระ ปริมาณเล็กน้อย ประมาณอาทิตย์ละ 1 ครั้ง",
+        "บางครั้งถ่ายมีมูกปนออกมาอย่างเดียวไม่มีเลือดปน",
+        "1 เดือนก่อนมาโรงพยาบาล ถ่ายอุจจาระมีเลือดปนออกมาเกือบทุกวัน",
+        "มีอาการท้องผูกสลับกับท้องเสีย ลักษณะก้อนอุจจาระลำเล็กลง",
+        "มีอาการปวดหน่วงๆ ลงทวารหนักเหมือนถ่ายไม่สุด",
+        "ปฏิเสธก้อนยื่นออกจากรูทวาร",
+        "ไม่มีเจ็บรูทวาร ปฏิเสธการบาดเจ็บบริเวณทวารหนัก",
+        "ไม่ปวดท้อง ไม่คลื่นไส้อาเจียน ไม่เบื่ออาหาร ไม่มีน้ำหนักลด"
+      ]
+    }
+  },
+  "simulation_view": {
+    "simulator_profile": {
+      "name": "อนันต์ พิพัฒน์กุล",
+      "age": 45,
+      "occupation": "not provided",
+      "family_structure": "not provided",
+      "role": "patient",
+      "emotional_state": "ปกติ"
+    },
+    "feeding_and_sleep": {
+      "feeding_type": "not provided",
+      "frequency": "not provided",
+      "duration_per_feed": "not provided",
+      "storage": "not provided",
+      "maternal_breast_condition": "not provided",
+      "daytime_sleep": "not provided",
+      "nighttime_sleep": "not provided",
+      "stool_pattern": "not provided",
+      "urine_pattern": "not provided"
+    },
+    "simulation_instructions": {
+      "scenario": "สถานการณ์ : ท่านสวมบทบาทเป็นผู้ป่วยจำลองมาตรวจด้วยอาการถ่ายเป็นเลือด ขณะนี้นั่งอยู่บนเตียงตรวจ รอแพทย์มาตรวจรักษา",
+      "appearance": "การแต่งกาย : ปกติ ใส่ชุดที่สามารถเปิดหน้าท้องให้ตรวจร่างกายใด้ สีหน้าท่าทาง : ปกติ",
+      "behavior": "ห้ามผู้ป้วยจำลองบอกประวัติถ้าผู้เข้าสอบไม่ได้ถาม พยายามตอบคำถามเฉพาะที่ผู้เข้าสอบถามเท่าน้น ถ้าผู้เข้าสอบถามอาการอื่น นอกจากอาการข้างต้น ให้ตอบ ปฏิเสธทั้งหมด ให้ผู้เข้าสอบเป็นคนเปิดเสื้อ หรือลดระดับของกางเกงลงเอง ถ้าผู้เข้าสอบสั่งให้ทำ ให้เปิดเสื้อเพียงเล็กน้อยพอ ถ้าผู้เข้าสอบสั่งให้เิดขึ้นอีก ให้ขยับเพิ่มเล็กน้อย และถามว่า \"พอหรือยังครับ คุณหมอ\" ถ้าผู้เข้าสอบถามว่า เจ็บตรงไหน ตอนก่อนกดและขณะกดบริเวณหน้าท้อง ให้ตอบว่า \"ไม่เจ็บ\" ถ้าผู้เข้าสอบขอตรวจรูทวาร ผู้คุมสอบจะเป็นฝ่ายแจ้งผู้เข้าสอบเองว่า \"ให้ตรวจกับหุ่นจำลอง\" ให้ตอบเฉพาะเท่าที่ผู้เข้าสอบถาม ประเด็นไดที่ผูเข้าสอบไม่ได้ถาม ไม่ต้องเล่าและไม่ต้องตอบ",
+      "fallback_question": null,
+      "sample_dialogue": [
+        {
+          "topic": "เหตุผลในการมาพบแพทย์",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "วันนี้มาด้วยเรื่องอะไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "มีอาการถ่ายเป็นเลือด"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติอาการถ่ายเป็นเลือดและการเปลี่ยนแปลง",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เริ่มมีอาการมาตั้งแต่เมื่อไรครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "3 เดือนก่อนมาโรงพยาบาลมีอาการถ่ายเป็นเลือด เป็น ๆ หาย ๆ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เลือดที่ออกเป็นแบบไหน ปริมาณมากน้อยแค่ไหน"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ลักษณะเป็นมูกเลือดเคลือบอุจจาระแต่ละครั้งปริมาณเล็กน้อย มีเลือดปนออกมาประมาณอาทิตย์ละ 1 ครั้ง บางครั้งถ่ายมีมูกปนออกมาอย่างเดียวไม่มีเลือดปน"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ช่วงหลัง ๆ อาการเป็นอย่างไรบ้างครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "1 เดือนก่อนมาโรงพยาบาล ถ่ายอุจจาระมีเลือดปนออกมาเกือบทุกวัน มีอาการท้องผูกสลับกับท้องเสีย ลักษณะก้อนอุจจาระลำเล็กลง มีอาการปวดหน่วงๆ ลงทวารหนักเหมือนถ่ายไม่สุด"
+            }
+          ]
+        },
+        {
+          "topic": "อาการร่วมที่ปฏิเสธ",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีก้อนยื่นออกจากรูทวาร หรือเจ็บรูทวารไหม"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ปฏิเสธก้อนยื่นออกจากรูทวาร ไม่มีเจ็บรูทวาร ปฏิเสธการบาดเจ็บบริเวณทวารหนัก"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีปวดท้อง คลื่นไส้ อาเจียน เบื่ออาหาร หรือน้ำหนักลดหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ไม่ปวดท้อง ไม่คลื่นไส้อาเจียน ไม่เบื่ออาหาร ไม่มีน้ำหนักลด"
+            }
+          ]
+        },
+        {
+          "topic": "ประวัติทางการแพทย์ ยา ครอบครัว และสังคม",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "มีโรคประจำตัวหรือทานยากันเลือดแข็งตัวหรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ปฏิเสธโรคประจำตัว ปฏิเสธประวัติการทานยากันเลือดแข็งตัว"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "เคยผ่าตัดหรือได้รับการฉายรังสีมาก่อนไหมครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ปฏิเสธประวัติการผ่าตัด และฉายรังสีรักษา"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ในครอบครัวมีใครเป็นมะเร็งลำไส้หรือมะเร็งอื่น ๆ ไหม"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ปฏิเสธโรคมะเร็งลำไส้หรือมะเร็งอื่น ๆ ในครอบครัว"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ดื่มสุราหรือสูบบุหรี่หรือไม่"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ปฏิเสธการดื่มสุราและสูบบุหรี่"
+            }
+          ]
+        },
+        {
+          "topic": "การตรวจร่างกายเบื้องต้น",
+          "dialogue": [
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ขออนุญาตกดตรวจหน้าท้องนะครับ ถ้าเจ็บบอกนะครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "ไม่เจ็บ"
+            },
+            {
+              "type": "question",
+              "role": "examiner",
+              "text": "ขอให้ยกเสื้อขึ้นอีกนิดนะครับ"
+            },
+            {
+              "type": "answer",
+              "role": "patient",
+              "text": "พอหรือยังครับ คุณหมอ"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
