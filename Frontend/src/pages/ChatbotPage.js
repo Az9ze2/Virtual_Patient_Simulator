@@ -15,7 +15,10 @@ const ChatbotPage = () => {
   const [diagnosis, setDiagnosis] = useState('');
   const [treatmentPlan, setTreatmentPlan] = useState('');
   
-  // ============ NEW: MAGIC BENTO SPOTLIGHT EFFECT ============
+  // ============ NEW: State for box expansion ============
+  const [isPatientInfoExpanded, setIsPatientInfoExpanded] = useState(false);
+  
+  // ============ MAGIC BENTO SPOTLIGHT EFFECT ============
   const chatCardRef = useRef(null);
   const infoCardRef = useRef(null);
   const diagnosisCardRef = useRef(null);
@@ -27,7 +30,7 @@ const ChatbotPage = () => {
     }
   }, [sessionData, navigate]);
 
-  // ============ NEW: MOUSE MOVE HANDLER FOR SPOTLIGHT ============
+  // ============ MOUSE MOVE HANDLER FOR SPOTLIGHT ============
   const handleMouseMove = (e, ref) => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
@@ -91,7 +94,7 @@ const ChatbotPage = () => {
       {/* Main Content */}
       <div className="chatbot-content">
         <div className="content-grid">
-          {/* ============ UPDATED: Left - Chat Interface with Magic Bento ============ */}
+          {/* ============ Left - Chat Interface with Magic Bento ============ */}
           <div className="chat-column">
             <div 
               ref={chatCardRef}
@@ -102,19 +105,22 @@ const ChatbotPage = () => {
             </div>
           </div>
 
-          {/* ============ UPDATED: Right - Patient Info & Diagnosis with Magic Bento ============ */}
+          {/* ============ Right - Patient Info & Diagnosis with Magic Bento ============ */}
           <div className="info-column">
             <div 
               ref={infoCardRef}
-              className="magic-bento-card"
+              className={`magic-bento-card ${isPatientInfoExpanded ? 'expanded' : ''}`}
               onMouseMove={(e) => handleMouseMove(e, infoCardRef)}
             >
-              <PatientInfo caseData={sessionData.caseData} />
+              <PatientInfo 
+                caseData={sessionData.caseData}
+                onExpand={setIsPatientInfoExpanded}
+              />
             </div>
             
             <div 
               ref={diagnosisCardRef}
-              className="magic-bento-card"
+              className={`magic-bento-card ${isPatientInfoExpanded ? 'shrunk' : ''}`}
               onMouseMove={(e) => handleMouseMove(e, diagnosisCardRef)}
             >
               <DiagnosisSection 

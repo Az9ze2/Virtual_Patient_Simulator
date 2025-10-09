@@ -133,7 +133,7 @@
   border: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -153,27 +153,45 @@
 }
 
 /* ============================================
-   PATIENT INFO BOX - FIXED HEIGHT
+   PATIENT INFO BOX - DYNAMIC HEIGHT
    Change this number to adjust patient info size
    ============================================ */
 .info-column .magic-bento-card:nth-child(1) {
-  /* FIXED HEIGHT for Patient Info - Change 280px to your desired height */
+  /* DEFAULT HEIGHT for Patient Info */
   height: 200px;
   max-height: 200px;
   min-height: 200px;
   flex: 0 0 200px;
+  z-index: 10;
+}
+
+/* NEW: Expanded state for Patient Info */
+.info-column .magic-bento-card:nth-child(1).expanded {
+  height: 785px;
+  max-height: 785px;
+  min-height: 785px;
+  flex: 0 0 785px;
+  z-index: 20;
 }
 
 /* ============================================
-   DIAGNOSIS BOX - FIXED HEIGHT
+   DIAGNOSIS BOX - DYNAMIC HEIGHT
    Change this number to adjust diagnosis size
    ============================================ */
 .info-column .magic-bento-card:nth-child(2) {
-  /* FIXED HEIGHT for Diagnosis - Change 350px to your desired height */
+  /* DEFAULT HEIGHT for Diagnosis */
   height: 750px;
   max-height: 750px;
   min-height: 750px;
   flex: 0 0 750px;
+}
+
+/* NEW: Shrunk state for Diagnosis */
+.info-column .magic-bento-card:nth-child(2).shrunk {
+  height: 165px;
+  max-height: 165px;
+  min-height: 165px;
+  flex: 0 0 165px;
 }
 
 .magic-bento-card::before {
@@ -491,6 +509,36 @@
 /* ============ PATIENT INFO CARD ANIMATIONS ============ */
 .patient-info-card {
   animation: slideUp 0.5s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* NEW: Expanded content styling */
+.patient-info-expanded {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+}
+
+.patient-info-expanded::-webkit-scrollbar {
+  width: 6px;
+}
+
+.patient-info-expanded::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+}
+
+.patient-info-expanded::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 3px;
+}
+
+.patient-info-expanded::-webkit-scrollbar-thumb:hover {
+  background: var(--medical-cyan);
 }
 
 .patient-info-item {
