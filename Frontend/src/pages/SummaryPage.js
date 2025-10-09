@@ -25,20 +25,29 @@ const SummaryPage = () => {
     );
   }
 
+  // Extract user info - handle both formats
+  const userName = sessionData.userInfo?.name || sessionData.user_info?.name || 'N/A';
+  const userStudentId = sessionData.userInfo?.student_id || sessionData.user_info?.student_id || 'N/A';
+  const caseTitle = sessionData.caseInfo?.case_title || sessionData.case_info?.case_title || 'N/A';
+  
+  // Calculate duration
   const duration = sessionData.duration || (sessionData.endTime - sessionData.startTime);
   const durationHours = Math.floor(duration / 3600000);
   const durationMinutes = Math.floor(duration / 60000) % 60;
   const durationSeconds = Math.floor((duration % 60000) / 1000);
-  const messageCount = sessionData.messages?.length || 0;
-  const studentMessages = sessionData.messages?.filter(m => m.role === 'user').length || 0;
-  const patientMessages = sessionData.messages?.filter(m => m.role === 'assistant').length || 0;
+  
+  // Handle messages - check different possible structures
+  const messages = sessionData.messages || sessionData.chat_history || [];
+  const messageCount = messages.length || 0;
+  const studentMessages = messages.filter(m => m.role === 'user' || m.type === 'user').length || 0;
+  const patientMessages = messages.filter(m => m.role === 'assistant' || m.role === 'bot' || m.type === 'bot').length || 0;
 
   const handleDownload = () => {
     const report = {
       sessionInfo: {
-        studentName: sessionData.studentName,
-        studentId: sessionData.studentId,
-        caseTitle: sessionData.caseData?.title,
+        studentName: userName,
+        studentId: userStudentId,
+        caseTitle: caseTitle,
         date: new Date(sessionData.startTime).toLocaleString('th-TH'),
         duration: `${durationMinutes}m ${durationSeconds}s`
       },
@@ -46,9 +55,9 @@ const SummaryPage = () => {
         totalMessages: messageCount,
         studentMessages,
         patientMessages,
-        tokenUsage: sessionData.tokenUsage
+        tokenUsage: sessionData.tokenUsage || sessionData.token_usage
       },
-      conversation: sessionData.messages,
+      conversation: messages,
       diagnosis: {
         diagnosis,
         treatmentPlan
@@ -59,7 +68,7 @@ const SummaryPage = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `session-${sessionData.studentId}-${Date.now()}.json`;
+    a.download = `session-${userStudentId}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -77,7 +86,7 @@ const SummaryPage = () => {
             </div>
             <h1 className="summary-title">Session Complete!</h1>
             <p className="summary-subtitle">
-              Great work, {sessionData.studentName}. Here's your session summary.
+              Great work, {userName}. Here's your session summary.
             </p>
           </div>
 
@@ -87,15 +96,15 @@ const SummaryPage = () => {
             <div className="info-grid">
               <div className="info-item">
                 <span className="info-label">Student Name</span>
-                <span className="info-value">{sessionData.studentName}</span>
+                <span className="info-value">{userName}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Student ID</span>
-                <span className="info-value">{sessionData.studentId}</span>
+                <span className="info-value">{userStudentId}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Case</span>
-                <span className="info-value">{sessionData.caseData?.title || 'N/A'}</span>
+                <span className="info-value">{caseTitle}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">Date</span>
@@ -169,14 +178,18 @@ const SummaryPage = () => {
           <div className="conversation-card fade-in" style={{ animationDelay: '0.4s' }}>
             <h3 className="card-section-title">Conversation History</h3>
             <div className="conversation-preview">
-              {sessionData.messages && sessionData.messages.slice(0, 5).map((msg, idx) => (
-                <div key={idx} className={`preview-message ${msg.role}`}>
-                  <span className="preview-role">
-                    {msg.role === 'user' ? '🧑‍⚕️ Doctor' : '👩‍⚕️ Patient'}:
-                  </span>
-                  <span className="preview-text">{msg.content}</span>
-                </div>
-              ))}
+              {messages && messages.slice(0, 5).map((msg, idx) => {
+                const isUser = msg.role === 'user' || msg.type === 'user';
+                const content = msg.content || msg.user || msg.bot || 'No content';
+                return (
+                  <div key={idx} className={`preview-message ${isUser ? 'user' : 'assistant'}`}>
+                    <span className="preview-role">
+                      {isUser ? '🧑‍⚕️ Doctor' : '👩‍⚕️ Patient'}:
+                    </span>
+                    <span className="preview-text">{content}</span>
+                  </div>
+                );
+              })}
               {messageCount > 5 && (
                 <div className="preview-more">
                   +{messageCount - 5} more messages

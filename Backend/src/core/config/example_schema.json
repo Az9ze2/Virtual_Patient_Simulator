@@ -1,0 +1,228 @@
+{
+  "case_id": {
+    "type": "string",
+    "description": "use the main prompt to generate unique case id"
+  },
+  "case_metadata": {
+    "case_title": "string",
+    "medical_specialty": "string",
+    "exam_type": "string",
+    "exam_duration_minutes": "number"
+  },
+
+  "examiner_view": {
+    "patient_background": {
+      "name": "string",
+      "age": {
+        "value": "number",
+        "unit": "string"
+      },
+      "sex": "string | not provided",
+      "occupation": {
+        "type": "string",
+        "description": "occupation of the patient"
+      }, 
+      "chief_complaint": {
+        "type": "string",
+        "description": "The main reason for the visit, if the patient is a child, please describe the complaint from the guardian's perspective"
+      }
+    },
+    "physical_examination": {
+      "weight_kg": "number | not provided",
+      "length_cm": "number | not provided",
+      "ofc_cm": "number | not provided",
+      "percentiles": {
+        "weight": "string | not provided", 
+        "length": "string | not provided",
+        "ofc": "string | not provided"
+      },
+      "vital_signs": {
+        "body_temperature_in_celsius": "number | not provided",
+        "heart_rate_in_beats_per_minute": "number | not provided",
+        "respiratory_rate_in_breaths_per_minute": "number | not provided",
+        "blood_pressure_in_mmHg": "string | not provided",
+        "oxygen_saturation": "string | not provided",
+        "other_vital_signs": "string | not provided"
+      },
+      "general_appearance": "string | not provided",
+      "heent": "string | not provided",
+      "heart": "string | not provided",
+      "lungs": "string | not provided",
+      "abdomen": "string | not provided",
+      "extremities": "string | not provided",
+      "neuro": "string | not provided"
+    },
+    "blood_tests": {
+      "type": "arrays",
+      "description": "If there are multiple testing date, includes date and result in an array separated by date. If not provided, use 'not provided'."
+    },
+    "growth_and_birth_history": {
+      "gestational_age_weeks": "number | not provided",
+      "birth_weight_g": "number | not provided",
+      "delivery": "string | not provided",
+      "hospital_stay_days": "number | not provided",
+      "discharge_weight_g": "number | not provided",
+      "complications": "string | not provided"
+    },
+    "patient_illness_history": {
+        "past_medical_history": {
+            "type": "string",
+            "description": "Past illnesses, hospitalizations, or surgeries. Include information about timing, duration, recurrence, and whether the condition is resolved or ongoing. If not provided, use 'not provided'."
+        },
+        "past_medication_history":{
+            "type": "string",
+            "description": "Previous medications taken regularly or for specific conditions. Include duration, dosage, frequency, and reason for taking. If not provided, use 'not provided'."
+        },   
+        "past_surgical_history": {
+            "type": "string",
+            "description": "Any surgeries the patient has undergone in the past, including the type of surgery, age/time of surgery, and outcome. If not provided, use 'not provided'."
+        },
+        "allergies": {
+            "type": "string",
+            "description": "Known allergies to medications, foods, or environmental factors. Include the allergen, type of reaction, and severity if available. If not provided, use 'not provided'."
+        },
+        "current_medications": {
+            "type": "string",
+            "description": "Medications the patient is currently taking. Include drug name, dosage, frequency, and indication. If not provided, use 'not provided'."
+        },
+        "family_history": {
+            "type": "string",
+            "description": "Family medical history. Note hereditary diseases, genetic conditions, or similar illnesses in close relatives. If not provided, use 'not provided'."
+        },
+        "social_history": {
+            "type": "string",
+            "description": "Social and environmental context. Include travel history, exposure risks, contact with sick individuals, smoking, alcohol, drug use, or other lifestyle factors. If not provided, use 'not provided'."
+        },
+        "immunization_history": {
+            "type": "string",
+            "description": "Immunization record including routine vaccines in the past, optional vaccines, and whether the schedule is up-to-date. If not provided, use 'not provided'."
+        }
+    },
+    "symptoms_timeline": {
+      "onset": {
+        "value": "number | not provided",
+        "unit": "string (days, weeks, months) | not provided",
+        "description": "When the symptom first appeared"
+      },
+      "duration": {
+        "value": "number | not provided",
+        "unit": "string (days, weeks, months) | not provided",
+        "description": "How long the symptom has lasted"
+      },
+      "progression": {
+        "type": "arrays",
+        "description": "Whether the symptom is improving, worsening, or stable. give details in a listing format in array"
+      }  
+    }
+  },
+
+  "simulation_view": {
+    "simulator_profile": {
+      "name": {
+          "type": "string",
+          "description": "If patient is a child, use child's parent name as a simulator's name. If simulator has a name, use the given name; if not, Generate the Thai woman name in Thai language followed by the child's surname regarding to parent gender"
+      },
+      "age": "number | not provided",
+      "occupation": "string | not provided",
+      "family_structure": "string | not provided",
+      "role": "string | not provided",
+      "emotional_state": {
+        "type": "string",
+        "description": "How does the mother or patient role or simulator feel about the patient's condition(only feeling in Thai), e.g., normal, anxious, worried, upset, angry, sad"
+      }
+    },
+
+    "feeding_and_sleep": {
+      "feeding_type": "string | not provided",
+      "frequency": "string | not provided",
+      "duration_per_feed": "string | not provided",
+      "storage": "string | not provided",
+      "maternal_breast_condition": "string | not provided",
+      "daytime_sleep": "string | not provided",
+      "nighttime_sleep": "string | not provided",
+      "stool_pattern": "string | not provided",
+      "urine_pattern": "string | not provided"
+    },
+
+    "simulation_instructions": {
+      "scenario": {
+        "type": "string",
+        "description": "Conclude the scenario in which the patient simulator is role-playing. If not provided, use 'not provided'."
+      },
+      "appearance": "string | not provided",
+      "behavior": "string | not provided",
+
+      "fallback_question": {
+        "type": "object",
+        "description": "Questions that the patient simulator should ask if the examiner did not ask them during history taking.",
+        "properties": {
+          "question_limit_type": {
+            "type": "string",
+            "enum": ["single", "multiple"],
+            "description": "Defines whether the simulator is allowed to ask only one fallback question ('single') or multiple fallback questions ('multiple')."
+          },
+          "questions": {
+            "type": "array",
+            "description": "List of fallback questions to be used depending on the case.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "The actual question that the simulator will ask if the examiner did not cover it."
+                },
+                "asked": {
+                  "type": "boolean",
+                  "description": "Indicates whether the examiner already asked this question. If true, the fallback is skipped."
+                }
+              },
+              "required": ["text", "asked"]
+            }
+          }
+        },
+        "required": ["question_limit_type", "questions"]
+      },
+
+
+        "sample_dialogue": {
+          "type": "array",
+          "description": "A list of conversation topics with their dialogues. Each topic contains a sequence of examiner and patient simulator exchanges. In the sample dialogue, the question shouldn't be the same as the question in the fallback_question.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "topic": {
+                "type": "string",
+                "description": "The topic of this dialogue section, generated based on the content (e.g., 'เหตุผลในการมาพบแพทย์', 'อาการทั่วไปของทารก')."
+              },
+              "dialogue": {
+                "type": "array",
+                "description": "A sequence of conversation turns between the examiner and the patient simulator.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["question", "answer"],
+                      "description": "The type of dialogue turn: either 'question' (examiner) or 'answer' (mother/patient simulator)."
+                    },
+                    "role": {
+                      "type": "string",
+                      "enum": ["examiner", "mother", "patient"],
+                      "description": "Who is speaking in this turn."
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "The actual text of the question or answer."
+                    }
+                  },
+                  "required": ["type", "role", "text"]
+                }
+              }
+            },
+            "required": ["topic", "dialogue"]
+          }
+        }
+
+  }
+ }
+}

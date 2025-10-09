@@ -48,9 +48,15 @@ const ChatbotPage = () => {
     setShowEndConfirm(true);
   };
 
-  const confirmEndSession = () => {
-    const completedSession = endSession();
-    navigate('/summary', { state: { sessionData: completedSession, diagnosis, treatmentPlan } });
+  const confirmEndSession = async () => {
+    try {
+      const completedSession = await endSession();
+      navigate('/summary', { state: { sessionData: completedSession, diagnosis, treatmentPlan } });
+    } catch (error) {
+      console.error('Failed to end session:', error);
+      // Navigate anyway with current session data as fallback
+      navigate('/summary', { state: { sessionData: sessionData, diagnosis, treatmentPlan } });
+    }
   };
 
   if (!sessionData) {

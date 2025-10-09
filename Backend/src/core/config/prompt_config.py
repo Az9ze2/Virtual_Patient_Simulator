@@ -28,6 +28,28 @@ class PromptConfig:
             return "unknown"
     
     @staticmethod
+    def get_case_type_from_medical_specialty(case_data: Dict[str, Any]) -> str:
+        """
+        Detect case type from medical specialty in case data
+        Args:
+            case_data: JSON case data
+        Returns:
+            "01" for กุมารเวชศาสตร์ cases, "02" for other specialties, "01" as default
+        """
+        case_metadata = case_data.get('case_metadata', {})
+        medical_specialty = case_metadata.get('medical_specialty', '')
+        
+        # กุมารเวชศาสตร์ = Pediatrics = Case 01 (mother/guardian)
+        if medical_specialty == "กุมารเวชศาสตร์":
+            return "01"
+        elif medical_specialty and medical_specialty not in ["not provided", "unknown", ""]:
+            # Other medical specialties = Case 02 (patient)
+            return "02"
+        else:
+            # Default to case 01 for unknown/missing specialty
+            return "01"
+    
+    @staticmethod
     def extract_data_and_build_prompt_01(case_data: Dict[str, Any], question_limit_rule: str, question_list: str, dialogue_examples: str) -> str:
         """
         Extract data and build system prompt for 01 cases (mother/guardian) - EXACT ORIGINAL LOGIC

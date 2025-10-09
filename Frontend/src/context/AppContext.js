@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import apiService from '../services/apiService';
 
 const AppContext = createContext();
 
@@ -68,19 +69,45 @@ export const AppProvider = ({ children }) => {
     setSettings(prev => ({ ...prev, ...newSettings }));
   };
 
-  const startSession = (data) => {
-    const session = {
-      ...data,
-      startTime: Date.now(),
-      messages: [],
-      tokenUsage: {
-        input: 0,
-        output: 0,
-        total: 0
+  const startSession = async (userInfo, caseFilename, config = {}) => {
+    try {
+      // Convert frontend settings to backend config format
+      const backendConfig = {
+        model_choice: config.model || settings.model,
+        memory_mode: config.memoryMode || settings.memoryMode, 
+        temperature: config.temperature || settings.temperature,
+        exam_mode: config.examMode || settings.examMode
+      };
+
+      const response = await apiService.startSession(userInfo, caseFilename, backendConfig);
+      
+      if (response.success) {
+        const session = {
+          sessionId: response.data.session_id,
+          userInfo: userInfo,
+          caseInfo: response.data.case_info,
+          caseData: {
+            examiner_view: response.data.examiner_view
+          },
+          config: backendConfig,
+          startTime: Date.now(),
+          messages: [],
+          tokenUsage: {
+            input: 0,
+            output: 0,
+            total: 0
+          }
+        };
+        
+        setSessionData(session);
+        return session;
+      } else {
+        throw new Error(response.error || 'Failed to start session');
       }
-    };
-    setSessionData(session);
-    return session;
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      throw error;
+    }
   };
 
   const updateSession = (updates) => {
@@ -100,7 +127,33 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  const endSession = () => {
+  const endSession = async () => {
+    if (sessionData && sessionData.sessionId) {
+      try {
+        const response = await apiService.endSession(sessionData.sessionId);
+        
+        if (response.success) {
+          const completedSession = {
+            ...sessionData,
+            ...response.data.summary,
+            endTime: Date.now(),
+            duration: Date.now() - sessionData.startTime
+          };
+          
+          // Save to session history
+          const history = JSON.parse(localStorage.getItem('sessionHistory') || '[]');
+          history.unshift(completedSession);
+          localStorage.setItem('sessionHistory', JSON.stringify(history.slice(0, 10))); // Keep last 10
+          
+          setSessionData(null);
+          return completedSession;
+        }
+      } catch (error) {
+        console.error('Failed to end session:', error);
+      }
+    }
+    
+    // Fallback for local session end
     if (sessionData) {
       const completedSession = {
         ...sessionData,
@@ -108,10 +161,9 @@ export const AppProvider = ({ children }) => {
         duration: Date.now() - sessionData.startTime
       };
       
-      // Save to session history
       const history = JSON.parse(localStorage.getItem('sessionHistory') || '[]');
       history.unshift(completedSession);
-      localStorage.setItem('sessionHistory', JSON.stringify(history.slice(0, 10))); // Keep last 10
+      localStorage.setItem('sessionHistory', JSON.stringify(history.slice(0, 10)));
       
       setSessionData(null);
       return completedSession;

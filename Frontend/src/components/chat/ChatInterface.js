@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Send, Loader } from 'lucide-react';
-import axios from 'axios';
+import apiService from '../../services/apiService';
 import './ChatInterface.css';
 
 const ChatInterface = () => {
@@ -21,7 +21,7 @@ const ChatInterface = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !sessionData?.sessionId) return;
 
     const userMessage = input.trim();
     setInput('');
@@ -36,40 +36,31 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Mock API call - replace with actual backend call
-      // const response = await axios.post('/api/chat', {
-      //   sessionId: sessionData.sessionId,
-      //   message: userMessage,
-      //   caseData: sessionData.caseData
-      // });
+      const response = await apiService.sendMessage(sessionData.sessionId, userMessage);
+      
+      if (response.success) {
+        // Add assistant message
+        addMessage({
+          role: 'assistant',
+          content: response.data.response,
+          timestamp: Date.now()
+        });
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Mock response
-      const mockResponse = generateMockResponse(userMessage);
-
-      // Add assistant message
-      addMessage({
-        role: 'assistant',
-        content: mockResponse,
-        timestamp: Date.now()
-      });
-
-      // Update token usage (mock)
-      updateSession({
-        tokenUsage: {
-          input: (sessionData.tokenUsage?.input || 0) + Math.floor(userMessage.length / 4),
-          output: (sessionData.tokenUsage?.output || 0) + Math.floor(mockResponse.length / 4),
-          total: (sessionData.tokenUsage?.total || 0) + Math.floor((userMessage.length + mockResponse.length) / 4)
+        // Update token usage from backend
+        if (response.data.token_usage) {
+          updateSession({
+            tokenUsage: response.data.token_usage
+          });
         }
-      });
+      } else {
+        throw new Error(response.error || 'Failed to get response');
+      }
 
     } catch (error) {
       console.error('Error sending message:', error);
       addMessage({
         role: 'system',
-        content: 'ขอโทษค่ะ เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง',
+        content: `ขอโทษค่ะ เกิดข้อผิดพลาด: ${error.message}`,
         timestamp: Date.now()
       });
     } finally {
@@ -77,43 +68,6 @@ const ChatInterface = () => {
     }
   };
 
-  const generateMockResponse = (userInput) => {
-    const lowerInput = userInput.toLowerCase();
-    
-    if (lowerInput.includes('สวัสดี') || lowerInput.includes('hello')) {
-      return 'สวัสดีค่ะ ดิฉันมีความยินดีที่จะให้ข้อมูลเกี่ยวกับลูกค่ะ';
-    }
-    
-    if (lowerInput.includes('ชื่อ') || lowerInput.includes('name')) {
-      return 'ลูกชื่อ ด.ช.ยินดี ปรีดา ค่ะ อายุ 5 วัน';
-    }
-    
-    if (lowerInput.includes('อาการ') || lowerInput.includes('symptom')) {
-      return 'ดิฉันมาเพราะมีปัญหาเรื่องการให้นมลูกค่ะ หัวนมข้างขวาแตก และเจ็บตอนให้นม';
-    }
-    
-    if (lowerInput.includes('นม') || lowerInput.includes('feed') || lowerInput.includes('breast')) {
-      return 'ดิฉันให้นมแม่อย่างเดียวค่ะ ทุก 3 ชั่วโมง ครั้งละประมาณ 15-20 นาที แต่ตอนนี้เจ็บหัวนมข้างขวามากเลยค่ะ';
-    }
-    
-    if (lowerInput.includes('เมื่อไหร่') || lowerInput.includes('when')) {
-      return 'เริ่มมีอาการตั้งแต่คลอดลูกได้ 2 วัน ค่ะ';
-    }
-    
-    if (lowerInput.includes('คำถาม') || lowerInput.includes('question') || lowerInput.includes('ถาม')) {
-      return 'ดิฉันอยากทราบว่าน้ำหนักลูกเป็นปกติหรือไม่คะ และต้องดูแลหัวนมที่แตกอย่างไร';
-    }
-
-    if (lowerInput.includes('นอน') || lowerInput.includes('sleep')) {
-      return 'ลูกนอนหลับได้ดีค่ะ นานครั้งละ 3-4 ชั่วโมง มักจะตื่นเองตอนหิว ไม่ต้องปลุกค่ะ';
-    }
-
-    if (lowerInput.includes('ถ่าย') || lowerInput.includes('stool') || lowerInput.includes('diaper')) {
-      return 'ถ่ายอุจจาระสีเหลืองทอง เนื้อนิ่ม วันละ 4-6 ครั้ง ปัสสาวะสีเหลืองใส วันละ 6-8 ครั้งค่ะ';
-    }
-    
-    return 'ดิฉันเข้าใจค่ะ มีอะไรอยากทราบเพิ่มเติมไหมคะ';
-  };
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);

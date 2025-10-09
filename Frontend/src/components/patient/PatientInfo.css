@@ -1,0 +1,342 @@
+.patient-info {
+  background: var(--card-bg, #ffffff);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.patient-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--primary-color, #3b82f6);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-content h3 {
+  margin: 0;
+  color: var(--text-primary, #1a202c);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.header-content svg {
+  color: var(--primary-color, #3b82f6);
+}
+
+.refresh-btn {
+  background: none;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-secondary, #64748b);
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background-color: var(--hover-bg, #f8fafc);
+  border-color: var(--primary-color, #3b82f6);
+  color: var(--primary-color, #3b82f6);
+}
+
+.patient-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-section {
+  background: var(--section-bg, #f8fafc);
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid var(--border-light, #f1f5f9);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #1a202c);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.section-title svg {
+  color: var(--primary-color, #3b82f6);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.info-label {
+  font-weight: 500;
+  color: var(--text-secondary, #64748b);
+  font-size: 13px;
+}
+
+.info-value {
+  font-weight: 600;
+  color: var(--text-primary, #1a202c);
+  font-size: 13px;
+  text-align: right;
+}
+
+.complaint-content {
+  font-size: 14px;
+  color: var(--text-primary, #1a202c);
+  line-height: 1.5;
+  background: var(--card-bg, #ffffff);
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #f1f5f9);
+}
+
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.vital-item {
+  background: var(--card-bg, #ffffff);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #f1f5f9);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-primary, #1a202c);
+}
+
+.exam-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exam-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--card-bg, #ffffff);
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #f1f5f9);
+}
+
+.exam-label {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exam-value {
+  font-size: 13px;
+  color: var(--text-primary, #1a202c);
+  line-height: 1.4;
+}
+
+.history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  background: var(--card-bg, #ffffff);
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light, #f1f5f9);
+}
+
+.history-label {
+  display: block;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.history-value {
+  font-size: 13px;
+  color: var(--text-primary, #1a202c);
+  line-height: 1.4;
+}
+
+/* Loading State */
+.loading-state,
+.error-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-content .spinning {
+  animation: spin 1s linear infinite;
+  color: var(--primary-color, #3b82f6);
+}
+
+.loading-content p {
+  color: var(--text-secondary, #64748b);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Error State */
+.error-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+}
+
+.error-message {
+  color: var(--error-color, #dc2626);
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+}
+
+.error-details {
+  color: var(--text-secondary, #64748b);
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Empty State */
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty-icon {
+  color: var(--text-light, #cbd5e1);
+}
+
+.empty-content p {
+  color: var(--text-secondary, #64748b);
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .patient-info {
+  background: var(--card-bg-dark, #1e293b);
+  border-color: var(--border-dark, #334155);
+}
+
+[data-theme="dark"] .info-section {
+  background: var(--section-bg-dark, #0f172a);
+  border-color: var(--border-dark, #334155);
+}
+
+[data-theme="dark"] .vital-item,
+[data-theme="dark"] .exam-item,
+[data-theme="dark"] .history-item,
+[data-theme="dark"] .complaint-content {
+  background: var(--card-bg-dark, #1e293b);
+  border-color: var(--border-dark, #334155);
+}
+
+[data-theme="dark"] .refresh-btn:hover {
+  background-color: var(--hover-bg-dark, #334155);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .patient-info {
+    padding: 15px;
+    margin: 10px;
+    max-height: calc(100vh - 100px);
+  }
+
+  .patient-info-header h3 {
+    font-size: 16px;
+  }
+
+  .vitals-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .info-value {
+    text-align: left;
+    font-size: 14px;
+  }
+}
+
+/* Animation for spinning loader */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Scrollbar styling */
+.patient-info::-webkit-scrollbar {
+  width: 6px;
+}
+
+.patient-info::-webkit-scrollbar-track {
+  background: var(--scroll-track, #f1f5f9);
+  border-radius: 3px;
+}
+
+.patient-info::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb, #cbd5e1);
+  border-radius: 3px;
+}
+
+.patient-info::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover, #94a3b8);
+}
