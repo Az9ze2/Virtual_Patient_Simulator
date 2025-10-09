@@ -86,6 +86,9 @@ export const AppProvider = ({ children }) => {
           sessionId: response.data.session_id,
           userInfo: userInfo,
           caseInfo: response.data.case_info,
+          caseData: {
+            examiner_view: response.data.examiner_view
+          },
           config: backendConfig,
           startTime: Date.now(),
           messages: [],

@@ -51,7 +51,8 @@ async def start_session(request: StartSessionRequest):
             data={
                 "session_id": session_id,
                 "case_info": case_info.dict(),
-                "user_info": request.user_info.dict()
+                "user_info": request.user_info.dict(),
+                "examiner_view": case_data.get("examiner_view", {})
             }
         )
         

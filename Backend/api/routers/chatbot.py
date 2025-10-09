@@ -38,9 +38,16 @@ async def send_message(session_id: str, message: ChatMessage):
                 detail="Chatbot instance not found"
             )
         
+        # Log incoming message
+        print(f"💬 [CHATBOT] Processing message from user: {message.message[:100]}...")
+        print(f"   📋 Session: {session_id[:8]}... | Case: {chatbot.case_type} | Model: {chatbot.model_choice}")
+        
         # Send message to chatbot
         start_time = time.time()
         response, response_time = chatbot.chat_turn(message.message)
+        
+        print(f"   🤖 Bot response: {response[:100]}...")
+        print(f"   ⏱️ Response time: {response_time:.3f}s | Tokens: {chatbot.total_tokens}")
         
         # Update session chat history
         session_manager.update_chat_history(

@@ -11,11 +11,36 @@ class ApiService {
       },
     });
 
-    // Add response interceptor for error handling
-    this.api.interceptors.response.use(
-      (response) => response,
+    // Add request interceptor for logging
+    this.api.interceptors.request.use(
+      (config) => {
+        console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`, {
+          data: config.data,
+          params: config.params
+        });
+        return config;
+      },
       (error) => {
-        console.error('API Error:', error);
+        console.error('🚨 Request Error:', error);
+        return Promise.reject(error);
+      }
+    );
+
+    // Add response interceptor for logging and error handling
+    this.api.interceptors.response.use(
+      (response) => {
+        console.log(`✅ API Response: ${response.config.method?.toUpperCase()} ${response.config.url}`, {
+          status: response.status,
+          data: response.data
+        });
+        return response;
+      },
+      (error) => {
+        console.error(`❌ API Error: ${error.config?.method?.toUpperCase()} ${error.config?.url}`, {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        });
         if (error.response) {
           // Server responded with error status
           throw new Error(error.response.data?.details || error.response.data?.error || 'API request failed');
