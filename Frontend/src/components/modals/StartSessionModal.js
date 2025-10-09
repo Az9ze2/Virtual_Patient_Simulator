@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { X, User, CreditCard, ChevronRight, FileText } from 'lucide-react';
 import './Modal.css';
@@ -36,6 +36,22 @@ const MOCK_CASES = [
     specialty: 'Pediatrics',
     duration: 10,
     description: 'Child presenting with edema symptoms'
+  },
+  {
+    id: 'CASE-005',
+    title: 'Fever in Newborn',
+    titleThai: 'ไข้ในทารกแรกเกิด',
+    specialty: 'Pediatrics',
+    duration: 10,
+    description: 'Newborn with fever evaluation'
+  },
+  {
+    id: 'CASE-006',
+    title: 'Jaundice Assessment',
+    titleThai: 'ประเมินอาการตัวเหลือง',
+    specialty: 'Pediatrics',
+    duration: 10,
+    description: 'Infant with jaundice symptoms'
   }
 ];
 
@@ -48,6 +64,70 @@ const StartSessionModal = ({ onClose, onStart }) => {
     selectedCase: null
   });
   const [errors, setErrors] = useState({});
+  
+  // Refs and state for gradient overlay
+  const caseListRef = useRef(null);
+  const cardRefs = useRef([]);
+  const [showTopGradient, setShowTopGradient] = useState(false);
+  const [showBottomGradient, setShowBottomGradient] = useState(true);
+  const [visibleCards, setVisibleCards] = useState(new Set());
+
+  // Intersection Observer for scroll-triggered animations
+  useEffect(() => {
+    if (step !== 2 || !caseListRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const cardId = entry.target.dataset.cardId;
+          if (entry.isIntersecting) {
+            // Add visible class when entering viewport
+            setVisibleCards((prev) => new Set([...prev, cardId]));
+          } else {
+            // Remove visible class when leaving viewport (allows re-animation)
+            setVisibleCards((prev) => {
+              const newSet = new Set(prev);
+              newSet.delete(cardId);
+              return newSet;
+            });
+          }
+        });
+      },
+      {
+        root: caseListRef.current,
+        rootMargin: '-1px 0px -20px 0px',
+        threshold: 0.1
+      }
+    );
+
+    cardRefs.current.forEach((card) => {
+      if (card) observer.observe(card);
+    });
+
+    return () => observer.disconnect();
+  }, [step]);
+
+  // Handle scroll to show/hide gradients
+  useEffect(() => {
+    const caseList = caseListRef.current;
+    if (!caseList) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = caseList;
+      
+      // Show top gradient if scrolled down
+      setShowTopGradient(scrollTop > 10);
+      
+      // Show bottom gradient if not at bottom
+      setShowBottomGradient(scrollTop < scrollHeight - clientHeight - 10);
+    };
+
+    caseList.addEventListener('scroll', handleScroll);
+    // Initial check
+    handleScroll();
+
+    return () => caseList.removeEventListener('scroll', handleScroll);
+  }, [step]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -177,24 +257,33 @@ const StartSessionModal = ({ onClose, onStart }) => {
                   <FileText size={18} />
                   Select Patient Case
                 </label>
-                <div className="case-list">
-                  {MOCK_CASES.map((caseItem) => (
-                    <div
-                      key={caseItem.id}
-                      className={`case-card ${formData.selectedCase?.id === caseItem.id ? 'selected' : ''}`}
-                      onClick={() => handleCaseSelect(caseItem)}
-                    >
-                      <div className="case-header">
-                        <h4 className="case-title">{caseItem.title}</h4>
-                        <span className="case-duration">{caseItem.duration} min</span>
+                {/* Wrapper with gradient overlays */}
+                <div 
+                  className={`case-list-wrapper ${showTopGradient ? 'show-top-gradient' : ''} ${showBottomGradient ? 'show-bottom-gradient' : ''}`}
+                >
+                  <div className="case-list" ref={caseListRef}>
+                    {MOCK_CASES.map((caseItem, index) => (
+                      <div
+                        key={caseItem.id}
+                        ref={(el) => (cardRefs.current[index] = el)}
+                        data-card-id={caseItem.id}
+                        className={`case-card ${formData.selectedCase?.id === caseItem.id ? 'selected' : ''} ${
+                          visibleCards.has(caseItem.id) ? 'visible' : ''
+                        }`}
+                        onClick={() => handleCaseSelect(caseItem)}
+                      >
+                        <div className="case-header">
+                          <h4 className="case-title">{caseItem.title}</h4>
+                          <span className="case-duration">{caseItem.duration} min</span>
+                        </div>
+                        <p className="case-title-thai">{caseItem.titleThai}</p>
+                        <p className="case-description">{caseItem.description}</p>
+                        <div className="case-meta">
+                          <span className="case-badge">{caseItem.specialty}</span>
+                        </div>
                       </div>
-                      <p className="case-title-thai">{caseItem.titleThai}</p>
-                      <p className="case-description">{caseItem.description}</p>
-                      <div className="case-meta">
-                        <span className="case-badge">{caseItem.specialty}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
                 {errors.case && (
                   <span className="error-text">{errors.case}</span>

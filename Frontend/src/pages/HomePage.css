@@ -1,6 +1,14 @@
+/* Add extra top padding in fullscreen mode */
+@media (display-mode: fullscreen) {
+  .home-page {
+    padding-top: 10rem !important;
+  }
+}
 .home-page {
   min-height: 100vh;
-  padding: 2rem 0;
+  padding: 5rem 0 2rem 0;
+  /* ============ GRADIENT BACKGROUND ============ */
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-light) 100%);
 }
 
 .home-content {
@@ -20,9 +28,13 @@
   gap: 1.5rem;
 }
 
+/* ============ ENHANCED LOGO WITH GLOW ============ */
 .logo-icon {
   color: var(--accent-primary);
-  animation: pulse 2s ease-in-out infinite;
+  /* Removed background for transparent SVG icon */
+  animation: glowPulse 3s ease-in-out infinite, float 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.6));
+  
 }
 
 .title-section {
@@ -31,27 +43,45 @@
   gap: 0.5rem;
 }
 
+/* ============ TYPEWRITER EFFECT FOR MAIN TITLE ============ */
 .main-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+  position: relative;
+}
+
+.main-title.typewriter {
+  overflow: hidden;
+  border-right: 3px solid var(--accent-primary);
+  white-space: nowrap;
+  animation: typewriter 3s steps(50) 0.5s forwards,
+             blink 0.75s step-end infinite;
+}
+
+.main-title.typewriter-complete {
+  border-right: none;
 }
 
 .thai-title {
   font-size: 2rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  /* ============ UPDATED: BRIGHTER COLOR ============ */
+  color: var(--text-bright);
   margin: 0;
+  text-shadow: 0 2px 4px rgba(14, 165, 233, 0.1);
 }
 
 .subtitle {
   font-size: 1.125rem;
-  color: var(--text-muted);
+  /* ============ UPDATED: BRIGHTER COLOR ============ */
+  color: var(--text-secondary);
   margin: 0.5rem 0 0;
+  font-weight: 500;
 }
 
-/* Action Cards */
+/* ============ ACTION CARDS WITH ENHANCED ANIMATIONS ============ */
 .action-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -64,7 +94,7 @@
   border-radius: 1rem;
   padding: 2rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid var(--border-color);
   display: flex;
   flex-direction: column;
@@ -73,6 +103,7 @@
   overflow: hidden;
 }
 
+/* ============ GRADIENT TOP BORDER ANIMATION ============ */
 .action-card::before {
   content: '';
   position: absolute;
@@ -80,14 +111,31 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover));
+  background: linear-gradient(90deg, var(--accent-primary), var(--medical-cyan));
   transform: scaleX(0);
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
+}
+
+/* ============ SHINE EFFECT ON HOVER ============ */
+.action-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(14, 165, 233, 0.1),
+    transparent
+  );
+  transition: left 0.6s;
 }
 
 .action-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(14, 165, 233, 0.25);
   border-color: var(--accent-primary);
 }
 
@@ -95,6 +143,11 @@
   transform: scaleX(1);
 }
 
+.action-card:hover::after {
+  left: 100%;
+}
+
+/* ============ CARD ICONS WITH GRADIENT & ROTATION ============ */
 .card-icon {
   width: 64px;
   height: 64px;
@@ -103,21 +156,32 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.action-card:hover .card-icon {
+  transform: scale(1.15) rotate(8deg);
+  animation: float 2s ease-in-out infinite;
 }
 
 .primary-card .card-icon {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
   color: white;
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
 }
 
 .secondary-card .card-icon {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
 }
 
 .tertiary-card .card-icon {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
 }
 
 .card-title {
@@ -125,6 +189,8 @@
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .card-description {
@@ -132,24 +198,48 @@
   color: var(--text-secondary);
   margin: 0;
   flex-grow: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .card-footer {
   margin-top: auto;
   padding-top: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
+/* ============ BADGE WITH SHIMMER ============ */
 .card-badge {
   display: inline-block;
   padding: 0.375rem 0.75rem;
-  background: var(--accent-light);
-  color: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-light), var(--accent-bright));
+  /* ============ UPDATED: BRIGHTER TEXT COLOR ============ */
+  color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Statistics Section */
+.card-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine 3s infinite;
+}
+
+/* ============ STATISTICS SECTION ============ */
 .stats-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -157,6 +247,7 @@
   margin-bottom: 2rem;
 }
 
+/* ============ STAT CARDS WITH STAGGER ANIMATION ============ */
 .stat-card {
   background: var(--bg-secondary);
   border-radius: 0.75rem;
@@ -165,23 +256,56 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  opacity: 0;
+  animation: slideUp 0.6s ease forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent, rgba(14, 165, 233, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .stat-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.2);
+  transform: translateY(-6px);
+  border-color: var(--accent-bright);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
 }
 
 .stat-icon {
   width: 48px;
   height: 48px;
   border-radius: 0.75rem;
-  background: var(--accent-light);
-  color: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  /* ============ UPDATED: BRIGHTER ICON COLOR ============ */
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.15) rotate(-8deg);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
 }
 
 .stat-content {
@@ -190,27 +314,56 @@
   gap: 0.25rem;
 }
 
+/* ============ UPDATED: BRIGHTER STAT VALUE WITH GRADIENT ============ */
 .stat-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Fallback for browsers that don't support background-clip */
+  color: var(--accent-primary);
+  animation: wave 2s ease-in-out infinite;
+  display: inline-block;
 }
 
 .stat-label {
   font-size: 0.875rem;
+  /* ============ UPDATED: BRIGHTER LABEL COLOR ============ */
   color: var(--text-secondary);
+  font-weight: 500;
 }
 
-/* Resume Banner */
+/* ============ RESUME BANNER WITH PULSE ANIMATION ============ */
 .resume-banner {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
   color: white;
   padding: 1.5rem 2rem;
   border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+  animation: fadeIn 0.6s ease, glowPulse 3s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.resume-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: rotateGlow 8s linear infinite;
 }
 
 .resume-content {
@@ -219,15 +372,22 @@
   gap: 0.75rem;
   font-size: 1.125rem;
   font-weight: 500;
+  position: relative;
+  z-index: 1;
 }
 
 .resume-banner .btn {
   background: white;
   color: var(--accent-primary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
 }
 
 .resume-banner .btn:hover {
   background: #f1f5f9;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive */

@@ -26,7 +26,8 @@ const SummaryPage = () => {
   }
 
   const duration = sessionData.duration || (sessionData.endTime - sessionData.startTime);
-  const durationMinutes = Math.floor(duration / 60000);
+  const durationHours = Math.floor(duration / 3600000);
+  const durationMinutes = Math.floor(duration / 60000) % 60;
   const durationSeconds = Math.floor((duration % 60000) / 1000);
   const messageCount = sessionData.messages?.length || 0;
   const studentMessages = sessionData.messages?.filter(m => m.role === 'user').length || 0;
@@ -113,7 +114,7 @@ const SummaryPage = () => {
               </div>
               <div className="metric-content">
                 <div className="metric-label">Total Duration</div>
-                <div className="metric-value">{durationMinutes}m {durationSeconds}s</div>
+                <div className="metric-value">{durationHours}h {durationMinutes}m {durationSeconds}s</div>
                 <div className="metric-detail">Active session time</div>
               </div>
             </div>
@@ -194,10 +195,10 @@ const SummaryPage = () => {
               <Home size={20} />
               Go Home
             </button>
-            <button className="btn btn-outline btn-large" onClick={() => navigate('/')}>
+            {/* <button className="btn btn-outline btn-large" onClick={() => navigate('/')}>
               <Play size={20} />
               Start New Session
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

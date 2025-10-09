@@ -14,6 +14,11 @@ const ChatbotPage = () => {
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [diagnosis, setDiagnosis] = useState('');
   const [treatmentPlan, setTreatmentPlan] = useState('');
+  
+  // ============ NEW: MAGIC BENTO SPOTLIGHT EFFECT ============
+  const chatCardRef = useRef(null);
+  const infoCardRef = useRef(null);
+  const diagnosisCardRef = useRef(null);
 
   useEffect(() => {
     // Redirect if no active session
@@ -21,6 +26,17 @@ const ChatbotPage = () => {
       navigate('/');
     }
   }, [sessionData, navigate]);
+
+  // ============ NEW: MOUSE MOVE HANDLER FOR SPOTLIGHT ============
+  const handleMouseMove = (e, ref) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    ref.current.style.setProperty('--mouse-x', `${x}px`);
+    ref.current.style.setProperty('--mouse-y', `${y}px`);
+  };
 
   const handleGoBack = () => {
     if (window.confirm('Are you sure you want to leave? Your progress will be saved.')) {
@@ -69,20 +85,39 @@ const ChatbotPage = () => {
       {/* Main Content */}
       <div className="chatbot-content">
         <div className="content-grid">
-          {/* Left: Chat Interface */}
+          {/* ============ UPDATED: Left - Chat Interface with Magic Bento ============ */}
           <div className="chat-column">
-            <ChatInterface />
+            <div 
+              ref={chatCardRef}
+              className="magic-bento-card"
+              onMouseMove={(e) => handleMouseMove(e, chatCardRef)}
+            >
+              <ChatInterface />
+            </div>
           </div>
 
-          {/* Right: Patient Info & Diagnosis */}
+          {/* ============ UPDATED: Right - Patient Info & Diagnosis with Magic Bento ============ */}
           <div className="info-column">
-            <PatientInfo caseData={sessionData.caseData} />
-            <DiagnosisSection 
-              diagnosis={diagnosis}
-              setDiagnosis={setDiagnosis}
-              treatmentPlan={treatmentPlan}
-              setTreatmentPlan={setTreatmentPlan}
-            />
+            <div 
+              ref={infoCardRef}
+              className="magic-bento-card"
+              onMouseMove={(e) => handleMouseMove(e, infoCardRef)}
+            >
+              <PatientInfo caseData={sessionData.caseData} />
+            </div>
+            
+            <div 
+              ref={diagnosisCardRef}
+              className="magic-bento-card"
+              onMouseMove={(e) => handleMouseMove(e, diagnosisCardRef)}
+            >
+              <DiagnosisSection 
+                diagnosis={diagnosis}
+                setDiagnosis={setDiagnosis}
+                treatmentPlan={treatmentPlan}
+                setTreatmentPlan={setTreatmentPlan}
+              />
+            </div>
           </div>
         </div>
       </div>
