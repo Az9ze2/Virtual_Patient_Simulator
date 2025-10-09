@@ -1,59 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, User, CreditCard, ChevronRight, FileText } from 'lucide-react';
+import { X, User, CreditCard, ChevronRight, FileText, Loader } from 'lucide-react';
+import apiService from '../../services/apiService';
 import './Modal.css';
 
-// Mock cases data
-const MOCK_CASES = [
-  {
-    id: 'CASE-001',
-    title: 'Breast Feeding Problems - Cracked Nipple',
-    titleThai: 'ปัญหาการให้นมแม่ - หัวนมแตก',
-    specialty: 'Pediatrics',
-    duration: 10,
-    description: '5-day-old infant with mother experiencing cracked nipple'
-  },
-  {
-    id: 'CASE-002',
-    title: 'Child Health Check - 9 months',
-    titleThai: 'ตรวจสุขภาพเด็ก 9 เดือน',
-    specialty: 'Pediatrics',
-    duration: 10,
-    description: '9-month-old infant routine health check'
-  },
-  {
-    id: 'CASE-003',
-    title: 'Phimosis in 2-month-old',
-    titleThai: 'ปัญหาหนังหุ้มปลายลึงค์ในเด็ก 2 เดือน',
-    specialty: 'Pediatrics',
-    duration: 10,
-    description: '2-month-old with phimosis concerns'
-  },
-  {
-    id: 'CASE-004',
-    title: 'Edema in Child',
-    titleThai: 'อาการบวมในเด็ก',
-    specialty: 'Pediatrics',
-    duration: 10,
-    description: 'Child presenting with edema symptoms'
-  },
-  {
-    id: 'CASE-005',
-    title: 'Fever in Newborn',
-    titleThai: 'ไข้ในทารกแรกเกิด',
-    specialty: 'Pediatrics',
-    duration: 10,
-    description: 'Newborn with fever evaluation'
-  },
-  {
-    id: 'CASE-006',
-    title: 'Jaundice Assessment',
-    titleThai: 'ประเมินอาการตัวเหลือง',
-    specialty: 'Pediatrics',
-    duration: 10,
-    description: 'Infant with jaundice symptoms'
-  }
-];
 
 const StartSessionModal = ({ onClose, onStart }) => {
   const { startSession } = useApp();
@@ -64,6 +14,9 @@ const StartSessionModal = ({ onClose, onStart }) => {
     selectedCase: null
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [cases, setCases] = useState([]);
+  const [loadingCases, setLoadingCases] = useState(false);
   
   // Refs and state for gradient overlay
   const caseListRef = useRef(null);
@@ -71,6 +24,37 @@ const StartSessionModal = ({ onClose, onStart }) => {
   const [showTopGradient, setShowTopGradient] = useState(false);
   const [showBottomGradient, setShowBottomGradient] = useState(true);
   const [visibleCards, setVisibleCards] = useState(new Set());
+
+  // Load cases when modal opens
+  useEffect(() => {
+    loadCases();
+  }, []);
+
+  const loadCases = async () => {
+    try {
+      setLoadingCases(true);
+      const response = await apiService.getCases();
+      if (response.success) {
+        // Transform backend cases to frontend format
+        const transformedCases = response.data.cases.map(caseItem => ({
+          id: caseItem.case_id,
+          filename: caseItem.filename,
+          title: caseItem.case_title,
+          titleThai: caseItem.case_title, // Use same title for now
+          specialty: caseItem.medical_specialty,
+          duration: caseItem.exam_duration_minutes,
+          description: `${caseItem.case_type === '01' ? 'Child/Parent case' : 'Adult patient case'} - ${caseItem.medical_specialty}`,
+          caseType: caseItem.case_type
+        }));
+        setCases(transformedCases);
+      }
+    } catch (error) {
+      console.error('Failed to load cases:', error);
+      setErrors({ api: 'Failed to load cases. Please try again.' });
+    } finally {
+      setLoadingCases(false);
+    }
+  };
 
   // Intersection Observer for scroll-triggered animations
   useEffect(() => {
@@ -159,20 +143,28 @@ const StartSessionModal = ({ onClose, onStart }) => {
     setFormData(prev => ({ ...prev, selectedCase: caseData }));
   };
 
-  const handleStartSession = () => {
+  const handleStartSession = async () => {
     if (!formData.selectedCase) {
       setErrors({ case: 'Please select a case' });
       return;
     }
 
-    const session = startSession({
-      studentName: formData.name,
-      studentId: formData.studentId,
-      caseData: formData.selectedCase,
-      caseId: formData.selectedCase.id
-    });
-
-    onStart(session);
+    try {
+      setLoading(true);
+      const userInfo = {
+        name: formData.name,
+        student_id: formData.studentId
+      };
+      
+      const session = await startSession(userInfo, formData.selectedCase.filename, {});
+      onStart(session);
+      onClose();
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      setErrors({ api: error.message || 'Failed to start session. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleOverlayClick = (e) => {
@@ -258,35 +250,48 @@ const StartSessionModal = ({ onClose, onStart }) => {
                   Select Patient Case
                 </label>
                 {/* Wrapper with gradient overlays */}
-                <div 
-                  className={`case-list-wrapper ${showTopGradient ? 'show-top-gradient' : ''} ${showBottomGradient ? 'show-bottom-gradient' : ''}`}
-                >
-                  <div className="case-list" ref={caseListRef}>
-                    {MOCK_CASES.map((caseItem, index) => (
-                      <div
-                        key={caseItem.id}
-                        ref={(el) => (cardRefs.current[index] = el)}
-                        data-card-id={caseItem.id}
-                        className={`case-card ${formData.selectedCase?.id === caseItem.id ? 'selected' : ''} ${
-                          visibleCards.has(caseItem.id) ? 'visible' : ''
-                        }`}
-                        onClick={() => handleCaseSelect(caseItem)}
-                      >
-                        <div className="case-header">
-                          <h4 className="case-title">{caseItem.title}</h4>
-                          <span className="case-duration">{caseItem.duration} min</span>
-                        </div>
-                        <p className="case-title-thai">{caseItem.titleThai}</p>
-                        <p className="case-description">{caseItem.description}</p>
-                        <div className="case-meta">
-                          <span className="case-badge">{caseItem.specialty}</span>
-                        </div>
-                      </div>
-                    ))}
+                {loadingCases ? (
+                  <div className="loading-state">
+                    <Loader className="spinning" size={24} />
+                    <p>Loading cases...</p>
                   </div>
-                </div>
+                ) : (
+                  <div 
+                    className={`case-list-wrapper ${showTopGradient ? 'show-top-gradient' : ''} ${showBottomGradient ? 'show-bottom-gradient' : ''}`}
+                  >
+                    <div className="case-list" ref={caseListRef}>
+                      {cases.map((caseItem, index) => (
+                        <div
+                          key={caseItem.id}
+                          ref={(el) => (cardRefs.current[index] = el)}
+                          data-card-id={caseItem.id}
+                          className={`case-card ${formData.selectedCase?.id === caseItem.id ? 'selected' : ''} ${
+                            visibleCards.has(caseItem.id) ? 'visible' : ''
+                          }`}
+                          onClick={() => handleCaseSelect(caseItem)}
+                        >
+                          <div className="case-header">
+                            <h4 className="case-title">{caseItem.title}</h4>
+                            <span className="case-duration">{caseItem.duration} min</span>
+                          </div>
+                          <p className="case-title-thai">{caseItem.titleThai}</p>
+                          <p className="case-description">{caseItem.description}</p>
+                          <div className="case-meta">
+                            <span className="case-badge">{caseItem.specialty}</span>
+                            <span className="case-badge case-type-badge">
+                              {caseItem.caseType === '01' ? 'Child/Parent' : 'Adult Patient'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {errors.case && (
                   <span className="error-text">{errors.case}</span>
+                )}
+                {errors.api && (
+                  <span className="error-text">{errors.api}</span>
                 )}
               </div>
             </div>
@@ -312,10 +317,19 @@ const StartSessionModal = ({ onClose, onStart }) => {
               <button 
                 className="btn btn-primary" 
                 onClick={handleStartSession}
-                disabled={!formData.selectedCase}
+                disabled={!formData.selectedCase || loading}
               >
-                Start Session
-                <ChevronRight size={18} />
+                {loading ? (
+                  <>
+                    <Loader className="spinning" size={18} />
+                    Starting Session...
+                  </>
+                ) : (
+                  <>
+                    Start Session
+                    <ChevronRight size={18} />
+                  </>
+                )}
               </button>
             </>
           )}
