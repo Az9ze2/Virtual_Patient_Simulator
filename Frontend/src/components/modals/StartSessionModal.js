@@ -272,7 +272,7 @@ const StartSessionModal = ({ onClose, onStart }) => {
                         >
                           <div className="case-header">
                             <h4 className="case-title">{caseItem.title}</h4>
-                            <span className="case-duration">{caseItem.duration} min</span>
+                            {/* <span className="case-duration">{caseItem.duration} min</span> */}
                           </div>
                           <p className="case-title-thai">{caseItem.titleThai}</p>
                           <p className="case-description">{caseItem.description}</p>
