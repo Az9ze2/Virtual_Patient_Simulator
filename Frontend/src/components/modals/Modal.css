@@ -334,7 +334,7 @@
   margin: 0;
 }
 
-.case-duration {
+/* .case-duration {
   font-size: 0.875rem;
   color: var(--text-muted);
   font-weight: 500;
@@ -342,7 +342,7 @@
   background: var(--bg-tertiary);
   border-radius: 0.375rem;
   transition: all 0.3s ease;
-}
+} */
 
 .case-card:hover .case-duration {
   background: var(--accent-primary);
