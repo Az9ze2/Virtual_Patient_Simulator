@@ -99,10 +99,23 @@ app = FastAPI(
 # Add request logging middleware
 app.add_middleware(RequestLoggingMiddleware)
 
-# Configure CORS
+# Configure CORS for both development and production
+allowed_origins = [
+    "http://localhost:3000",  # Local development
+    "http://127.0.0.1:3000",  # Local development
+    "https://your-app.vercel.app",  # Replace with your actual Vercel URL
+    # Add your custom domain here if you have one
+]
+
+# Allow all origins in development, specific origins in production
+if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("ENVIRONMENT") == "production":
+    cors_origins = [origin for origin in allowed_origins if not origin.startswith("http://localhost")]
+else:
+    cors_origins = allowed_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # React dev server
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],

@@ -2,14 +2,34 @@ import axios from 'axios';
 
 class ApiService {
   constructor() {
+    // Determine API base URL based on environment
+    const getApiUrl = () => {
+      // Check if we have an explicit API URL set
+      if (process.env.REACT_APP_API_URL) {
+        return process.env.REACT_APP_API_URL;
+      }
+      
+      // Fallback based on NODE_ENV
+      if (process.env.NODE_ENV === 'production') {
+        // In production, this should be set via environment variables
+        return 'https://your-railway-app.railway.app'; // Replace with your actual Railway URL
+      } else {
+        // Local development
+        return 'http://localhost:8000';
+      }
+    };
+
     // Set up axios defaults
     this.api = axios.create({
-      baseURL: process.env.NODE_ENV === 'production' ? 'http://localhost:8000' : '',
+      baseURL: getApiUrl(),
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
       },
     });
+    
+    // Log the API URL being used (helpful for debugging)
+    console.log('🌐 API Base URL:', getApiUrl());
 
     // Add request interceptor for logging
     this.api.interceptors.request.use(
