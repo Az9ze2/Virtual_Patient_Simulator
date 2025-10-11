@@ -96,6 +96,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+print("✅ FastAPI app initialized and ready to start...")
+
 # Add request logging middleware
 app.add_middleware(RequestLoggingMiddleware)
 
@@ -142,24 +144,12 @@ async def root():
         "status": "running"
     }
 
-@app.get("/health")
+@app.get("/health", status_code=200)
 async def health_check():
-    """Health check endpoint"""
-    import os
-    return {
-        "status": "healthy",
-        "message": "FastAPI is running",
-        "port": os.getenv("PORT", "8000"),
-        "has_openai_key": bool(os.getenv("OPENAI_API_KEY")),
-        "python_path": os.getcwd()
-    }
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn
+    import os
     port = int(os.getenv("PORT", 8000))
-    uvicorn.run(
-        "app:app",
-        host="0.0.0.0",  # must be 0.0.0.0 for Railway
-        port=port,
-        log_level="info"
-    )
+    uvicorn.run("api.app:app", host="0.0.0.0", port=port, log_level="info")
