@@ -145,14 +145,21 @@ async def root():
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy"}
+    import os
+    return {
+        "status": "healthy",
+        "message": "FastAPI is running",
+        "port": os.getenv("PORT", "8000"),
+        "has_openai_key": bool(os.getenv("OPENAI_API_KEY")),
+        "python_path": os.getcwd()
+    }
 
 if __name__ == "__main__":
     import uvicorn
+    port = int(os.getenv("PORT", 8000))
     uvicorn.run(
         "app:app",
-        host="127.0.0.1",
-        port=8000,
-        reload=True,
+        host="0.0.0.0",  # must be 0.0.0.0 for Railway
+        port=port,
         log_level="info"
     )
