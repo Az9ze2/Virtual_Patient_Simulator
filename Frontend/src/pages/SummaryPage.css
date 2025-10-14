@@ -495,7 +495,7 @@
 }
 
 /* Responsive */
-@media (max-width: 968px) {
+/* @media (max-width: 968px) {
   .summary-title {
     font-size: 2rem;
   }
@@ -539,4 +539,4 @@
   .metric-value {
     font-size: 1.5rem;
   }
-}
+} */

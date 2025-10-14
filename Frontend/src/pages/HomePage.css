@@ -391,7 +391,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .main-title {
     font-size: 1.75rem;
   }
@@ -422,4 +422,4 @@
   .resume-content {
     flex-direction: column;
   }
-}
+} */
