@@ -98,7 +98,8 @@ app = FastAPI(
 
 print("✅ FastAPI app initialized and ready to start...")
 
-
+# Add request logging middleware
+app.add_middleware(RequestLoggingMiddleware)
 
 # -----------------------------
 # 🌍 Dynamic CORS Configuration
