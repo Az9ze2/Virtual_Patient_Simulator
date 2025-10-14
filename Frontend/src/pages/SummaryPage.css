@@ -148,7 +148,7 @@
 }
 
 .card-section-title {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 1.5rem;
@@ -201,7 +201,7 @@
 }
 
 .info-label {
-  font-size: 0.975rem;
+  font-size: 1.175rem;
   color: var(--text-muted);
   font-weight: 500;
   text-transform: uppercase;
@@ -302,7 +302,7 @@
 }
 
 .metric-label {
-  font-size: 0.975rem;
+  font-size: 1.175rem;
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -334,7 +334,7 @@
 }
 
 .assessment-label {
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 0.75rem;
@@ -342,7 +342,7 @@
 
 /* ============ UPDATED: ASSESSMENT TEXT WITH BORDER ANIMATION ============ */
 .assessment-text {
-  font-size: 0.9375rem;
+  font-size: 1.1375rem;
   color: var(--text-primary);
   line-height: 1.6;
   margin: 0;
@@ -425,20 +425,20 @@
 }
 
 .preview-role {
-  font-size: 0.8525rem;
+  font-size: 1.1525rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .preview-text {
-  font-size: 0.975rem;
+  font-size: 1.175rem;
   color: var(--text-primary);
   line-height: 1.5;
 }
 
 .preview-more {
   text-align: center;
-  font-size: 0.975rem;
+  font-size: 1.175rem;
   color: var(--text-muted);
   padding: 0.75rem;
   background: var(--bg-secondary);
@@ -470,7 +470,7 @@
 
 .btn-large {
   padding: 1rem 2rem;
-  font-size: 1rem;
+  font-size: 1.215rem;
 }
 
 .error-state {
@@ -489,7 +489,7 @@
 }
 
 .error-state p {
-  font-size: 1.125rem;
+  font-size: 1.325rem;
   color: var(--text-secondary);
   margin: 0;
 }
