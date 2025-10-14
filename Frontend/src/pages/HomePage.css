@@ -74,7 +74,7 @@
 }
 
 .subtitle {
-  font-size: 1.125rem;
+  font-size: 1.225rem;
   /* ============ UPDATED: BRIGHTER COLOR ============ */
   color: var(--text-secondary);
   margin: 0.5rem 0 0;
@@ -185,7 +185,7 @@
 }
 
 .card-title {
-  font-size: 1.5rem;
+  font-size: 1.9rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -194,7 +194,7 @@
 }
 
 .card-description {
-  font-size: 1rem;
+  font-size: 1.12rem;
   color: var(--text-secondary);
   margin: 0;
   flex-grow: 1;
@@ -217,7 +217,7 @@
   /* ============ UPDATED: BRIGHTER TEXT COLOR ============ */
   color: var(--text-primary);
   border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   font-weight: 600;
   position: relative;
   overflow: hidden;
@@ -370,7 +370,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 1.125rem;
+  font-size: 1.225rem;
   font-weight: 500;
   position: relative;
   z-index: 1;

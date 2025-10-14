@@ -59,7 +59,7 @@
 
 /* ============ SESSION TITLE WITH ANIMATION ============ */
 .session-title {
-  font-size: 1.125rem;
+  font-size: 1.225rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -67,7 +67,7 @@
 }
 
 .session-meta {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-secondary);
   margin: 0;
 }
