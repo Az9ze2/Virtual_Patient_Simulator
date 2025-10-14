@@ -98,8 +98,7 @@ app = FastAPI(
 
 print("✅ FastAPI app initialized and ready to start...")
 
-# Add request logging middleware
-app.add_middleware(RequestLoggingMiddleware)
+
 
 # -----------------------------
 # 🌍 Dynamic CORS Configuration
@@ -123,13 +122,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-)
+# Add request logging middleware
+app.add_middleware(RequestLoggingMiddleware)
 
 # Include routers
 app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
