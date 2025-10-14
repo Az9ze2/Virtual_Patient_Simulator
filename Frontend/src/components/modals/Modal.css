@@ -40,7 +40,7 @@
 }
 
 .modal-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-muted);
   margin: 0;
 }
@@ -141,7 +141,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -328,7 +328,7 @@
 }
 
 .case-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -350,13 +350,13 @@
 }
 
 .case-title-thai {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-secondary);
   margin: 0.25rem 0;
 }
 
 .case-description {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-secondary);
   margin: 0.5rem 0;
   line-height: 1.5;
@@ -369,7 +369,7 @@
 }
 
 .case-badge {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   padding: 0.25rem 0.625rem;
   background: var(--bg-tertiary);
   color: var(--text-secondary);
@@ -429,20 +429,20 @@
 }
 
 .upload-text-primary {
-  font-size: 1.125rem;
+  font-size: 1.225rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
 }
 
 .upload-text-secondary {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-secondary);
   margin: 0;
 }
 
 .upload-text-hint {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-muted);
   margin: 0;
 }
@@ -511,7 +511,7 @@
 }
 
 .progress-text {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   font-weight: 600;
   color: var(--accent-primary);
 }
@@ -544,7 +544,7 @@
   padding: 0.75rem;
   background: var(--bg-tertiary);
   border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.975rem;
 }
 
 .icon-success {
@@ -568,7 +568,7 @@
 
 .json-preview pre {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.95rem;
   color: var(--text-primary);
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -636,7 +636,7 @@
 }
 
 .setting-value {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--accent-primary);
   font-weight: 700;
   padding: 0.25rem 0.625rem;
@@ -645,7 +645,7 @@
 }
 
 .setting-hint {
-  font-size: 0.8125rem;
+  font-size: 0.8325rem;
   color: var(--text-muted);
   margin: 0;
 }
@@ -781,7 +781,7 @@ input:checked + .switch-label .switch-slider:before {
 }
 
 .toggle-label {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -838,7 +838,7 @@ input:checked + .switch-label .switch-slider:before {
   }
 
   .progress-label {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
 
   .case-list {

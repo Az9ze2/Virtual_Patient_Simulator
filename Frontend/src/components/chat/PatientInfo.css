@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.125rem;
+  font-size: 1.225rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -66,7 +66,7 @@
 }
 
 .hint-text {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--text-muted);
   font-weight: 500;
   opacity: 0.8;
@@ -201,7 +201,7 @@
 }
 
 .patient-info-expanded .modal-label {
-  font-size: 0.7rem;
+  font-size: 0.725rem;
   color: var(--text-muted);
   font-weight: 500;
   text-transform: uppercase;
@@ -252,7 +252,7 @@
 }
 
 .patient-info-expanded .vital-card-label {
-  font-size: 0.7rem;
+  font-size: 0.725rem;
   color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
@@ -292,14 +292,14 @@
 }
 
 .patient-info-expanded .measurement-label {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
 }
 
 .patient-info-expanded .measurement-value {
-  font-size: 0.875rem;
+  font-size: 0.975rem;
   color: var(--accent-primary);
   font-weight: 700;
 }
@@ -331,7 +331,7 @@
 }
 
 .patient-info-expanded .exam-detail-text {
-  font-size: 0.8125rem;
+  font-size: 0.8325rem;
   color: var(--text-primary);
   line-height: 1.5;
 }
@@ -368,7 +368,7 @@
 }
 
 .patient-info-expanded .history-item-text {
-  font-size: 0.8125rem;
+  font-size: 0.8325rem;
   color: var(--text-primary);
   line-height: 1.5;
 }

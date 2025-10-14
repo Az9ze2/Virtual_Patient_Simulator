@@ -59,7 +59,7 @@
 
 /* ============ SESSION TITLE WITH ANIMATION ============ */
 .session-title {
-  font-size: 1.125rem;
+  font-size: 1.425rem;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -67,7 +67,7 @@
 }
 
 .session-meta {
-  font-size: 0.875rem;
+  font-size: 1.175rem;
   color: var(--text-secondary);
   margin: 0;
 }
@@ -380,7 +380,7 @@
   padding: 0.875rem 1rem;
   border: 2px solid var(--border-color);
   border-radius: 0.75rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   transition: all 0.3s ease;
@@ -590,21 +590,21 @@
    ============================================ */
 
 /* Large Desktop: 1600px+ */
-@media (min-width: 1600px) {
+/* @media (min-width: 1600px) {
   .content-grid {
     grid-template-columns: minmax(800px, 1fr) 450px;
   }
-}
+} */
 
 /* Medium Desktop: 1400-1599px */
-@media (max-width: 1599px) and (min-width: 1400px) {
+/* @media (max-width: 1599px) and (min-width: 1400px) {
   .content-grid {
     grid-template-columns: minmax(700px, 1fr) 400px;
   }
-}
+} */
 
 /* Small Desktop/Large Laptop: 1200-1399px */
-@media (max-width: 1399px) and (min-width: 1200px) {
+/* @media (max-width: 1399px) and (min-width: 1200px) {
   .content-grid {
     grid-template-columns: minmax(650px, 1fr) 380px;
   }
@@ -612,20 +612,20 @@
   .chatbot-content {
     padding: 1.25rem;
   }
-}
+} */
 
 /* Standard Laptop: 1024-1199px */
-@media (max-width: 1199px) and (min-width: 1024px) {
+/* @media (max-width: 1199px) and (min-width: 1024px) {
   .content-grid {
     grid-template-columns: minmax(600px, 1fr) 350px;
   }
   
   .chatbot-content {
     padding: 1rem;
-  }
+  } */
   
   /* Slightly reduce box heights for smaller screens */
-  .chat-column .magic-bento-card {
+  /* .chat-column .magic-bento-card {
     height: 600px;
     max-height: 600px;
     min-height: 600px;
@@ -644,4 +644,4 @@
     min-height: 320px;
     flex: 0 0 320px;
   }
-}
+} */
