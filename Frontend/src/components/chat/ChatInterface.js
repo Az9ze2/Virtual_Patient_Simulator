@@ -10,14 +10,28 @@ const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const inputRef = useRef(null); // ✅ reference to chat input
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Scrolls when messages change
   useEffect(() => {
     scrollToBottom();
   }, [sessionData?.messages]);
+
+  // ✅ Auto focus when component loads
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  // ✅ Auto focus after model replies (messages updated)
+  useEffect(() => {
+    if (!isLoading) {
+      inputRef.current?.focus();
+    }
+  }, [isLoading, sessionData?.messages]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -67,7 +81,6 @@ const ChatInterface = () => {
       setIsLoading(false);
     }
   };
-
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -139,6 +152,7 @@ const ChatInterface = () => {
 
       <form className="chat-input-form" onSubmit={handleSendMessage}>
         <input
+          ref={inputRef} // ✅ auto-focus target
           type="text"
           className="chat-input"
           placeholder="Type your message to the patient..."
