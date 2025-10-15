@@ -10,23 +10,20 @@ const ChatInterface = () => {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
-  const inputRef = useRef(null); // ✅ reference to chat input
+  const inputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Scrolls when messages change
   useEffect(() => {
     scrollToBottom();
   }, [sessionData?.messages]);
 
-  // ✅ Auto focus when component loads
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // ✅ Auto focus after model replies (messages updated)
   useEffect(() => {
     if (!isLoading) {
       inputRef.current?.focus();
@@ -40,7 +37,6 @@ const ChatInterface = () => {
     const userMessage = input.trim();
     setInput('');
 
-    // Add user message
     addMessage({
       role: 'user',
       content: userMessage,
@@ -53,28 +49,37 @@ const ChatInterface = () => {
       const response = await apiService.sendMessage(sessionData.sessionId, userMessage);
       
       if (response.success) {
-        // Add assistant message
         addMessage({
           role: 'assistant',
           content: response.data.response,
           timestamp: Date.now()
         });
 
-        // Update token usage from backend
-        if (response.data.token_usage) {
+        const tokens = response.data.token_usage;
+        if (tokens) {
+          // Accumulate tokens for the entire session
+          const currentTokenUsage = sessionData?.tokenUsage || {
+            inputTokens: 0,
+            outputTokens: 0,
+            totalTokens: 0
+          };
+          
           updateSession({
-            tokenUsage: response.data.token_usage
+            tokenUsage: {
+              inputTokens: currentTokenUsage.inputTokens + tokens.input_tokens,
+              outputTokens: currentTokenUsage.outputTokens + tokens.output_tokens,
+              totalTokens: currentTokenUsage.totalTokens + tokens.total_tokens
+            }
           });
         }
       } else {
         throw new Error(response.error || 'Failed to get response');
       }
-
     } catch (error) {
       console.error('Error sending message:', error);
       addMessage({
         role: 'system',
-        content: `ขอโทษค่ะ เกิดข้อผิดพลาด: ${error.message}`,
+        content: `ข้อผิดพลาด เกิดข้อผิดพลาด: ${error.message}`,
         timestamp: Date.now()
       });
     } finally {
@@ -100,8 +105,13 @@ const ChatInterface = () => {
             <p className="chat-subtitle">Mother Simulator</p>
           </div>
         </div>
-        <div className="message-count">
-          {sessionData?.messages?.length || 0} messages
+        <div className="header-stats">
+          <div className="message-count">
+            💬 {sessionData?.messages?.length || 0} messages
+          </div>
+          <div className="token-count">
+            📊 {sessionData?.tokenUsage?.totalTokens || 0} tokens
+          </div>
         </div>
       </div>
 
@@ -152,7 +162,7 @@ const ChatInterface = () => {
 
       <form className="chat-input-form" onSubmit={handleSendMessage}>
         <input
-          ref={inputRef} // ✅ auto-focus target
+          ref={inputRef}
           type="text"
           className="chat-input"
           placeholder="Type your message to the patient..."
