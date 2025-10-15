@@ -22,7 +22,7 @@ class ApiService {
     // Set up axios defaults
     this.api = axios.create({
       baseURL: getApiUrl(),
-      timeout: 30000,
+      timeout: 60000, // Increased to 1 minute for regular operations
       headers: {
         'Content-Type': 'application/json',
       },
@@ -102,6 +102,15 @@ class ApiService {
     const response = await this.api.post('/api/sessions/start', {
       user_info: userInfo,
       case_filename: caseFilename,
+      config: config
+    });
+    return response.data;
+  }
+
+  async startSessionWithUploadedCase(userInfo, caseData, config = {}) {
+    const response = await this.api.post('/api/sessions/start-uploaded-case', {
+      user_info: userInfo,
+      case_data: caseData,
       config: config
     });
     return response.data;
@@ -196,6 +205,7 @@ class ApiService {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      timeout: 300000, // 5 minutes timeout for ChatGPT processing
     };
     
     if (onUploadProgress) {

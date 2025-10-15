@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 import { X, Upload, FileText, CheckCircle, AlertCircle, Eye, Edit } from 'lucide-react';
+import apiService from '../../services/apiService';
 import './Modal.css';
 
 const UploadDocumentModal = ({ onClose, onComplete }) => {
-  const { startSession } = useApp();
+  const { startSessionWithUploadedCase } = useApp();
   const [step, setStep] = useState(1); // 1: upload, 2: processing, 3: preview
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -46,62 +47,94 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
     e.preventDefault();
   };
 
-  const simulateUpload = () => {
+  const uploadDocument = async () => {
+    if (!file) return;
+    
     setStep(2);
     setUploadProgress(0);
+    setError(null);
     
-    // Simulate progress
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          // Simulate extraction complete
-          setTimeout(() => {
-            setExtractedData({
-              case_id: 'CASE-UPLOAD-001',
-              case_metadata: {
-                case_title: 'Uploaded Case: Pediatric Assessment',
-                medical_specialty: 'Pediatrics',
-                exam_type: 'History Taking + Physical Examination',
-                exam_duration_minutes: 15
-              },
-              examiner_view: {
-                patient_background: {
-                  name: 'ด.ช.สมชาย ใจดี',
-                  age: { value: 6, unit: 'months' },
-                  sex: 'Male',
-                  chief_complaint: 'Fever for 2 days'
-                }
-              },
-              validation: {
-                complete: true,
-                missingFields: []
-              }
-            });
-            setValidationStatus({
-              caseId: true,
-              patientInfo: true,
-              chiefComplaint: true,
-              physicalExam: false
-            });
-            setStep(3);
-          }, 500);
-          return 100;
+    try {
+      // Start with file upload progress
+      let uploadComplete = false;
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (!uploadComplete && prev < 20) {
+            return prev + 2; // File upload: 0-20%
+          } else if (uploadComplete && prev < 95) {
+            return prev + 0.5; // AI processing: 20-95% (very slow for 3-4 min)
+          }
+          return prev;
+        });
+      }, 1000); // 1 second intervals for better UX during long processing
+      
+      // Upload document and process with ChatGPT
+      const response = await apiService.uploadDocument(file, (progressEvent) => {
+        if (progressEvent.loaded === progressEvent.total) {
+          uploadComplete = true;
+          setUploadProgress(20); // File uploaded, now processing
         }
-        return prev + 5;
       });
-    }, 100);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+      if (response.success && response.data.extracted_data) {
+        // Set the real extracted data from ChatGPT
+        setExtractedData(response.data.extracted_data);
+        
+        // Generate validation status based on the main schema topics
+        const validationStatus = generateValidationStatus(response.data.extracted_data);
+        setValidationStatus(validationStatus);
+        
+        setStep(3);
+      } else {
+        throw new Error(response.message || 'Failed to process document');
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      let errorMessage = 'Failed to upload and process document';
+      
+      if (err.message.includes('timeout')) {
+        errorMessage = 'Processing is taking longer than expected. The document might still be processing in the background. Please try again in a moment.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+      setStep(1);
+      setUploadProgress(0);
+    }
+  };
+  
+  const generateValidationStatus = (data) => {
+    return {
+      case_id: !!(data.case_id),
+      case_metadata: !!(data.case_metadata && data.case_metadata.case_title),
+      examiner_view: !!(data.examiner_view && data.examiner_view.patient_background),
+      simulation_view: !!(data.simulation_view && data.simulation_view.simulator_profile)
+    };
   };
 
-  const handleStartSession = () => {
-    const session = startSession({
-      studentName: 'Current User',
-      studentId: 'TEMP-ID',
-      caseData: extractedData,
-      caseId: extractedData.case_id,
-      isUploadedCase: true
-    });
-    onComplete(session);
+  const handleStartSession = async () => {
+    try {
+      const userInfo = {
+        name: 'Current User',
+        student_id: 'TEMP-ID',
+        email: 'user@example.com'
+      };
+      
+      const session = await startSessionWithUploadedCase(
+        userInfo,
+        extractedData,
+        {}
+      );
+      
+      onComplete(session);
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      setError('Failed to start session: ' + error.message);
+    }
   };
 
   const handleOverlayClick = (e) => {
@@ -180,7 +213,10 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
               <div className="processing-content">
                 <div className="spinner-large"></div>
                 <h3>Processing Document</h3>
-                <p>Extracting patient information from your document...</p>
+                <p>Extracting patient information using ChatGPT AI...</p>
+                <p className="text-muted" style={{ fontSize: '0.9em', marginTop: '0.5rem' }}>
+                  This may take 3-4 minutes depending on document complexity. Please be patient.
+                </p>
                 <div className="progress-bar">
                   <div 
                     className="progress-fill" 
@@ -188,6 +224,13 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
                   ></div>
                 </div>
                 <p className="progress-text">{uploadProgress}%</p>
+                
+                {error && (
+                  <div className="error-message" style={{ marginTop: '1rem' }}>
+                    <AlertCircle size={18} />
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -198,20 +241,32 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
                 <h3>Validation Status</h3>
                 <div className="validation-items">
                   <div className="validation-item">
-                    <CheckCircle size={18} className="icon-success" />
-                    <span>Case ID: Found</span>
+                    {validationStatus?.case_id ? 
+                      <CheckCircle size={18} className="icon-success" /> : 
+                      <AlertCircle size={18} className="icon-warning" />
+                    }
+                    <span>Case ID: {validationStatus?.case_id ? 'Found' : 'Missing'}</span>
                   </div>
                   <div className="validation-item">
-                    <CheckCircle size={18} className="icon-success" />
-                    <span>Patient Information: Complete</span>
+                    {validationStatus?.case_metadata ? 
+                      <CheckCircle size={18} className="icon-success" /> : 
+                      <AlertCircle size={18} className="icon-warning" />
+                    }
+                    <span>Case Metadata: {validationStatus?.case_metadata ? 'Complete' : 'Incomplete'}</span>
                   </div>
                   <div className="validation-item">
-                    <CheckCircle size={18} className="icon-success" />
-                    <span>Chief Complaint: Found</span>
+                    {validationStatus?.examiner_view ? 
+                      <CheckCircle size={18} className="icon-success" /> : 
+                      <AlertCircle size={18} className="icon-warning" />
+                    }
+                    <span>Examiner View: {validationStatus?.examiner_view ? 'Complete' : 'Incomplete'}</span>
                   </div>
                   <div className="validation-item">
-                    <AlertCircle size={18} className="icon-warning" />
-                    <span>Physical Examination: Incomplete</span>
+                    {validationStatus?.simulation_view ? 
+                      <CheckCircle size={18} className="icon-success" /> : 
+                      <AlertCircle size={18} className="icon-warning" />
+                    }
+                    <span>Simulation View: {validationStatus?.simulation_view ? 'Complete' : 'Incomplete'}</span>
                   </div>
                 </div>
               </div>
@@ -221,6 +276,13 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
                 <div className="json-preview">
                   <pre>{JSON.stringify(extractedData, null, 2)}</pre>
                 </div>
+                
+                {error && (
+                  <div className="error-message" style={{ marginTop: '1rem' }}>
+                    <AlertCircle size={18} />
+                    {error}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -234,7 +296,7 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
               </button>
               <button 
                 className="btn btn-primary" 
-                onClick={simulateUpload}
+                onClick={uploadDocument}
                 disabled={!file}
               >
                 <Upload size={18} />

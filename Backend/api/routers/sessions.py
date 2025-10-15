@@ -16,8 +16,8 @@ from fastapi.responses import StreamingResponse
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from api.models.schemas import (
-    StartSessionRequest, APIResponse, SessionSummary,
-    UpdateDiagnosisRequest, CaseInfo, CaseType
+    StartSessionRequest, StartSessionWithUploadedCaseRequest, APIResponse, SessionSummary,
+    UpdateDiagnosisRequest, CaseInfo, CaseType, UserInfo
 )
 from api.utils.session_manager import session_manager
 
@@ -62,6 +62,54 @@ async def start_session(request: StartSessionRequest):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to start session: {str(e)}"
+        )
+
+@router.post("/start-uploaded-case")
+async def start_session_with_uploaded_case(request: StartSessionWithUploadedCaseRequest):
+    """
+    Start a new interview session with uploaded case data
+    """
+    try:
+        user_info = request.user_info
+        case_data = request.case_data
+        config = request.config
+        
+        # Create case info from uploaded data
+        case_metadata = case_data.get('case_metadata', {})
+        case_info = CaseInfo(
+            filename="uploaded_case.json",
+            case_id=case_data.get('case_id', 'UPLOADED-CASE'),
+            case_title=case_metadata.get('case_title', 'Uploaded Case'),
+            case_type=_determine_case_type_from_data(case_data),
+            medical_specialty=case_metadata.get('medical_specialty', ''),
+            exam_duration_minutes=case_metadata.get('exam_duration_minutes', 15)
+        )
+        
+        # Create session in session manager
+        session_id = session_manager.create_session(
+            user_info=user_info,
+            case_info=case_info,
+            config=config,
+            case_data=case_data
+        )
+        
+        return APIResponse(
+            success=True,
+            message="Session started successfully with uploaded case",
+            data={
+                "session_id": session_id,
+                "case_info": case_info.dict(),
+                "user_info": user_info.dict(),
+                "examiner_view": case_data.get("examiner_view", {})
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to start session with uploaded case: {str(e)}"
         )
 
 @router.get("/info/{session_id}")
@@ -291,6 +339,28 @@ async def get_active_sessions():
             status_code=500,
             detail=f"Failed to get active sessions: {str(e)}"
         )
+
+def _determine_case_type_from_data(case_data: dict) -> CaseType:
+    """
+    Determine case type from case data based on patient age
+    """
+    try:
+        age_info = case_data["examiner_view"]["patient_background"]["age"]
+        
+        # Handle both dict and plain int
+        if isinstance(age_info, dict) and "value" in age_info:
+            age = int(age_info["value"])
+        elif isinstance(age_info, (int, float)):
+            age = int(age_info)
+        else:
+            # Default to child if age format not recognized
+            return CaseType.CHILD
+        
+        return CaseType.ADULT if age >= 18 else CaseType.CHILD
+        
+    except Exception:
+        # Default to child case on error
+        return CaseType.CHILD
 
 def _load_case_data(filename: str):
     """
