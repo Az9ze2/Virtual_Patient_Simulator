@@ -1,7 +1,37 @@
+/* ============================================
+   FIXED LAYOUT BASE - NO RESPONSIVE CHANGES
+   Everything locked to exact pixel dimensions
+   ============================================ */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  /* CRITICAL: Disable all user zoom and scaling */
+  touch-action: none;
+  -ms-touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* CRITICAL: Disable browser zoom */
+html {
+  /* Fixed font size - NO viewport scaling */
+  font-size: 16px !important;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  overflow: hidden;
 }
 
 body {
@@ -13,29 +43,41 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+  /* CRITICAL: Force fixed size */
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  overflow: hidden !important;
+}
+
+/* CRITICAL: Prevent any zoom on all elements */
+#root {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  overflow: hidden !important;
+  transform: scale(1) !important;
+  transform-origin: 0 0 !important;
 }
 
 :root {
-  /* ============ UPDATED: BRIGHTER MEDICAL THEME COLORS ============ */
+  /* ============ MEDICAL THEME COLORS ============ */
   /* Light mode colors - Medical Blue Theme */
   --bg-primary: #f0f9ff;
   --bg-secondary: #ffffff;
   --bg-tertiary: #e0f2fe;
   --text-primary: #0c4a6e;
   --text-secondary: #0369a1;
-  /* ============ UPDATED: BRIGHTER MUTED TEXT ============ */
   --text-muted: #0891b2;
   --border-color: #bae6fd;
   --accent-primary: #0ea5e9;
   --accent-hover: #0284c7;
-  /* ============ UPDATED: BRIGHTER ACCENT LIGHT ============ */
   --accent-light: #bae6fd;
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
   --medical-cyan: #06b6d4;
   --medical-purple: #8b5cf6;
-  /* ============ NEW: BRIGHT ACCENT COLOR ============ */
   --accent-bright: #38bdf8;
   --text-bright: #0284c7;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -45,7 +87,7 @@ body {
 }
 
 [data-theme="dark"] {
-  /* ============ UPDATED: DARK MODE MEDICAL THEME ============ */
+  /* Dark mode colors */
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
   --bg-tertiary: #334155;
@@ -69,7 +111,7 @@ code {
   font-family: 'Fira Code', 'Courier New', monospace;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - FIXED SIZE */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -88,7 +130,7 @@ code {
   background: var(--text-secondary);
 }
 
-/* ============ ENHANCED ANIMATIONS ============ */
+/* ============ ANIMATIONS ============ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -120,7 +162,6 @@ code {
   }
 }
 
-/* ============ TYPEWRITER ANIMATION ============ */
 @keyframes typewriter {
   from {
     width: 0;
@@ -136,7 +177,6 @@ code {
   }
 }
 
-/* ============ SHINE ANIMATION FOR BUTTONS ============ */
 @keyframes shine {
   0% {
     transform: translateX(-100%) rotate(45deg);
@@ -146,7 +186,6 @@ code {
   }
 }
 
-/* ============ FOLDER OPEN ANIMATION ============ */
 @keyframes folderOpen {
   0% {
     transform: rotateX(0deg) scale(1);
@@ -159,7 +198,6 @@ code {
   }
 }
 
-/* ============ SLIDE IN FROM LEFT ============ */
 @keyframes slideInLeft {
   from {
     transform: translateX(-30px);
@@ -171,7 +209,6 @@ code {
   }
 }
 
-/* ============ SCALE IN ============ */
 @keyframes scaleIn {
   from {
     transform: scale(0.8);
@@ -183,7 +220,6 @@ code {
   }
 }
 
-/* ============ GLOW PULSE ============ */
 @keyframes glowPulse {
   0%, 100% {
     box-shadow: 0 0 5px var(--accent-primary), 0 0 10px var(--accent-primary);
@@ -193,7 +229,6 @@ code {
   }
 }
 
-/* ============ NEW: BOUNCE IN ============ */
 @keyframes bounceIn {
   0% {
     transform: scale(0.3);
@@ -211,7 +246,6 @@ code {
   }
 }
 
-/* ============ NEW: FLOAT ============ */
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -221,7 +255,6 @@ code {
   }
 }
 
-/* ============ NEW: ROTATE GLOW ============ */
 @keyframes rotateGlow {
   0% {
     transform: rotate(0deg);
@@ -231,7 +264,6 @@ code {
   }
 }
 
-/* ============ NEW: SLIDE UP ============ */
 @keyframes slideUp {
   from {
     transform: translateY(30px);
@@ -243,7 +275,6 @@ code {
   }
 }
 
-/* ============ NEW: SHIMMER ============ */
 @keyframes shimmer {
   0% {
     background-position: -1000px 0;
@@ -253,7 +284,6 @@ code {
   }
 }
 
-/* ============ NEW: WAVE ============ */
 @keyframes wave {
   0%, 100% {
     transform: translateY(0) scaleY(1);
@@ -261,6 +291,11 @@ code {
   50% {
     transform: translateY(-5px) scaleY(1.1);
   }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .fade-in {
@@ -271,49 +306,54 @@ code {
   animation: slideIn 0.5s ease-out forwards;
 }
 
-/* ============ ANIMATED LIST CLASS ============ */
 .animate-list-item {
   animation: slideInLeft 0.5s ease-out forwards;
   opacity: 0;
 }
 
-/* ============ SCALE ANIMATION CLASS ============ */
 .scale-in {
   animation: scaleIn 0.5s ease-out forwards;
 }
 
-/* ============ NEW: BOUNCE IN CLASS ============ */
 .bounce-in {
   animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
-/* ============ NEW: FLOAT CLASS ============ */
 .float {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Utility classes */
+/* ============ FIXED CONTAINER - NO RESPONSIVE ============ */
 .container {
+  /* FIXED WIDTH: Change this value to adjust overall width */
   max-width: 1400px;
+  width: 1400px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 24px;
+  /* CRITICAL: Prevent container from flexing */
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
-/* ============ ENHANCED BUTTON WITH SHINE EFFECT ============ */
+/* ============ FIXED BUTTONS ============ */
 .btn {
-  padding: 0.75rem 1.5rem;
+  /* FIXED SIZE */
+  padding: 12px 24px;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 8px;
   text-decoration: none;
   position: relative;
   overflow: hidden;
+  /* CRITICAL: Prevent button from resizing */
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .btn::before {
@@ -382,11 +422,11 @@ code {
   border-color: var(--text-secondary);
 }
 
-/* ============ CARD WITH HOVER GLOW ============ */
+/* ============ FIXED CARDS ============ */
 .card {
   background-color: var(--bg-secondary);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
+  border-radius: 12px;
+  padding: 24px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
@@ -399,7 +439,6 @@ code {
   border-color: var(--accent-primary);
 }
 
-/* ============ MAGIC BENTO SPOTLIGHT EFFECT ============ */
 .card.magic-bento {
   background: var(--bg-secondary);
   position: relative;
@@ -427,12 +466,13 @@ code {
   opacity: 1;
 }
 
+/* ============ FIXED INPUTS ============ */
 .input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   border: 2px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 16px;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   transition: all 0.2s ease;
@@ -450,10 +490,10 @@ code {
 
 .select {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   border: 2px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 16px;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   cursor: pointer;
@@ -468,10 +508,10 @@ code {
 
 .textarea {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 12px 16px;
   border: 2px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 1rem;
+  border-radius: 8px;
+  font-size: 16px;
   background-color: var(--bg-secondary);
   color: var(--text-primary);
   resize: vertical;
@@ -486,7 +526,7 @@ code {
   box-shadow: 0 0 0 3px var(--accent-light);
 }
 
-/* Modal overlay */
+/* ============ FIXED MODAL ============ */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -498,23 +538,26 @@ code {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 1rem;
+  padding: 16px;
   animation: fadeIn 0.2s ease-out;
 }
 
 .modal {
   background-color: var(--bg-secondary);
-  border-radius: 1rem;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 32px;
+  /* FIXED WIDTH */
   max-width: 600px;
-  width: 100%;
+  width: 600px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-xl);
   animation: scaleIn 0.3s ease-out;
+  /* CRITICAL: Prevent modal from resizing */
+  flex-shrink: 0;
 }
 
-/* Loading spinner */
+/* ============ FIXED SPINNER ============ */
 .spinner {
   border: 3px solid var(--border-color);
   border-top: 3px solid var(--accent-primary);
@@ -524,26 +567,23 @@ code {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* Toast notifications */
+/* ============ FIXED TOAST ============ */
 .toast {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 32px;
+  right: 32px;
   background-color: var(--bg-secondary);
-  padding: 1rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: 16px 24px;
+  border-radius: 8px;
   box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
   z-index: 2000;
   animation: slideIn 0.3s ease-out;
   border: 1px solid var(--border-color);
+  /* FIXED SIZE */
+  min-width: 300px;
 }
 
 .toast.success {
@@ -558,19 +598,5 @@ code {
   border-left: 4px solid var(--warning);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
-  }
-  
-  .modal {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-  
-  .btn {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.9rem;
-  }
-}
+/* ============ CRITICAL: NO RESPONSIVE - REMOVE ALL MEDIA QUERIES ============ */
+/* All components maintain exact pixel dimensions on all screens */

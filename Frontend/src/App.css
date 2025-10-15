@@ -1,4 +1,21 @@
 .app {
+  /* FIXED: Lock to viewport */
+  width: 100vw !important;
+  height: 100vh !important;
   min-height: 100vh;
   background-color: var(--bg-primary);
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  /* Prevent any scaling */
+  transform: scale(1) !important;
+  transform-origin: 0 0 !important;
+}
+
+/* Ensure all child routes are also fixed */
+.app > * {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
 }

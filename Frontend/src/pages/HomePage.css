@@ -1,51 +1,57 @@
-/* Add extra top padding in fullscreen mode */
-@media (display-mode: fullscreen) {
-  .home-page {
-    padding-top: 10rem !important;
-  }
-}
+/* ============================================
+   FIXED HOME PAGE LAYOUT - NO RESPONSIVE
+   All sizes locked to exact pixels
+   ============================================ */
+
 .home-page {
   min-height: 100vh;
-  padding: 5rem 0 2rem 0;
-  /* ============ GRADIENT BACKGROUND ============ */
+  padding: 80px 0 32px 0;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-light) 100%);
+  /* FIXED: Prevent overflow */
+  width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .home-content {
+  /* FIXED WIDTH */
   max-width: 1200px;
+  width: 1200px;
   margin: 0 auto;
 }
 
 .home-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 48px;
 }
 
 .logo-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 24px;
 }
 
-/* ============ ENHANCED LOGO WITH GLOW ============ */
+/* ============ FIXED LOGO ============ */
 .logo-icon {
   color: var(--accent-primary);
-  /* Removed background for transparent SVG icon */
   animation: glowPulse 3s ease-in-out infinite, float 4s ease-in-out infinite;
   filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.6));
-  
+  /* FIXED SIZE */
+  width: 48px;
+  height: 48px;
 }
 
 .title-section {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-/* ============ TYPEWRITER EFFECT FOR MAIN TITLE ============ */
+/* ============ FIXED TITLES ============ */
 .main-title {
-  font-size: 2.5rem;
+  /* FIXED SIZE */
+  font-size: 40px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -65,45 +71,49 @@
 }
 
 .thai-title {
-  font-size: 2rem;
+  /* FIXED SIZE */
+  font-size: 32px;
   font-weight: 600;
-  /* ============ UPDATED: BRIGHTER COLOR ============ */
   color: var(--text-bright);
   margin: 0;
   text-shadow: 0 2px 4px rgba(14, 165, 233, 0.1);
 }
 
 .subtitle {
-  font-size: 1.225rem;
-  /* ============ UPDATED: BRIGHTER COLOR ============ */
+  /* FIXED SIZE */
+  font-size: 19.6px;
   color: var(--text-secondary);
-  margin: 0.5rem 0 0;
+  margin: 8px 0 0;
   font-weight: 500;
 }
 
-/* ============ ACTION CARDS WITH ENHANCED ANIMATIONS ============ */
+/* ============ FIXED ACTION CARDS GRID ============ */
 .action-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 3rem;
+  /* FIXED: 3 columns with exact widths */
+  grid-template-columns: repeat(3, 380px);
+  gap: 32px;
+  margin-bottom: 48px;
+  justify-content: center;
 }
 
 .action-card {
   background: var(--bg-secondary);
-  border-radius: 1rem;
-  padding: 2rem;
+  border-radius: 16px;
+  /* FIXED SIZE */
+  padding: 32px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
   position: relative;
   overflow: hidden;
+  /* FIXED HEIGHT */
+  min-height: 280px;
 }
 
-/* ============ GRADIENT TOP BORDER ANIMATION ============ */
 .action-card::before {
   content: '';
   position: absolute;
@@ -116,7 +126,6 @@
   transition: transform 0.4s ease;
 }
 
-/* ============ SHINE EFFECT ON HOVER ============ */
 .action-card::after {
   content: '';
   position: absolute;
@@ -147,15 +156,16 @@
   left: 100%;
 }
 
-/* ============ CARD ICONS WITH GRADIENT & ROTATION ============ */
+/* ============ FIXED CARD ICONS ============ */
 .card-icon {
+  /* FIXED SIZE */
   width: 64px;
   height: 64px;
-  border-radius: 1rem;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
   position: relative;
   z-index: 1;
   transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -185,7 +195,8 @@
 }
 
 .card-title {
-  font-size: 1.9rem;
+  /* FIXED SIZE */
+  font-size: 30.4px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -194,7 +205,8 @@
 }
 
 .card-description {
-  font-size: 1.12rem;
+  /* FIXED SIZE */
+  font-size: 17.92px;
   color: var(--text-secondary);
   margin: 0;
   flex-grow: 1;
@@ -204,20 +216,20 @@
 
 .card-footer {
   margin-top: auto;
-  padding-top: 1rem;
+  padding-top: 16px;
   position: relative;
   z-index: 1;
 }
 
-/* ============ BADGE WITH SHIMMER ============ */
+/* ============ FIXED BADGE ============ */
 .card-badge {
   display: inline-block;
-  padding: 0.375rem 0.75rem;
+  /* FIXED SIZE */
+  padding: 6px 12px;
   background: linear-gradient(135deg, var(--accent-light), var(--accent-bright));
-  /* ============ UPDATED: BRIGHTER TEXT COLOR ============ */
   color: var(--text-primary);
-  border-radius: 0.5rem;
-  font-size: 0.975rem;
+  border-radius: 8px;
+  font-size: 15.6px;
   font-weight: 600;
   position: relative;
   overflow: hidden;
@@ -239,28 +251,33 @@
   animation: shine 3s infinite;
 }
 
-/* ============ STATISTICS SECTION ============ */
+/* ============ FIXED STATISTICS GRID ============ */
 .stats-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  /* FIXED: 3 columns with exact widths */
+  grid-template-columns: repeat(3, 380px);
+  gap: 24px;
+  margin-bottom: 32px;
+  justify-content: center;
 }
 
-/* ============ STAT CARDS WITH STAGGER ANIMATION ============ */
+/* ============ FIXED STAT CARDS ============ */
 .stat-card {
   background: var(--bg-secondary);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
+  border-radius: 12px;
+  /* FIXED SIZE */
+  padding: 24px;
   border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
   transition: all 0.3s ease;
   opacity: 0;
   animation: slideUp 0.6s ease forwards;
   position: relative;
   overflow: hidden;
+  /* FIXED HEIGHT */
+  min-height: 100px;
 }
 
 .stat-card:nth-child(1) { animation-delay: 0.1s; }
@@ -290,17 +307,18 @@
 }
 
 .stat-icon {
+  /* FIXED SIZE */
   width: 48px;
   height: 48px;
-  border-radius: 0.75rem;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
-  /* ============ UPDATED: BRIGHTER ICON COLOR ============ */
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease;
   box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+  flex-shrink: 0;
 }
 
 .stat-card:hover .stat-icon {
@@ -311,36 +329,37 @@
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 4px;
 }
 
-/* ============ UPDATED: BRIGHTER STAT VALUE WITH GRADIENT ============ */
+/* ============ FIXED STAT VALUES ============ */
 .stat-value {
-  font-size: 1.75rem;
+  /* FIXED SIZE */
+  font-size: 28px;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* Fallback for browsers that don't support background-clip */
   color: var(--accent-primary);
   animation: wave 2s ease-in-out infinite;
   display: inline-block;
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  /* ============ UPDATED: BRIGHTER LABEL COLOR ============ */
+  /* FIXED SIZE */
+  font-size: 14px;
   color: var(--text-secondary);
   font-weight: 500;
 }
 
-/* ============ RESUME BANNER WITH PULSE ANIMATION ============ */
+/* ============ FIXED RESUME BANNER ============ */
 .resume-banner {
   background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
   color: white;
-  padding: 1.5rem 2rem;
-  border-radius: 1rem;
+  /* FIXED SIZE */
+  padding: 24px 32px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -369,8 +388,9 @@
 .resume-content {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.225rem;
+  gap: 12px;
+  /* FIXED SIZE */
+  font-size: 19.6px;
   font-weight: 500;
   position: relative;
   z-index: 1;
@@ -390,36 +410,5 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Responsive */
-/* @media (max-width: 768px) {
-  .main-title {
-    font-size: 1.75rem;
-  }
-
-  .thai-title {
-    font-size: 1.5rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .action-cards {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .stats-section {
-    grid-template-columns: 1fr;
-  }
-
-  .resume-banner {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-
-  .resume-content {
-    flex-direction: column;
-  }
-} */
+/* ============ CRITICAL: NO RESPONSIVE - ALL SIZES FIXED ============ */
+/* Remove all media queries - layout stays same on all screens */

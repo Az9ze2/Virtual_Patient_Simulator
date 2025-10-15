@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -10,15 +10,24 @@
     />
     <title>Virtual Patient Simulator</title>
     <style>
-      html, body {
-        touch-action: manipulation;
-        overscroll-behavior: contain;
+      /* Prevent pinch zoom on touch devices */
+      html {
+        touch-action: pan-x pan-y;
+        -ms-touch-action: pan-x pan-y;
       }
-      body {
+      
+      /* Prevent text size adjustment on orientation change */
+      html, body {
+        -webkit-text-size-adjust: 80%;
+        -moz-text-size-adjust: 80%;
+        -ms-text-size-adjust: 80%;
+        text-size-adjust: 80%;
+      }
+      
+      /* Prevent double-tap zoom on mobile */
+      * {
+        touch-action: manipulation;
         -ms-touch-action: manipulation;
-        -webkit-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
       }
     </style>
   </head>
