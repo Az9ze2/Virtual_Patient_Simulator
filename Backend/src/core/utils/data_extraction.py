@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import docx
 import PyPDF2
 import re
+from pathlib import Path
 
 load_dotenv()
 
@@ -123,9 +124,11 @@ def process_document(doc_path: str, schema_path: str, prompt_path: str, output_d
     print(f"✅ JSON extracted ({case_type} case) and saved to {output_path}")
 
 if __name__ == "__main__":
-    schema_file = r"C:\Users\ACER\Desktop\testAPI\schema.json"
+    base = Path(__file__).resolve().parent.parent.parent  # points roughly to Backend/src
+    schema_file = base / "core" / "config" / "example_schema.json"
+    prompt_file = base / "core" / "config" / "extraction_prompt.txt"
+
     doc_file = r"C:\Users\ACER\Desktop\testAPI\document\iron_def-ข้อสอบ_ฝึก_SP.docx"        
-    prompt_file = r"C:\Users\ACER\Desktop\testAPI\prompt.txt"
     output_dir = r"C:\Users\ACER\Desktop\testAPI\extracted_data2"
 
     process_document(doc_file, schema_file, prompt_file, output_dir)
