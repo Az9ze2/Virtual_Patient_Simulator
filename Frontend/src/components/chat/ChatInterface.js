@@ -109,9 +109,6 @@ const ChatInterface = () => {
           <div className="message-count">
             💬 {sessionData?.messages?.length || 0} messages
           </div>
-          <div className="token-count">
-            📊 {sessionData?.tokenUsage?.totalTokens || 0} tokens
-          </div>
         </div>
       </div>
 
