@@ -53,9 +53,11 @@ body {
 /* CRITICAL: Prevent any zoom on all elements */
 #root {
   width: 100vw !important;
-  height: 100vh !important;
-  position: fixed !important;
-  overflow: hidden !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  position: relative !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   transform: scale(1) !important;
   transform-origin: 0 0 !important;
 }
