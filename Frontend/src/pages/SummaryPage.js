@@ -42,6 +42,13 @@ const SummaryPage = () => {
   const studentMessages = messages.filter(m => m.role === 'user' || m.type === 'user').length || 0;
   const patientMessages = messages.filter(m => m.role === 'assistant' || m.role === 'bot' || m.type === 'bot').length || 0;
 
+  // Extract token usage - accumulated from all messages
+  const tokenUsage = sessionData.tokenUsage || {
+    inputTokens: 0,
+    outputTokens: 0,
+    totalTokens: 0
+  };
+
   const handleDownload = () => {
     const report = {
       sessionInfo: {
@@ -55,7 +62,11 @@ const SummaryPage = () => {
         totalMessages: messageCount,
         studentMessages,
         patientMessages,
-        tokenUsage: sessionData.tokenUsage || sessionData.token_usage
+        tokenUsage: {
+          inputTokens: tokenUsage.inputTokens,
+          outputTokens: tokenUsage.outputTokens,
+          totalTokens: tokenUsage.totalTokens
+        }
       },
       conversation: messages,
       diagnosis: {
@@ -145,9 +156,9 @@ const SummaryPage = () => {
               </div>
               <div className="metric-content">
                 <div className="metric-label">Token Usage</div>
-                <div className="metric-value">{sessionData.tokenUsage?.total || 0}</div>
+                <div className="metric-value">{tokenUsage.totalTokens}</div>
                 <div className="metric-detail">
-                  Input: {sessionData.tokenUsage?.input || 0} | Output: {sessionData.tokenUsage?.output || 0}
+                  Input: {tokenUsage.inputTokens} | Output: {tokenUsage.outputTokens}
                 </div>
               </div>
             </div>
@@ -208,10 +219,6 @@ const SummaryPage = () => {
               <Home size={20} />
               Go Home
             </button>
-            {/* <button className="btn btn-outline btn-large" onClick={() => navigate('/')}>
-              <Play size={20} />
-              Start New Session
-            </button> */}
           </div>
         </div>
       </div>
