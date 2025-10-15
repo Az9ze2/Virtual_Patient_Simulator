@@ -93,9 +93,9 @@ export const AppProvider = ({ children }) => {
           startTime: Date.now(),
           messages: [],
           tokenUsage: {
-            input: 0,
-            output: 0,
-            total: 0
+            inputTokens: 0,    // ✅ Fixed property names
+            outputTokens: 0,   // ✅ Fixed property names
+            totalTokens: 0     // ✅ Fixed property names
           },
           isUploadedCase: false
         };
@@ -135,9 +135,9 @@ export const AppProvider = ({ children }) => {
           startTime: Date.now(),
           messages: [],
           tokenUsage: {
-            input: 0,
-            output: 0,
-            total: 0
+            inputTokens: 0,    // ✅ Fixed property names
+            outputTokens: 0,   // ✅ Fixed property names
+            totalTokens: 0     // ✅ Fixed property names
           },
           isUploadedCase: true,
           uploadedCaseData: caseData
