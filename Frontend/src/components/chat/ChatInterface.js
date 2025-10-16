@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Send, Loader } from 'lucide-react';
 import apiService from '../../services/apiService';
+import SpeechModule from './SpeechModule';
 import './ChatInterface.css';
+import './SpeechModule.css';
 
 const ChatInterface = () => {
   const { sessionData, addMessage, updateSession } = useApp();
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastAssistantMessage, setLastAssistantMessage] = useState(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
@@ -49,11 +52,16 @@ const ChatInterface = () => {
       const response = await apiService.sendMessage(sessionData.sessionId, userMessage);
       
       if (response.success) {
+        const assistantResponse = response.data.response;
+        
         addMessage({
           role: 'assistant',
-          content: response.data.response,
+          content: assistantResponse,
           timestamp: Date.now()
         });
+
+        // Set last assistant message for text-to-speech
+        setLastAssistantMessage(assistantResponse);
 
         const tokens = response.data.token_usage;
         if (tokens) {
@@ -87,6 +95,74 @@ const ChatInterface = () => {
     }
   };
 
+  // Handle transcript from speech recognition
+  const handleTranscript = (transcript) => {
+    console.log('📝 Received transcript:', transcript);
+    setInput(transcript);
+    
+    // Auto-send the transcribed message after a short delay
+    setTimeout(() => {
+      if (transcript.trim() && !isLoading && sessionData?.sessionId) {
+        const userMessage = transcript.trim();
+        
+        addMessage({
+          role: 'user',
+          content: userMessage,
+          timestamp: Date.now()
+        });
+
+        setIsLoading(true);
+        setInput('');
+
+        apiService.sendMessage(sessionData.sessionId, userMessage)
+          .then(response => {
+            if (response.success) {
+              const assistantResponse = response.data.response;
+              
+              addMessage({
+                role: 'assistant',
+                content: assistantResponse,
+                timestamp: Date.now()
+              });
+
+              // Set last assistant message for text-to-speech
+              setLastAssistantMessage(assistantResponse);
+
+              const tokens = response.data.token_usage;
+              if (tokens) {
+                const currentTokenUsage = sessionData?.tokenUsage || {
+                  inputTokens: 0,
+                  outputTokens: 0,
+                  totalTokens: 0
+                };
+                
+                updateSession({
+                  tokenUsage: {
+                    inputTokens: currentTokenUsage.inputTokens + tokens.input_tokens,
+                    outputTokens: currentTokenUsage.outputTokens + tokens.output_tokens,
+                    totalTokens: currentTokenUsage.totalTokens + tokens.total_tokens
+                  }
+                });
+              }
+            } else {
+              throw new Error(response.error || 'Failed to get response');
+            }
+          })
+          .catch(error => {
+            console.error('Error sending message:', error);
+            addMessage({
+              role: 'system',
+              content: `ข้อผิดพลาด เกิดข้อผิดพลาด: ${error.message}`,
+              timestamp: Date.now()
+            });
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }
+    }, 100);
+  };
+
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('th-TH', { 
@@ -118,6 +194,9 @@ const ChatInterface = () => {
             <div className="empty-icon">💬</div>
             <h3>Start the Conversation</h3>
             <p>Begin by greeting the patient and asking about their concerns.</p>
+            <p className="text-muted" style={{ marginTop: '0.5rem' }}>
+              🎤 Click the microphone to speak or type your message
+            </p>
           </div>
         ) : (
           sessionData.messages.map((message, index) => (
@@ -162,11 +241,19 @@ const ChatInterface = () => {
           ref={inputRef}
           type="text"
           className="chat-input"
-          placeholder="Type your message to the patient..."
+          placeholder="พิมพ์ข้อความหรือกดไมค์เพื่อพูด..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={isLoading}
         />
+        
+        {/* Speech Module - Microphone next to Send button */}
+        <SpeechModule
+          onTranscript={handleTranscript}
+          autoSpeak={true}
+          messageToSpeak={lastAssistantMessage}
+        />
+        
         <button
           type="submit"
           className="btn btn-primary chat-send-btn"

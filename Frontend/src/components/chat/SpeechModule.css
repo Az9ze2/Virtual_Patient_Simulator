@@ -1,0 +1,292 @@
+/* ============================================
+   SPEECH MODULE STYLES - FIXED VERSION
+   ============================================ */
+
+.speech-module {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+/* ============ SPEECH BUTTONS ============ */
+.btn-speech {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  /* FIXED: Prevent button from shrinking */
+  flex-shrink: 0;
+}
+
+.btn-speech:hover:not(:disabled) {
+  transform: scale(1.1);
+  border-color: var(--accent-primary);
+  background: var(--accent-light);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.btn-speech:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.btn-speech:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============ LISTENING STATE - ENHANCED ============ */
+.btn-speech.listening {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: #ef4444;
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.btn-speech.listening::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  opacity: 0.5;
+  animation: ripple 1.5s ease-out infinite;
+}
+
+/* ============ SPEAKING STATE - ENHANCED ============ */
+.btn-speech.speaking {
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  border-color: var(--accent-primary);
+  color: white;
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.5);
+}
+
+.btn-speech.speaking::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--medical-cyan));
+  opacity: 0.5;
+  animation: ripple 1.5s ease-out infinite;
+}
+
+/* ============ STATUS DISPLAYS - IMPROVED ============ */
+.speech-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease;
+  white-space: nowrap;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listening-status {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 2px solid #ef4444;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.speaking-status {
+  background: linear-gradient(135deg, var(--accent-light), rgba(14, 165, 233, 0.1));
+  color: var(--accent-primary);
+  border: 2px solid var(--accent-primary);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+/* ============ ANIMATED STATUS DOT ============ */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: blink 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.listening-status .status-dot {
+  background: #ef4444;
+}
+
+.speaking-status .status-dot {
+  background: var(--accent-primary);
+}
+
+/* ============ ERROR POPUP - FIXED TO SHOW ON HEADER ============ */
+.speech-error-popup {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 3px solid #ef4444;
+  border-radius: 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: slideDownBounce 0.5s ease;
+  z-index: 10000;
+  box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
+  max-width: 90%;
+  text-align: center;
+  pointer-events: none;
+}
+
+.speech-module-error {
+  padding: 1rem;
+  background: linear-gradient(135deg, #fef3c7, #fde047);
+  border: 2px solid #f59e0b;
+  border-radius: 0.75rem;
+  color: #92400e;
+  font-size: 0.875rem;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Pulse animation for active buttons */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+/* Ripple effect for active buttons */
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Blinking dot animation */
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+/* Bounce slide down for popup error */
+@keyframes slideDownBounce {
+  0% {
+    transform: translate(-50%, -30px);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(-50%, 5px);
+  }
+  80% {
+    transform: translate(-50%, -2px);
+  }
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   INTEGRATION WITH CHAT INPUT
+   ============================================ */
+
+.chat-input-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.chat-input-form .speech-module {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chat-input-form .chat-input {
+  flex: 1;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .btn-speech {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .speech-status {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    max-width: 200px;
+  }
+  
+  .speech-error-popup {
+    font-size: 0.9rem;
+    padding: 0.75rem 1.25rem;
+    max-width: 85%;
+    white-space: normal;
+    top: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-speech {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .speech-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    max-width: 150px;
+  }
+}
