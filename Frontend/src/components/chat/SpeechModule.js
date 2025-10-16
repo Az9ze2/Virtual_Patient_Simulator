@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import ttsService from '../../services/ttsService';
 
 const SpeechModule = ({ 
   onTranscript, 
@@ -11,42 +12,30 @@ const SpeechModule = ({
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [error, setError] = useState('');
   const [isSupported, setIsSupported] = useState(true);
   const [recognitionError, setRecognitionError] = useState('');
+  const [ttsError, setTtsError] = useState('');
 
   const recognitionRef = useRef(null);
-  const synthRef = useRef(window.speechSynthesis);
-  const messageCounterRef = useRef(0); // FIXED: Counter to force re-speak
-  const isRecognitionActiveRef = useRef(false); // FIXED: Track recognition state
-  const availableVoicesRef = useRef([]);
-  const voicesLoadedRef = useRef(false);
+  const messageCounterRef = useRef(0); // Counter to force re-speak
+  const isRecognitionActiveRef = useRef(false); // Track recognition state
 
-  // ============ Load voices ============
+  // ============ Initialize gTTS Service ============
   useEffect(() => {
-    const loadVoices = () => {
-      const voices = synthRef.current.getVoices();
-      if (voices.length > 0) {
-        availableVoicesRef.current = voices;
-        voicesLoadedRef.current = true;
-        console.log('🎤 Loaded voices:', voices.length);
-        console.log('🎤 Thai voices available:', voices.filter(v => v.lang.startsWith('th')).map(v => v.name));
-      }
-    };
-
-    loadVoices();
+    // Test gTTS service on initialization
+    console.log('🔊 Initializing Thai gTTS service');
     
-    if (synthRef.current.onvoiceschanged !== undefined) {
-      synthRef.current.onvoiceschanged = loadVoices;
-    }
-
-    // Force load after delay
-    setTimeout(loadVoices, 100);
-
+    // Monitor TTS service status
+    const checkTTSStatus = () => {
+      setIsSpeaking(ttsService.isSpeaking());
+    };
+    
+    const statusInterval = setInterval(checkTTSStatus, 500);
+    
     return () => {
-      if (synthRef.current.onvoiceschanged !== undefined) {
-        synthRef.current.onvoiceschanged = null;
-      }
+      clearInterval(statusInterval);
+      // Stop any ongoing TTS when component unmounts
+      ttsService.stop();
     };
   }, []);
 
@@ -56,7 +45,7 @@ const SpeechModule = ({
     
     if (!SpeechRecognition) {
       setIsSupported(false);
-      setError('❌ เบราว์เซอร์นี้ไม่รองรับการรับเสียง กรุณาใช้ Chrome, Edge หรือ Safari');
+      setRecognitionError('❌ เบราว์เซอร์นี้ไม่รองรับการรับเสียง กรุณาใช้ Chrome, Edge หรือ Safari');
       return;
     }
 
@@ -72,7 +61,6 @@ const SpeechModule = ({
       console.log('🎤 Recognition STARTED');
       isRecognitionActiveRef.current = true;
       setIsListening(true);
-      setError('');
       setRecognitionError('');
     };
 
@@ -156,16 +144,48 @@ const SpeechModule = ({
     };
   }, [onTranscript]);
 
-  // ============ FIXED: Force speak EVERY message with counter ============
+  // ============ gTTS Speech Function ============
+  const speakWithGTTS = React.useCallback(async (text) => {
+    if (!text || text.trim().length === 0) {
+      console.warn('⚠️ No text to speak');
+      return;
+    }
+
+    try {
+      setTtsError('');
+      setIsSpeaking(true);
+      
+      console.log('🔊 Speaking with gTTS:', text.substring(0, 50));
+      
+      // Configure TTS options based on speaker characteristics
+      const options = {
+        language: 'th', // Always use Thai
+        slow: speakerAge === 'child', // Slower for children
+        volume: 0.8
+      };
+      
+      await ttsService.speak(text, options);
+      
+    } catch (error) {
+      console.error('❌ gTTS error:', error);
+      setTtsError('❌ ไม่สามารถอ่านข้อความได้');
+      setIsSpeaking(false);
+      
+      // Clear error after 5 seconds
+      setTimeout(() => setTtsError(''), 5000);
+    }
+  }, [speakerAge]);
+
+  // ============ Auto-speak messages using gTTS ============
   useEffect(() => {
     if (autoSpeak && messageToSpeak) {
       messageCounterRef.current += 1;
       console.log('🔊 NEW MESSAGE #' + messageCounterRef.current + ':', messageToSpeak.substring(0, 50));
       
-      // Force speak with unique trigger
-      speakText(messageToSpeak, messageCounterRef.current);
+      // Use gTTS service to speak Thai text
+      speakWithGTTS(messageToSpeak);
     }
-  }, [messageToSpeak, autoSpeak]);
+  }, [messageToSpeak, autoSpeak, speakWithGTTS]);
 
   // ============ FIXED: Better microphone start ============
   const startListening = () => {
@@ -184,10 +204,10 @@ const SpeechModule = ({
       }
     }
 
-    // FIXED: Stop any speech
-    if (synthRef.current.speaking) {
-      console.log('🔇 Stopping speech for microphone');
-      synthRef.current.cancel();
+    // Stop any gTTS speech
+    if (ttsService.isSpeaking()) {
+      console.log('🔇 Stopping gTTS for microphone');
+      ttsService.stop();
       setIsSpeaking(false);
     }
 
@@ -197,7 +217,6 @@ const SpeechModule = ({
         console.log('▶️ Starting recognition...');
         recognitionRef.current.start();
         setTranscript('');
-        setError('');
         setRecognitionError('');
       } catch (err) {
         console.error('❌ Failed to start recognition:', err);
@@ -229,121 +248,12 @@ const SpeechModule = ({
     }
   };
 
-  // ============ Smart voice selection ============
-  const selectBestVoice = () => {
-    if (!voicesLoadedRef.current || availableVoicesRef.current.length === 0) {
-      console.warn('⚠️ No voices loaded yet');
-      return null;
-    }
-
-    const voices = availableVoicesRef.current;
-    
-    // Try Thai voices first
-    const thaiVoices = voices.filter(voice => voice.lang.startsWith('th'));
-    
-    if (thaiVoices.length > 0) {
-      console.log('🎯 Using Thai voice');
-      
-      if (speakerAge === 'child') {
-        const childVoice = thaiVoices.find(v => 
-          v.name.toLowerCase().includes('child') || 
-          v.name.toLowerCase().includes('kid')
-        );
-        if (childVoice) return childVoice;
-      }
-      
-      if (speakerGender === 'female') {
-        const femaleVoice = thaiVoices.find(v => 
-          v.name.toLowerCase().includes('female') || 
-          v.name.toLowerCase().includes('woman') ||
-          v.name.toLowerCase().includes('samantha') ||
-          (!v.name.toLowerCase().includes('male') && !v.name.toLowerCase().includes('man'))
-        );
-        if (femaleVoice) return femaleVoice;
-      } else if (speakerGender === 'male') {
-        const maleVoice = thaiVoices.find(v => 
-          v.name.toLowerCase().includes('male') ||
-          v.name.toLowerCase().includes('man')
-        );
-        if (maleVoice) return maleVoice;
-      }
-      
-      return thaiVoices[0];
-    }
-    
-    console.log('⚠️ No Thai voices, using default');
-    return voices[0] || null;
-  };
-
-  // ============ FIXED: Force speak with counter ============
-  const speakText = (text, counter) => {
-    if (!text) return;
-
-    console.log('🔊 Speaking message #' + counter);
-
-    // FIXED: Force cancel completely
-    synthRef.current.cancel();
-    
-    // FIXED: Longer delay to ensure cancel completes
-    setTimeout(() => {
-      // Double-check cancel
-      if (synthRef.current.speaking) {
-        console.log('⚠️ Still speaking, forcing cancel again');
-        synthRef.current.cancel();
-      }
-
-      setTimeout(() => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'th-TH';
-        
-        // Adjust voice characteristics
-        if (speakerAge === 'child') {
-          utterance.rate = 0.7;
-          utterance.pitch = 1.5;
-        } else if (speakerGender === 'female') {
-          utterance.rate = 0.7;
-          utterance.pitch = 1.1;
-        } else {
-          utterance.rate = 0.7;
-          utterance.pitch = 0.9;
-        }
-        
-        utterance.volume = 1.0;
-
-        utterance.onstart = () => {
-          console.log('✅ TTS started');
-          setIsSpeaking(true);
-          setError('');
-        };
-
-        utterance.onend = () => {
-          console.log('✅ TTS ended');
-          setIsSpeaking(false);
-        };
-
-        utterance.onerror = (event) => {
-          console.error('❌ TTS error:', event.error);
-          setIsSpeaking(false);
-        };
-
-        // Select voice
-        const selectedVoice = selectBestVoice();
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-          console.log('🎤 Voice:', selectedVoice.name);
-        }
-
-        // FIXED: Speak immediately
-        console.log('▶️ Starting speech...');
-        synthRef.current.speak(utterance);
-      }, 100);
-    }, 200);
-  };
 
   const stopSpeaking = () => {
-    console.log('🔇 Stopping speech manually');
-    synthRef.current.cancel();
+    console.log('🔇 Stopping gTTS manually');
+    ttsService.stop();
     setIsSpeaking(false);
+    setTtsError('');
   };
 
   const toggleListening = () => {
@@ -404,10 +314,16 @@ const SpeechModule = ({
         </div>
       )}
 
-      {/* Error Popup */}
+      {/* Error Popups */}
       {recognitionError && (
-        <div className="speech-error-popup">
+        <div className="speech-error-popup recognition-error">
           {recognitionError}
+        </div>
+      )}
+      
+      {ttsError && (
+        <div className="speech-error-popup tts-error">
+          {ttsError}
         </div>
       )}
     </div>

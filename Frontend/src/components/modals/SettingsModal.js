@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Settings as SettingsIcon, Palette, Sun, Moon, Cpu, Sliders, Save, AlertTriangle, RotateCcw } from 'lucide-react';
+import { X, Palette, Sun, Moon, Cpu, Sliders, Save, AlertTriangle, RotateCcw } from 'lucide-react';
 import './Modal.css';
 
 // Default settings configuration

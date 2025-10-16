@@ -38,7 +38,7 @@ const CountUp = ({ end, duration = 2000, suffix = '' }) => {
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { sessionData, theme } = useApp();
+  const { sessionData } = useApp();
   const [showStartModal, setShowStartModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);

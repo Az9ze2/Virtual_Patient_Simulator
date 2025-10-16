@@ -137,19 +137,30 @@
   left: 50%;
   transform: translateX(-50%);
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #fee2e2, #fecaca);
-  color: #991b1b;
-  border: 3px solid #ef4444;
   border-radius: 1rem;
   font-size: 1.1rem;
   font-weight: 700;
   white-space: nowrap;
   animation: slideDownBounce 0.5s ease;
   z-index: 10000;
-  box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
   max-width: 90%;
   text-align: center;
   pointer-events: none;
+}
+
+.speech-error-popup.recognition-error {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 3px solid #ef4444;
+  box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);
+}
+
+.speech-error-popup.tts-error {
+  background: linear-gradient(135deg, #fef3c7, #fde047);
+  color: #92400e;
+  border: 3px solid #f59e0b;
+  box-shadow: 0 10px 40px rgba(245, 158, 11, 0.4);
+  top: 150px; /* Offset to not overlap with recognition error */
 }
 
 .speech-module-error {

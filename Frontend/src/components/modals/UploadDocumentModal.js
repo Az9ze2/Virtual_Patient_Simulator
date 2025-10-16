@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, Upload, FileText, CheckCircle, AlertCircle, Eye, Edit } from 'lucide-react';
+import { X, Upload, FileText, CheckCircle, AlertCircle } from 'lucide-react';
 import apiService from '../../services/apiService';
 import './Modal.css';
 

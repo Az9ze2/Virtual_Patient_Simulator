@@ -11,11 +11,14 @@
     "react-router-dom": "^6.20.0",
     "jspdf": "^2.5.1",
     "html2pdf.js": "^0.10.2",
-    "react-to-print": "^2.14.15"
+    "react-to-print": "^2.14.15",
+    "react-speech-recognition": "^3.10.0",
+    "regenerator-runtime": "^0.14.0"
   },
   "scripts": {
   "start": "react-scripts start",
-  "build": "CI=false react-scripts build",
+  "build": "set CI=false && react-scripts build",
+  "build:unix": "CI=false react-scripts build",
   "test": "react-scripts test",
   "eject": "react-scripts eject"
   },

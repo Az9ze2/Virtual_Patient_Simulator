@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Play, Download, Clock, MessageSquare, Cpu, CheckCircle } from 'lucide-react';
+import { Home, Download, Clock, MessageSquare, Cpu, CheckCircle } from 'lucide-react';
 import './SummaryPage.css';
 import apiService from '../services/apiService';
 
