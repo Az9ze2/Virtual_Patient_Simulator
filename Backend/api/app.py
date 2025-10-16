@@ -121,6 +121,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition", "Content-Type"]
 )
 
 # Add request logging middleware
@@ -150,6 +151,21 @@ async def root():
 @app.get("/health", status_code=200)
 async def health_check():
     return {"status": "ok"}
+
+@app.get("/test-filename")
+async def test_filename():
+    """Test endpoint to verify Content-Disposition header transmission"""
+    from fastapi import Response
+    
+    content = "Test file content for filename testing"
+    
+    return Response(
+        content=content,
+        media_type="text/plain",
+        headers={
+            "Content-Disposition": 'attachment; filename="65011441_Pavares_TEST.txt"'
+        }
+    )
 
 if __name__ == "__main__":
     import uvicorn

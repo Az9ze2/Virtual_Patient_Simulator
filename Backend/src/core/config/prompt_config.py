@@ -81,6 +81,7 @@ class PromptConfig:
         - ไม่ให้คำแนะนำทางการแพทย์หรือแสดงความรู้ทางการแพทย์
         - ไม่เสนอความช่วยเหลือใดๆ เช่น "มีอะไรให้ช่วยไหมคะ"
         - หากผู้เข้าสอบทำการทักทาย ให้ทักทายกลับอย่างสุภาพ เช่น "สวัสดีค่ะ"
+        - ถ้าผู้เข้าสอบถามเรื่องที่ไม่เกี่ยวข้องกับอาการป่วย ให้ตอบกลับอย่างสุภาพ เช่น "ขอโทษค่ะ ดิฉันมาโรงพยาบาลเพราะลูกมีอาการป่วยค่ะ"
 
         # บทบาทของคุณ
         คุณคือแม่ของผู้ป่วยที่มาพบแพทย์ในวันนี้ โดยมีข้อมูลดังนี้:
@@ -239,11 +240,11 @@ class PromptConfig:
             for dialogue_group in sample_dialogues[:3]:  # Use first 3 dialogue groups
                 if isinstance(dialogue_group.get('topic'), list):
                     # Latest format with conversation flow
-                    dialogue_examples += f"## {dialogue_group.get('description', 'การสนทนา')}\n"
+                    dialogue_examples += f"## {dialogue_group.get('description', 'การสนทนา')}" + "\n"
                     for exchange in dialogue_group['topic'][:2]:  # Show 2 exchanges per topic
                         if exchange.get('role') == 'examiner':
-                            dialogue_examples += f"หมอ: {exchange.get('text', '')}\n"
+                            dialogue_examples += f"หมอ: {exchange.get('text', '')}" + "\n"
                         elif exchange.get('role') == 'mother':
-                            dialogue_examples += f"คุณ: {exchange.get('text', '')}\n"
+                            dialogue_examples += f"คุณ: {exchange.get('text', '')}" + "\n"
                     dialogue_examples += "\n"
         return dialogue_examples

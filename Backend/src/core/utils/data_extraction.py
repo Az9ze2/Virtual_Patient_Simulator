@@ -72,7 +72,8 @@ def generate_output_filename(case_type: str, doc_path: str, output_dir: str) -> 
     # Extract sequence numbers
     numbers = []
     for f in existing_files:
-        match = re.match(rf"{prefix}_(\d+)_", f)
+        pattern = rf"{prefix}_(\d+)_"
+        match = re.match(pattern, f)
         if match:
             numbers.append(int(match.group(1)))
 
@@ -99,7 +100,7 @@ def process_document(doc_path: str, schema_path: str, prompt_path: str, output_d
         response_format={"type": "json_object"},  # force JSON output
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"Schema:\n{schema}\n\nCase text:\n{doc_text}"},
+            {"role": "user", "content": f"Schema:{chr(10)}{schema}{chr(10)}{chr(10)}Case text:{chr(10)}{doc_text}"},
         ],
     )
 
