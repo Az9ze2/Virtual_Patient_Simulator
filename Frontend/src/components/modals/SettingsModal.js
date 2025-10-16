@@ -114,7 +114,7 @@ const SettingsModal = ({ onClose }) => {
               onClick={() => setActiveTab('ai')}
             >
               <Cpu size={18} />
-              AI Configuration
+              การตั้งค่า AI
             </button>
             <button
               className={`settings-tab ${activeTab === 'appearance' ? 'active' : ''}`}
@@ -132,61 +132,61 @@ const SettingsModal = ({ onClose }) => {
                 <div className="setting-group">
                   <label className="setting-label">
                     <Cpu size={18} />
-                    Model Version
+                    เวอร์ชันโมเดล
                   </label>
                   <select
                     className="select"
                     value={localSettings.model}
                     onChange={(e) => handleSettingChange('model', e.target.value)}
                   >
-                    <option value="gpt-4.1-mini">GPT-4.1 Mini (Tunable)</option>
-                    <option value="gpt-5">GPT-5 (Deterministic)</option>
+                    <option value="gpt-4.1-mini">GPT-4.1 Mini (ปรับแต่งได้)</option>
+                    <option value="gpt-5">GPT-5 (คำตอบคงที่)</option>
                   </select>
                   <p className="setting-hint">
-                    GPT-4.1 Mini allows parameter tuning. GPT-5 provides consistent responses.
+                    GPT-4.1 Mini สามารถปรับแต่งพารามิเตอร์ได้ ส่วน GPT-5 ให้คำตอบที่สม่ำเสมอ
                   </p>
                 </div>
 
                 {/* Memory Mode */}
                 <div className="setting-group">
                   <label className="setting-label">
-                    Memory Mode
+                    โหมดความจำ
                   </label>
                   <select
                     className="select"
                     value={localSettings.memoryMode}
                     onChange={(e) => handleSettingChange('memoryMode', e.target.value)}
                   >
-                    <option value="none">Keep All History</option>
-                    <option value="truncate">Truncate Old Messages</option>
-                    <option value="summarize">Summarize Old Messages</option>
+                    <option value="none">เก็บประวัติทั้งหมด</option>
+                    <option value="truncate">ตัดข้อความเก่าทิ้ง</option>
+                    <option value="summarize">สรุปข้อความเก่า</option>
                   </select>
                   <p className="setting-hint">
-                    Controls how conversation history is managed.
+                    กำหนดวิธีจัดการประวัติการสนทนา
                   </p>
                 </div>
 
                 {/* Exam Mode */}
                 <div className="setting-group">
                   <label className="setting-label">
-                    Exam Mode
+                    โหมดการใช้งาน
                   </label>
                   <div className="toggle-group">
                     <button
                       className={`toggle-option ${!localSettings.examMode ? 'active' : ''}`}
                       onClick={() => handleSettingChange('examMode', false)}
                     >
-                      Practice Mode
+                      โหมดฝึกซ้อม
                     </button>
                     <button
                       className={`toggle-option ${localSettings.examMode ? 'active' : ''}`}
                       onClick={() => handleSettingChange('examMode', true)}
                     >
-                      Exam Mode
+                      โหมดสอบ
                     </button>
                   </div>
                   <p className="setting-hint">
-                    Exam mode uses fixed seed for reproducible responses.
+                    โหมดสอบจะให้คำตอบที่เหมือนเดิมทุกครั้งเพื่อความยุติธรรม
                   </p>
                 </div>
 
@@ -194,7 +194,7 @@ const SettingsModal = ({ onClose }) => {
                 <div className="setting-group">
                   <label className="setting-label">
                     <Sliders size={18} />
-                    Temperature
+                    ความสร้างสรรค์
                     <span className="setting-value">{localSettings.temperature}</span>
                   </label>
                   <input
@@ -208,7 +208,7 @@ const SettingsModal = ({ onClose }) => {
                     disabled={localSettings.model === 'gpt-5'}
                   />
                   <p className="setting-hint">
-                    Higher values make responses more creative. Lower values make them more focused.
+                    ค่าสูง = คำตอบสร้างสรรค์มากขึ้น, ค่าต่ำ = คำตอบตรงประเด็นมากขึ้น
                   </p>
                 </div>
 
@@ -216,7 +216,7 @@ const SettingsModal = ({ onClose }) => {
                 <div className="setting-group">
                   <label className="setting-label">
                     <Sliders size={18} />
-                    Top P
+                    ความหลากหลาย
                     <span className="setting-value">{localSettings.topP}</span>
                   </label>
                   <input
@@ -230,7 +230,7 @@ const SettingsModal = ({ onClose }) => {
                     disabled={localSettings.model === 'gpt-5'}
                   />
                   <p className="setting-hint">
-                    Controls diversity via nucleus sampling.
+                    ควบคุมความหลากหลายของการเลือกคำ, ค่าสูง = คำตอบหลากหลายขึ้น
                   </p>
                 </div>
 
@@ -238,7 +238,7 @@ const SettingsModal = ({ onClose }) => {
                 <div className="setting-group">
                   <label className="setting-label">
                     <Sliders size={18} />
-                    Frequency Penalty
+                    ลดคำซ้ำ
                     <span className="setting-value">{localSettings.frequencyPenalty}</span>
                   </label>
                   <input
@@ -252,7 +252,7 @@ const SettingsModal = ({ onClose }) => {
                     disabled={localSettings.model === 'gpt-5'}
                   />
                   <p className="setting-hint">
-                    Reduces repetition of words. Higher values decrease repetition.
+                    ลดการใช้คำซ้ำๆ ค่าสูง = ซ้ำน้อยลง
                   </p>
                 </div>
 
@@ -260,7 +260,7 @@ const SettingsModal = ({ onClose }) => {
                 <div className="setting-group">
                   <label className="setting-label">
                     <Sliders size={18} />
-                    Presence Penalty
+                    หัวข้อใหม่
                     <span className="setting-value">{localSettings.presencePenalty}</span>
                   </label>
                   <input
@@ -274,14 +274,14 @@ const SettingsModal = ({ onClose }) => {
                     disabled={localSettings.model === 'gpt-5'}
                   />
                   <p className="setting-hint">
-                    Encourages talking about new topics.
+                    กระตุ้นให้พูดถึงหัวข้อใหม่ๆ มากขึ้น
                   </p>
                 </div>
 
                 {/* Max Duration */}
                 <div className="setting-group">
                   <label className="setting-label">
-                    Max Session Duration (minutes)
+                    ระยะเวลาสูงสุดต่อเซสชัน (นาที)
                   </label>
                   <input
                     type="number"
@@ -292,7 +292,7 @@ const SettingsModal = ({ onClose }) => {
                     max="60"
                   />
                   <p className="setting-hint">
-                    Maximum time allowed for a session.
+                    กำหนดเวลาสูงสุดที่อนุญาตสำหรับการใช้งานแต่ละครั้ง
                   </p>
                 </div>
               </div>
