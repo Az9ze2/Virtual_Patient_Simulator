@@ -93,10 +93,11 @@ export const AppProvider = ({ children }) => {
           startTime: Date.now(),
           messages: [],
           tokenUsage: {
-            input: 0,
-            output: 0,
-            total: 0
-          }
+            inputTokens: 0,    // ✅ Fixed property names
+            outputTokens: 0,   // ✅ Fixed property names
+            totalTokens: 0     // ✅ Fixed property names
+          },
+          isUploadedCase: false
         };
         
         setSessionData(session);
@@ -106,6 +107,49 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Failed to start session:', error);
+      throw error;
+    }
+  };
+
+  const startSessionWithUploadedCase = async (userInfo, caseData, config = {}) => {
+    try {
+      // Convert frontend settings to backend config format
+      const backendConfig = {
+        model_choice: config.model || settings.model,
+        memory_mode: config.memoryMode || settings.memoryMode, 
+        temperature: config.temperature || settings.temperature,
+        exam_mode: config.examMode || settings.examMode
+      };
+
+      const response = await apiService.startSessionWithUploadedCase(userInfo, caseData, backendConfig);
+      
+      if (response.success) {
+        const session = {
+          sessionId: response.data.session_id,
+          userInfo: userInfo,
+          caseInfo: response.data.case_info,
+          caseData: {
+            examiner_view: response.data.examiner_view
+          },
+          config: backendConfig,
+          startTime: Date.now(),
+          messages: [],
+          tokenUsage: {
+            inputTokens: 0,    // ✅ Fixed property names
+            outputTokens: 0,   // ✅ Fixed property names
+            totalTokens: 0     // ✅ Fixed property names
+          },
+          isUploadedCase: true,
+          uploadedCaseData: caseData
+        };
+        
+        setSessionData(session);
+        return session;
+      } else {
+        throw new Error(response.error || 'Failed to start session with uploaded case');
+      }
+    } catch (error) {
+      console.error('Failed to start session with uploaded case:', error);
       throw error;
     }
   };
@@ -182,6 +226,7 @@ export const AppProvider = ({ children }) => {
     updateSettings,
     sessionData,
     startSession,
+    startSessionWithUploadedCase,
     updateSession,
     addMessage,
     endSession,

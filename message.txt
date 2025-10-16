@@ -1,0 +1,112 @@
+import json
+from datetime import datetime
+
+def transform_chat_summary(data: dict) -> str:
+    """
+    Transform chatbot session JSON data into a human-readable report
+    suitable for evaluation by a medical professional.
+    """
+
+    summary = data.get("data", {}).get("summary", {})
+
+    # ---- Extract student info ----
+    user_info = summary.get("user_info", {})
+    student_name = user_info.get("name", "N/A")
+    student_id = user_info.get("student_id", "N/A")
+
+    # ---- Extract case info ----
+    case_info = summary.get("case_info", {})
+    case_title = case_info.get("case_title", "N/A")
+    case_id = case_info.get("case_id", "N/A")
+    medical_specialty = case_info.get("medical_specialty", "N/A")
+    exam_duration = case_info.get("exam_duration_minutes", 0)
+
+    # ---- Extract session details ----
+    session_id = summary.get("session_id", "N/A")
+    duration = summary.get("duration_minutes", 0)
+    total_messages = summary.get("total_messages", 0)
+    ended_at = summary.get("ended_at", "N/A")
+    ended_at_str = (
+        datetime.fromisoformat(ended_at).strftime("%Y-%m-%d %H:%M:%S")
+        if ended_at != "N/A" else "N/A"
+    )
+
+    # ---- Extract diagnosis and treatment ----
+    diagnosis_info = summary.get("diagnosis_treatment", {})
+    diagnosis = diagnosis_info.get("diagnosis", "").strip() or "Not provided"
+    treatment_plan = diagnosis_info.get("treatment_plan", "").strip() or "Not provided"
+
+    # ---- Extract chat history ----
+    chat_history = summary.get("chat_history", [])
+
+    # ---- Build the readable text ----
+    report_lines = []
+
+    # HEADER
+    report_lines.append("=" * 80)
+    report_lines.append("🩺 CASE SUMMARY REPORT")
+    report_lines.append("=" * 80)
+    report_lines.append(f"Session ID: {session_id}")
+    report_lines.append(f"Ended At: {ended_at_str}")
+    report_lines.append("")
+
+    # STUDENT INFO
+    report_lines.append("👨‍⚕️ STUDENT INFORMATION")
+    report_lines.append("-" * 80)
+    report_lines.append(f"Name: {student_name}")
+    report_lines.append(f"Student ID: {student_id}")
+    report_lines.append("")
+
+    # CASE INFO
+    report_lines.append("📋 CASE INFORMATION")
+    report_lines.append("-" * 80)
+    report_lines.append(f"Case Title: {case_title}")
+    report_lines.append(f"Case ID: {case_id}")
+    report_lines.append(f"Medical Specialty: {medical_specialty}")
+    report_lines.append(f"Expected Duration: {exam_duration} minutes")
+    report_lines.append("")
+
+    # SESSION DETAILS
+    report_lines.append("🕒 SESSION DETAILS")
+    report_lines.append("-" * 80)
+    report_lines.append(f"Actual Duration: {round(duration, 2)} minutes")
+    report_lines.append(f"Total Messages: {total_messages}")
+    report_lines.append("")
+
+    # DIAGNOSIS & TREATMENT
+    report_lines.append("💊 DIAGNOSIS AND TREATMENT PLAN")
+    report_lines.append("-" * 80)
+    report_lines.append(f"Diagnosis: {diagnosis}")
+    report_lines.append(f"Treatment Plan: {treatment_plan}")
+    report_lines.append("")
+
+    # CHAT TRANSCRIPT
+    report_lines.append("💬 CHAT TRANSCRIPT")
+    report_lines.append("-" * 80)
+
+    for i, msg in enumerate(chat_history, 1):
+        timestamp = datetime.fromisoformat(msg["timestamp"]).strftime("%H:%M:%S")
+        user_msg = msg.get("user", "").strip()
+        bot_msg = msg.get("bot", "").strip()
+        report_lines.append(f"[{i}] Time: {timestamp}")
+        report_lines.append(f"   Student: {user_msg}")
+        report_lines.append(f"   Bot: {bot_msg}")
+        report_lines.append("")
+
+    report_lines.append("=" * 80)
+    report_lines.append("END OF REPORT")
+    report_lines.append("=" * 80)
+
+    return "\n".join(report_lines)
+
+
+# Example usage
+if __name__ == "__main__":
+    with open("session_data.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    formatted_report = transform_chat_summary(data)
+    print(formatted_report)
+
+    with open("formatted_summary.txt", "w", encoding="utf-8") as f:
+        f.write(formatted_report)

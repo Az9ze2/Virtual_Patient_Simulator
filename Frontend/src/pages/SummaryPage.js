@@ -2,11 +2,25 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Play, Download, Clock, MessageSquare, Cpu, CheckCircle } from 'lucide-react';
 import './SummaryPage.css';
+import apiService from '../services/apiService';
 
 const SummaryPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { sessionData, diagnosis, treatmentPlan } = location.state || {};
+
+  const handleDownload = async () => {
+    if (!sessionData?.sessionId) {
+      alert('No session ID available for download.');
+      return;
+    }
+    try {
+      await apiService.downloadReport(sessionData.sessionId);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert('Failed to download report. Please try again.');
+    }
+  };
 
   if (!sessionData) {
     return (
@@ -31,60 +45,26 @@ const SummaryPage = () => {
   const caseTitle = sessionData.caseInfo?.case_title || sessionData.case_info?.case_title || 'N/A';
   
   // Calculate duration
-  const duration = sessionData.duration || (sessionData.endTime - sessionData.startTime);
-  const durationHours = Math.floor(duration / 3600000);
-  const durationMinutes = Math.floor(duration / 60000) % 60;
-  const durationSeconds = Math.floor((duration % 60000) / 1000);
+  const duration = sessionData.duration || (sessionData.endTime && sessionData.startTime ? sessionData.endTime - sessionData.startTime : 0);
+  const safeDuration = isNaN(duration) ? 0 : duration;
+  const durationHours = Math.floor(safeDuration / 3600000);
+  const durationMinutes = Math.floor(safeDuration / 60000) % 60;
+  const durationSeconds = Math.floor((safeDuration % 60000) / 1000);
   
   // Handle messages - check different possible structures
   const messages = sessionData.messages || sessionData.chat_history || [];
-  const messageCount = messages.length || 0;
-  const studentMessages = messages.filter(m => m.role === 'user' || m.type === 'user').length || 0;
-  const patientMessages = messages.filter(m => m.role === 'assistant' || m.role === 'bot' || m.type === 'bot').length || 0;
+  const messageCount = Array.isArray(messages) ? messages.length : 0;
+  const studentMessages = Array.isArray(messages) ? messages.filter(m => m.role === 'user' || m.type === 'user').length : 0;
+  const patientMessages = Array.isArray(messages) ? messages.filter(m => m.role === 'assistant' || m.role === 'bot' || m.type === 'bot').length : 0;
 
   // Extract token usage - accumulated from all messages
-  const tokenUsage = sessionData.tokenUsage || {
-    inputTokens: 0,
-    outputTokens: 0,
-    totalTokens: 0
+  const tokenUsage = sessionData.tokenUsage || sessionData.token_usage || {};
+  const safeTokenUsage = {
+    inputTokens: Number(tokenUsage.inputTokens || tokenUsage.input_tokens || 0) || 0,
+    outputTokens: Number(tokenUsage.outputTokens || tokenUsage.output_tokens || 0) || 0,
+    totalTokens: Number(tokenUsage.totalTokens || tokenUsage.total_tokens || 0) || 0
   };
 
-  const handleDownload = () => {
-    const report = {
-      sessionInfo: {
-        studentName: userName,
-        studentId: userStudentId,
-        caseTitle: caseTitle,
-        date: new Date(sessionData.startTime).toLocaleString('th-TH'),
-        duration: `${durationMinutes}m ${durationSeconds}s`
-      },
-      metrics: {
-        totalMessages: messageCount,
-        studentMessages,
-        patientMessages,
-        tokenUsage: {
-          inputTokens: tokenUsage.inputTokens,
-          outputTokens: tokenUsage.outputTokens,
-          totalTokens: tokenUsage.totalTokens
-        }
-      },
-      conversation: messages,
-      diagnosis: {
-        diagnosis,
-        treatmentPlan
-      }
-    };
-
-    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `session-${userStudentId}-${Date.now()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="summary-page">
@@ -120,7 +100,7 @@ const SummaryPage = () => {
               <div className="info-item">
                 <span className="info-label">Date</span>
                 <span className="info-value">
-                  {new Date(sessionData.startTime).toLocaleDateString('th-TH')}
+                  {sessionData.startTime ? new Date(sessionData.startTime).toLocaleDateString('th-TH') : 'N/A'}
                 </span>
               </div>
             </div>
@@ -156,9 +136,9 @@ const SummaryPage = () => {
               </div>
               <div className="metric-content">
                 <div className="metric-label">Token Usage</div>
-                <div className="metric-value">{tokenUsage.totalTokens}</div>
+                <div className="metric-value">{safeTokenUsage.totalTokens}</div>
                 <div className="metric-detail">
-                  Input: {tokenUsage.inputTokens} | Output: {tokenUsage.outputTokens}
+                  Input: {safeTokenUsage.inputTokens} | Output: {safeTokenUsage.outputTokens}
                 </div>
               </div>
             </div>
@@ -189,7 +169,7 @@ const SummaryPage = () => {
           <div className="conversation-card fade-in" style={{ animationDelay: '0.4s' }}>
             <h3 className="card-section-title">Conversation History</h3>
             <div className="conversation-preview">
-              {messages && messages.slice(0, 5).map((msg, idx) => {
+              {Array.isArray(messages) && messages.length > 0 && messages.slice(0, 5).map((msg, idx) => {
                 const isUser = msg.role === 'user' || msg.type === 'user';
                 const content = msg.content || msg.user || msg.bot || 'No content';
                 return (
@@ -213,7 +193,7 @@ const SummaryPage = () => {
           <div className="action-buttons fade-in" style={{ animationDelay: '0.5s' }}>
             <button className="btn btn-primary btn-large" onClick={handleDownload}>
               <Download size={20} />
-              Download Report
+              Download PDF Report
             </button>
             <button className="btn btn-outline btn-large" onClick={() => navigate('/')}>
               <Home size={20} />

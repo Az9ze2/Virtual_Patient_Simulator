@@ -130,6 +130,11 @@ class StartSessionRequest(BaseModel):
     case_filename: str
     config: Optional[SessionConfig] = SessionConfig()
 
+class StartSessionWithUploadedCaseRequest(BaseModel):
+    user_info: UserInfo
+    case_data: Dict[str, Any]
+    config: Optional[SessionConfig] = SessionConfig()
+
 class UpdateDiagnosisRequest(BaseModel):
     diagnosis: Optional[str] = None
     treatment_plan: Optional[str] = None
