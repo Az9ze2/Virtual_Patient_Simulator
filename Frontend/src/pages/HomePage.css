@@ -6,14 +6,21 @@
 }
 .home-page {
   min-height: 100vh;
+  max-height: 100vh;
   padding: 5rem 0 2rem 0;
   /* ============ GRADIENT BACKGROUND ============ */
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-light) 100%);
+  overflow: hidden; /* Prevent scrolling */
 }
 
 .home-content {
   max-width: 1200px;
   margin: 0 auto;
+  /* Scale down all content to 80% */
+  transform: scale(0.8);
+  transform-origin: top center;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 .home-header {
