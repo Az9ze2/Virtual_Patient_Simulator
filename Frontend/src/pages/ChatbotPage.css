@@ -34,8 +34,14 @@
   box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);
   backdrop-filter: blur(10px);
   /* FIXED HEIGHT - Change this to adjust header size */
-  min-height: 80px;
+  min-height: calc(80px * var(--ui-scale, 0.8));
   flex-shrink: 0;
+  /* Scale header with CSS variable */
+  transform: scale(var(--ui-scale, 0.8));
+  transform-origin: top center;
+  /* Adjust width to compensate for scaling */
+  width: calc(100% / var(--ui-scale, 0.8));
+  margin-bottom: calc(-20px * (1 - var(--ui-scale, 0.8)));
 }
 
 .header-left,
@@ -77,14 +83,15 @@
   padding: 1.5rem;
   overflow: hidden;
   /* FIXED: Calculate height based on viewport */
-  height: calc(100vh - 80px);
+  height: calc(100vh - calc(80px * var(--ui-scale, 0.8)));
   min-height: 600px; /* Minimum height for small screens */
   box-sizing: border-box;
-  /* Scale down all content to 80% */
-  transform: scale(0.8);
+  /* Scale down all content using CSS variable */
+  transform: scale(var(--ui-scale, 0.8));
   transform-origin: top center;
-  /* Adjust height to compensate for scaling */
-  height: calc((100vh - 80px) / 0.8);
+  /* Adjust width to prevent overflow */
+  width: calc(100% / var(--ui-scale, 0.8));
+  margin-left: calc(50% - (50% / var(--ui-scale, 0.8)));
 }
 
 /* ============================================
@@ -588,65 +595,3 @@
   font-weight: 600;
   animation: pulse 1s ease-in-out infinite;
 }
-
-/* ============================================
-   RESPONSIVE BREAKPOINTS - Adapts to screens
-   Keep component sizes FIXED, adjust layout only
-   ============================================ */
-
-/* Large Desktop: 1600px+ */
-/* @media (min-width: 1600px) {
-  .content-grid {
-    grid-template-columns: minmax(800px, 1fr) 450px;
-  }
-} */
-
-/* Medium Desktop: 1400-1599px */
-/* @media (max-width: 1599px) and (min-width: 1400px) {
-  .content-grid {
-    grid-template-columns: minmax(700px, 1fr) 400px;
-  }
-} */
-
-/* Small Desktop/Large Laptop: 1200-1399px */
-/* @media (max-width: 1399px) and (min-width: 1200px) {
-  .content-grid {
-    grid-template-columns: minmax(650px, 1fr) 380px;
-  }
-  
-  .chatbot-content {
-    padding: 1.25rem;
-  }
-} */
-
-/* Standard Laptop: 1024-1199px */
-/* @media (max-width: 1199px) and (min-width: 1024px) {
-  .content-grid {
-    grid-template-columns: minmax(600px, 1fr) 350px;
-  }
-  
-  .chatbot-content {
-    padding: 1rem;
-  } */
-  
-  /* Slightly reduce box heights for smaller screens */
-  /* .chat-column .magic-bento-card {
-    height: 600px;
-    max-height: 600px;
-    min-height: 600px;
-  }
-  
-  .info-column .magic-bento-card:nth-child(1) {
-    height: 260px;
-    max-height: 260px;
-    min-height: 260px;
-    flex: 0 0 260px;
-  }
-  
-  .info-column .magic-bento-card:nth-child(2) {
-    height: 320px;
-    max-height: 320px;
-    min-height: 320px;
-    flex: 0 0 320px;
-  }
-} */

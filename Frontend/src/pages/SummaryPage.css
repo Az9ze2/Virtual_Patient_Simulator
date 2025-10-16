@@ -1,5 +1,6 @@
 .summary-page {
   min-height: 100vh;
+  max-height: 100vh; /* Prevent overflow */
   padding: 3rem 0;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-light) 100%);
   position: relative;
@@ -30,10 +31,10 @@
   gap: 2rem;
   position: relative;
   z-index: 1;
-  /* Scale down all content to 80% */
-  transform: scale(0.8);
+  /* Scale down all content using CSS variable */
+  transform: scale(var(--ui-scale));
   transform-origin: top center;
-  padding-bottom: 20vh; /* Add bottom padding to compensate for scaling */
+  padding-bottom: calc(20vh * var(--ui-scale)); /* Add bottom padding to compensate for scaling */
 }
 
 .summary-header {

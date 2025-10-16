@@ -3,6 +3,9 @@
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
+  /* Scale modal with CSS variable */
+  transform: scale(var(--ui-scale));
+  transform-origin: center center;
 }
 
 .start-session-modal {

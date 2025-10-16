@@ -16,8 +16,8 @@
 .home-content {
   max-width: 1200px;
   margin: 0 auto;
-  /* Scale down all content to 80% */
-  transform: scale(0.8);
+  /* Scale down all content using CSS variable */
+  transform: scale(var(--ui-scale));
   transform-origin: top center;
   max-height: 100vh;
   overflow: hidden;

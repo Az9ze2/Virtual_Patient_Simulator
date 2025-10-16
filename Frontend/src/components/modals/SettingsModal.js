@@ -14,7 +14,8 @@ const DEFAULT_SETTINGS = {
   presencePenalty: 0.9,
   maxDuration: 15,
   autoSave: true,
-  showTimer: true
+  showTimer: true,
+  uiScale: 0.8 // NEW: Default UI scale
 };
 
 const DEFAULT_THEME = 'light';
@@ -300,6 +301,38 @@ const SettingsModal = ({ onClose }) => {
 
             {activeTab === 'appearance' && (
               <div className="settings-section fade-in">
+                {/* UI Scale - NEW */}
+                <div className="setting-group">
+                  <label className="setting-label">
+                    <Sliders size={18} />
+                    UI Scale
+                    <span className="setting-value">{(localSettings.uiScale * 100).toFixed(0)}%</span>
+                  </label>
+                  <div className="toggle-group">
+                    <button
+                      className={`toggle-option ${localSettings.uiScale === 0.67 ? 'active' : ''}`}
+                      onClick={() => handleSettingChange('uiScale', 0.67)}
+                    >
+                      67%
+                    </button>
+                    <button
+                      className={`toggle-option ${localSettings.uiScale === 0.8 ? 'active' : ''}`}
+                      onClick={() => handleSettingChange('uiScale', 0.8)}
+                    >
+                      80%
+                    </button>
+                    <button
+                      className={`toggle-option ${localSettings.uiScale === 1.0 ? 'active' : ''}`}
+                      onClick={() => handleSettingChange('uiScale', 1.0)}
+                    >
+                      100%
+                    </button>
+                  </div>
+                  <p className="setting-hint">
+                    Adjust the overall size of the interface. 67% for high-DPI displays, 80% recommended, 100% for default size.
+                  </p>
+                </div>
+
                 {/* Theme - MODIFIED: Use localTheme instead of theme */}
                 <div className="setting-group">
                   <label className="setting-label">
