@@ -6,6 +6,7 @@ import PatientInfo from '../components/chat/PatientInfo';
 import DiagnosisSection from '../components/chat/DiagnosisSection';
 import SessionTimer from '../components/chat/SessionTimer';
 import { ArrowLeft, StopCircle, AlertTriangle } from 'lucide-react';
+import apiService from '../services/apiService';
 import './ChatbotPage.css';
 
 const ChatbotPage = () => {
@@ -53,6 +54,23 @@ const ChatbotPage = () => {
 
   const confirmEndSession = async () => {
     try {
+      // First, save diagnosis and treatment to backend if they exist
+      if (diagnosis || treatmentPlan) {
+        console.log('📁 Saving diagnosis and treatment to backend before ending session...');
+        try {
+          await apiService.updateDiagnosis(sessionData.sessionId, {
+            diagnosis: diagnosis || '',
+            treatment_plan: treatmentPlan || '',
+            notes: ''
+          });
+          console.log('✅ Diagnosis and treatment saved successfully');
+        } catch (diagnosisError) {
+          console.error('⚠️ Failed to save diagnosis/treatment:', diagnosisError);
+          // Continue with session end even if diagnosis save fails
+        }
+      }
+      
+      // Then end the session
       const completedSession = await endSession();
       navigate('/summary', { state: { sessionData: completedSession, diagnosis, treatmentPlan } });
     } catch (error) {
