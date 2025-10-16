@@ -420,8 +420,42 @@ async def download_session_report(session_id: str):
             try:
                 add_section_header('Clinical Assessment')
                 
+                # Check multiple possible field names for diagnosis and treatment
+                diagnosis_candidates = [
+                    dt.get('diagnosis'),
+                    dt.get('diagnosis_text'), 
+                    dt.get('diagnosisText'),
+                    report_data.get('diagnosis'),
+                    report_data.get('diagnosisText')
+                ]
+                
+                treatment_candidates = [
+                    dt.get('treatment_plan'),
+                    dt.get('treatment'),
+                    dt.get('treatmentPlan'),
+                    dt.get('treatment_text'),
+                    report_data.get('treatment_plan'),
+                    report_data.get('treatmentPlan')
+                ]
+                
+                # Find first non-empty diagnosis
+                diagnosis_text = 'Not provided'
+                for candidate in diagnosis_candidates:
+                    if candidate and str(candidate).strip() and str(candidate).strip().lower() != 'n/a':
+                        diagnosis_text = str(candidate)
+                        break
+                
+                # Find first non-empty treatment plan
+                treatment_text = 'Not provided'
+                for candidate in treatment_candidates:
+                    if candidate and str(candidate).strip() and str(candidate).strip().lower() != 'n/a':
+                        treatment_text = str(candidate)
+                        break
+                
+                diagnosis_text = clean_text(diagnosis_text)
+                treatment_text = clean_text(treatment_text)
+                
                 # Diagnosis
-                diagnosis_text = clean_text(dt.get('diagnosis', 'Not provided'))
                 pdf.set_font(pdf_font, '', 13)  # Slightly larger for sub-headers
                 pdf.cell(0, 7, 'Diagnosis:', ln=1)
                 pdf.set_font(pdf_font, '', 12)
@@ -436,8 +470,7 @@ async def download_session_report(session_id: str):
                 
                 pdf.ln(2)
                 
-                # Treatment Plan
-                treatment_text = clean_text(dt.get('treatment_plan', 'Not provided'))
+                # Treatment Plan (use already extracted treatment_text)
                 pdf.set_font(pdf_font, '', 13)
                 pdf.cell(0, 7, 'Treatment Plan:', ln=1)
                 pdf.set_font(pdf_font, '', 12)
