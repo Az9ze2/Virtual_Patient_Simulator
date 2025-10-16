@@ -81,6 +81,46 @@ class ApiService {
     return response.data;
   }
 
+  // Test filename header transmission
+  async testFilename() {
+    try {
+      console.log('🧪 Testing filename header transmission...');
+      
+      const response = await this.api.get('/test-filename', {
+        responseType: 'blob'
+      });
+      
+      console.log('🧪 Test response headers:', response.headers);
+      console.log('🧪 Content-Disposition:', response.headers['content-disposition']);
+      
+      // Try to extract filename using same logic as downloadReport
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'test_fallback.txt';
+      
+      if (contentDisposition) {
+        const patterns = [
+          /filename="([^"]+)"/,
+          /filename=([^;\s]+)/,
+          /filename='([^']+)'/
+        ];
+        
+        for (let i = 0; i < patterns.length; i++) {
+          const match = contentDisposition.match(patterns[i]);
+          if (match && match[1]) {
+            filename = match[1].trim();
+            console.log(`🧪 Test extracted filename: ${filename}`);
+            break;
+          }
+        }
+      }
+      
+      return { success: true, filename, headers: response.headers };
+    } catch (error) {
+      console.error('🧪 Test filename failed:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
   // Cases API
   async getCases() {
     const response = await this.api.get('/api/cases/list');
@@ -132,30 +172,82 @@ class ApiService {
   }
 
   async downloadReport(sessionId) {
-    const response = await this.api.get(`/api/sessions/${sessionId}/download`, {
-      responseType: 'blob'
-    });
-    
-    // Create download link
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    
-    // Extract filename from response headers or use default
-    const contentDisposition = response.headers['content-disposition'];
-    let filename = 'session_report.json';
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="?(.+)"?/);
-      if (match) filename = match[1];
+    try {
+      console.log(`📥 Starting download for session: ${sessionId}`);
+      
+      const response = await this.api.get(`/api/sessions/${sessionId}/download`, {
+        responseType: 'blob'
+      });
+      
+      // Get content type from response headers
+      const contentType = response.headers['content-type'] || 'application/pdf';
+      console.log(`📄 Response content type: ${contentType}`);
+      console.log(`📊 Response data size: ${response.data.size} bytes`);
+      
+      // Validate that we have data
+      if (!response.data || response.data.size === 0) {
+        throw new Error('Received empty file from server');
+      }
+      
+      // Create download link with correct content type
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: contentType }));
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from response headers or use default
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = 'session_report.pdf';
+      
+      console.log(`🔍 ALL RESPONSE HEADERS:`, response.headers);
+      console.log(`🔍 Content-Disposition (raw):`, contentDisposition);
+      
+      if (contentDisposition) {
+        console.log(`📎 Content-Disposition header: ${contentDisposition}`);
+        
+        // Simple pattern matching for filename="..." format
+        const patterns = [
+          /filename="([^"]+)"/,  // filename="name.pdf"
+          /filename=([^;\s]+)/,   // filename=name.pdf
+          /filename='([^']+)'/    // filename='name.pdf'
+        ];
+        
+        let matched = false;
+        for (let i = 0; i < patterns.length; i++) {
+          const match = contentDisposition.match(patterns[i]);
+          console.log(`🔍 Pattern ${i + 1} (${patterns[i]}) result:`, match);
+          
+          if (match && match[1]) {
+            filename = match[1].trim();
+            console.log(`✅ Successfully extracted filename: ${filename}`);
+            matched = true;
+            break;
+          }
+        }
+        
+        if (!matched) {
+          console.log(`⚠️ No filename pattern matched in Content-Disposition header!`);
+        }
+      } else {
+        // Fallback filename based on content type
+        filename = contentType.includes('html') ? 'session_report.html' : 'session_report.pdf';
+        console.log(`🔄 No Content-Disposition header, using fallback: ${filename}`);
+      }
+      
+      console.log(`💾 Downloading as: ${filename}`);
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      console.log(`✅ Download completed successfully: ${filename}`);
+      return { success: true, filename };
+      
+    } catch (error) {
+      console.error(`❌ Download failed for session ${sessionId}:`, error);
+      throw error;
     }
-    
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
-    
-    return { success: true, filename };
   }
 
   async deleteSession(sessionId) {
