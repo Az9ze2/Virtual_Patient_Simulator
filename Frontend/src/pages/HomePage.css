@@ -6,14 +6,27 @@
 }
 .home-page {
   min-height: 100vh;
+  max-height: 100vh;
   padding: 5rem 0 2rem 0;
   /* ============ GRADIENT BACKGROUND ============ */
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--accent-light) 100%);
+  overflow: hidden; /* Prevent scrolling */
+  /* ✅ FIX: Ensure content doesn't get covered */
+  position: relative;
 }
 
 .home-content {
   max-width: 1200px;
   margin: 0 auto;
+  /* Scale down all content using CSS variable */
+  transform: scale(var(--ui-scale, 0.8));
+  transform-origin: top center; /* ✅ Back to center for HomePage */
+  max-height: 100vh;
+  overflow: hidden;
+  /* ✅ FIX: Ensure z-index for proper layering and clearance from any headers */
+  position: relative;
+  z-index: 1;
+  padding-top: 2rem;
 }
 
 .home-header {
@@ -34,7 +47,11 @@
   /* Removed background for transparent SVG icon */
   animation: glowPulse 3s ease-in-out infinite, float 4s ease-in-out infinite;
   filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.6));
-  
+  /* ✅ FIX: Ensure icon is above everything with higher z-index */
+  position: relative;
+  z-index: 1000;
+  display: block;
+  margin: 0 auto;
 }
 
 .title-section {

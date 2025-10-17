@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
@@ -13,12 +13,29 @@
       html, body {
         touch-action: manipulation;
         overscroll-behavior: contain;
+        /* Prevent browser zoom affecting the layout */
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        /* Ensure consistent rendering across devices */
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        position: fixed;
+        overflow: hidden;
       }
       body {
         -ms-touch-action: manipulation;
         -webkit-user-select: none;
         -ms-user-select: none;
         user-select: none;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
       }
     </style>
   </head>
