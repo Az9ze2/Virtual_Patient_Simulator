@@ -23,8 +23,10 @@
   transform-origin: top center; /* ✅ Back to center for HomePage */
   max-height: 100vh;
   overflow: hidden;
-  /* ✅ FIX: Ensure z-index for proper layering */
+  /* ✅ FIX: Ensure z-index for proper layering and clearance from any headers */
   position: relative;
+  z-index: 1;
+  padding-top: 2rem;
 }
 
 .home-header {
@@ -45,9 +47,11 @@
   /* Removed background for transparent SVG icon */
   animation: glowPulse 3s ease-in-out infinite, float 4s ease-in-out infinite;
   filter: drop-shadow(0 0 15px rgba(14, 165, 233, 0.6));
-  /* ✅ FIX: Ensure icon is above everything */
+  /* ✅ FIX: Ensure icon is above everything with higher z-index */
   position: relative;
-  z-index: 10;
+  z-index: 1000;
+  display: block;
+  margin: 0 auto;
 }
 
 .title-section {
