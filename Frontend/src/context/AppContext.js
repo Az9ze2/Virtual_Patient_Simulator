@@ -31,7 +31,8 @@ export const AppProvider = ({ children }) => {
       examMode: false,
       autoSave: true,
       showTimer: true,
-      maxDuration: 15
+      maxDuration: 15,
+      uiScale: 0.8 // ✅ Add UI scale default
     };
   });
 
@@ -46,6 +47,11 @@ export const AppProvider = ({ children }) => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // ✅ Apply UI scale
+  useEffect(() => {
+    document.documentElement.style.setProperty('--ui-scale', settings.uiScale || 0.8);
+  }, [settings.uiScale]);
 
   // Save settings
   useEffect(() => {

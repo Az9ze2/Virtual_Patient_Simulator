@@ -4,8 +4,21 @@
   max-height: 90vh;
   overflow-y: auto;
   /* Scale modal with CSS variable */
-  transform: scale(var(--ui-scale));
+  transform: scale(var(--ui-scale, 0.8));
   transform-origin: center center;
+  /* ✅ FIX: Start hidden, fade in smoothly to prevent flash */
+  opacity: 0;
+  animation: modalFadeIn 0.15s ease-out 0.05s forwards;
+}
+
+/* ✅ NEW: Smooth modal fade-in animation */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .start-session-modal {

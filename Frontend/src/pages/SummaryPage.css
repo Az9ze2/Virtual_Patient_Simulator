@@ -32,9 +32,11 @@
   position: relative;
   z-index: 1;
   /* Scale down all content using CSS variable */
-  transform: scale(var(--ui-scale));
-  transform-origin: top center;
-  padding-bottom: calc(20vh * var(--ui-scale)); /* Add bottom padding to compensate for scaling */
+  transform: scale(var(--ui-scale, 0.8));
+  transform-origin: top center; /* ✅ Back to center for SummaryPage */
+  /* ✅ FIX: Proper padding to prevent scrolling past content */
+  padding-bottom: 5rem;
+  min-height: min-content;
 }
 
 .summary-header {

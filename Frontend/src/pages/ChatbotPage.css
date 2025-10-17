@@ -10,13 +10,14 @@
 }
 
 .chatbot-page {
-  min-height: 100vh;
+  height: calc(100vh / var(--ui-scale));
   display: flex;
   flex-direction: column;
   background-color: var(--bg-primary);
   /* FIXED: Prevent zoom issues */
   width: 100%;
   overflow: hidden;
+  position: fixed;
 }
 
 /* ============ HEADER WITH GRADIENT ============ */
@@ -34,14 +35,15 @@
   box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);
   backdrop-filter: blur(10px);
   /* FIXED HEIGHT - Change this to adjust header size */
-  min-height: calc(80px * var(--ui-scale, 0.8));
+  min-height: 80px;
   flex-shrink: 0;
   /* Scale header with CSS variable */
   transform: scale(var(--ui-scale, 0.8));
-  transform-origin: top center;
+  transform-origin: top left;
   /* Adjust width to compensate for scaling */
   width: calc(100% / var(--ui-scale, 0.8));
-  margin-bottom: calc(-20px * (1 - var(--ui-scale, 0.8)));
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .header-left,
@@ -83,15 +85,15 @@
   padding: 1.5rem;
   overflow: hidden;
   /* FIXED: Calculate height based on viewport */
-  height: calc(100vh - calc(80px * var(--ui-scale, 0.8)));
+  height: calc(100vh - 80px);
   min-height: 600px; /* Minimum height for small screens */
   box-sizing: border-box;
   /* Scale down all content using CSS variable */
   transform: scale(var(--ui-scale, 0.8));
-  transform-origin: top center;
+  transform-origin: top left;
   /* Adjust width to prevent overflow */
   width: calc(100% / var(--ui-scale, 0.8));
-  margin-left: calc(50% - (50% / var(--ui-scale, 0.8)));
+  margin-left: 0;
 }
 
 /* ============================================
