@@ -15,12 +15,14 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Add src directory to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # Import routers
-from routers import sessions, chatbot, cases, documents, config
+from routers import sessions, chatbot, cases, documents, config, stt_routes
 
 # Import session manager for cleanup
 from utils.session_manager import session_manager
@@ -133,6 +135,7 @@ app.include_router(chatbot.router, prefix="/api/chatbot", tags=["chatbot"])
 app.include_router(cases.router, prefix="/api/cases", tags=["cases"])
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
 app.include_router(config.router, prefix="/api/config", tags=["config"])
+app.include_router(stt_routes.router, prefix="/api/stt_routes", tags=["speech-to-text"])
 
 # Register error handlers
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
