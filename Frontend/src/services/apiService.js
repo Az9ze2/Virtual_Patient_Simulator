@@ -392,6 +392,40 @@ class ApiService {
   }
   
   // ============================================
+  // Text-to-Speech API
+  // ============================================
+  async sendMessageWithTTS(sessionId, message, enableTTS = true, voice = 'nova', speed = 1.0) {
+    const response = await this.api.post(`/api/chatbot/${sessionId}/chat-with-tts`, {
+      message: message,
+      enable_tts: enableTTS,
+      voice: voice,
+      tts_speed: speed
+    });
+    return response.data;
+  }
+
+  async generateTTS(text, voice = 'nova', model = 'tts-1', speed = 1.0, format = 'mp3') {
+    const response = await this.api.post('/api/tts/generate', {
+      text: text,
+      voice: voice,
+      model: model,
+      speed: speed,
+      format: format
+    });
+    return response.data;
+  }
+
+  async getTTSVoices() {
+    const response = await this.api.get('/api/tts/voices');
+    return response.data;
+  }
+
+  async getTTSHealth() {
+    const response = await this.api.get('/api/tts/health');
+    return response.data;
+  }
+
+  // ============================================
   // ✅ FIXED: Speech-to-Text API
   // ============================================
   async transcribeAudio(audioBlob) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Send, Loader, Mic, Square } from 'lucide-react';
+import { Send, Loader, Mic, Square, Volume2, VolumeX } from 'lucide-react';
 import apiService from '../../services/apiService';
 import './ChatInterface.css';
 
@@ -14,6 +14,12 @@ const ChatInterface = () => {
   const [isProcessingAudio, setIsProcessingAudio] = useState(false);
   const [sttError, setSttError] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  
+  // ============ TTS STATE ============
+  const [ttsEnabled, setTtsEnabled] = useState(true);
+  const [ttsVoice, setTtsVoice] = useState('nova');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const audioRef = useRef(null);
   
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -76,6 +82,45 @@ const ChatInterface = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // ============ PLAY AUDIO FUNCTION ============
+  const playAudio = (base64Audio) => {
+    try {
+      // Stop any currently playing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      
+      // Create and play new audio
+      const audioUrl = `data:audio/mp3;base64,${base64Audio}`;
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      
+      audio.onplay = () => {
+        setIsPlayingAudio(true);
+        console.log('🔊 TTS audio started playing');
+      };
+      
+      audio.onended = () => {
+        setIsPlayingAudio(false);
+        console.log('✅ TTS audio finished playing');
+      };
+      
+      audio.onerror = (error) => {
+        setIsPlayingAudio(false);
+        console.error('❌ TTS audio playback error:', error);
+      };
+      
+      audio.play().catch(error => {
+        console.error('❌ Failed to play audio:', error);
+        setIsPlayingAudio(false);
+      });
+    } catch (error) {
+      console.error('❌ Error playing audio:', error);
+      setIsPlayingAudio(false);
+    }
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !sessionData?.sessionId) return;
@@ -92,7 +137,10 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const response = await apiService.sendMessage(sessionData.sessionId, userMessage);
+      // Use TTS endpoint if enabled, otherwise use regular endpoint
+      const response = ttsEnabled 
+        ? await apiService.sendMessageWithTTS(sessionData.sessionId, userMessage, true, ttsVoice, 1.0)
+        : await apiService.sendMessage(sessionData.sessionId, userMessage);
       
       if (response.success) {
         addMessage({
@@ -100,6 +148,12 @@ const ChatInterface = () => {
           content: response.data.response,
           timestamp: Date.now()
         });
+
+        // Play TTS audio if available
+        if (ttsEnabled && response.data.audio && response.data.audio.audio_base64) {
+          console.log('🎵 Playing TTS audio response...');
+          playAudio(response.data.audio.audio_base64);
+        }
 
         const tokens = response.data.token_usage;
         if (tokens) {
@@ -350,10 +404,20 @@ const ChatInterface = () => {
           <div className="patient-avatar">👩‍⚕️</div>
           <div>
             <h3 className="chat-title">Virtual Patient</h3>
-            <p className="chat-subtitle">Mother Simulator</p>
+            <p className="chat-subtitle">
+              {isPlayingAudio ? '🔊 Speaking...' : 'Mother Simulator'}
+            </p>
           </div>
         </div>
         <div className="header-stats">
+          <button 
+            className={`btn btn-icon ${ttsEnabled ? 'btn-primary' : 'btn-outline'}`}
+            onClick={() => setTtsEnabled(!ttsEnabled)}
+            title={ttsEnabled ? 'Disable voice' : 'Enable voice'}
+            style={{ marginRight: '0.5rem' }}
+          >
+            {ttsEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          </button>
           <div className="message-count">
             💬 {sessionData?.messages?.length || 0} messages
           </div>
