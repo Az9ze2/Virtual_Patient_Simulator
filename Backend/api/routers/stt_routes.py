@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Create router
-router = APIRouter(prefix="/api/stt", tags=["Speech-to-Text"])
+router = APIRouter()
 
 # Initialize OpenAI client
 openai.api_key = os.getenv("OPENAI_API_KEY")

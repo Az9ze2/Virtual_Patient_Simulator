@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Send, Loader, Mic, MicOff, Square } from 'lucide-react';
+import { Send, Loader, Mic, Square } from 'lucide-react';
 import apiService from '../../services/apiService';
 import './ChatInterface.css';
 
@@ -9,13 +9,16 @@ const ChatInterface = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // ============ NEW: STT STATE ============
+  // ============ STT STATE ============
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessingAudio, setIsProcessingAudio] = useState(false);
   const [sttError, setSttError] = useState(null);
+  const [recordingTime, setRecordingTime] = useState(0);
+  
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
-  
+  const silenceTimeoutRef = useRef(null);
+  const recordingTimerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
@@ -47,6 +50,31 @@ const ChatInterface = () => {
       return () => clearTimeout(timer);
     }
   }, [sttError]);
+
+  // ============ RECORDING TIMER ============
+  useEffect(() => {
+    if (isRecording) {
+      recordingTimerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+    } else {
+      setRecordingTime(0);
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    }
+    return () => {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, [isRecording]);
+
+  const formatRecordingTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -104,32 +132,53 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ NEW: START RECORDING FUNCTION ============
+  // ============ START RECORDING FUNCTION ============
   const startRecording = async () => {
     try {
       // Clear previous error
       setSttError(null);
       
-      // Request microphone permission
+      // Check browser support
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setSttError('เบราว์เซอร์ของคุณไม่รองรับการบันทึกเสียง กรุณาใช้ Chrome, Firefox หรือ Edge');
+        return;
+      }
+
+      // Request microphone permission with optimized settings
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
-          // ============ OPTIMIZED AUDIO SETTINGS FOR THAI ============
-          channelCount: 1, // Mono audio (reduces file size, sufficient for speech)
-          sampleRate: 16000, // 16kHz is optimal for Whisper (required by Whisper)
-          echoCancellation: true, // Remove echo
-          noiseSuppression: true, // Remove background noise
-          autoGainControl: true // Normalize volume
+          channelCount: 1,           // Mono audio
+          sampleRate: 16000,         // 16kHz (Whisper optimal)
+          echoCancellation: true,    // Enable echo cancellation
+          noiseSuppression: true,    // Enable noise suppression
+          autoGainControl: true      // Enable auto gain
         } 
       });
 
-      // Create MediaRecorder with optimal settings
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-        ? 'audio/webm;codecs=opus' // Best quality and compression
-        : 'audio/webm'; // Fallback
+      // Check supported MIME types in order of preference
+      const mimeTypes = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/ogg;codecs=opus',
+        'audio/mp4'
+      ];
+      
+      let selectedMimeType = '';
+      for (const type of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          selectedMimeType = type;
+          break;
+        }
+      }
 
+      if (!selectedMimeType) {
+        throw new Error('ไม่พบรูปแบบการบันทึกเสียงที่รองรับ');
+      }
+
+      // Create MediaRecorder with selected MIME type
       mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType,
-        audioBitsPerSecond: 128000 // 128kbps - good quality for speech
+        mimeType: selectedMimeType,
+        audioBitsPerSecond: 128000  // 128kbps
       });
 
       audioChunksRef.current = [];
@@ -141,23 +190,32 @@ const ChatInterface = () => {
       };
 
       mediaRecorderRef.current.onstop = async () => {
-        // Stop all tracks to release microphone
+        // Stop all tracks
         stream.getTracks().forEach(track => track.stop());
         
         // Process the recorded audio
         await processRecording();
       };
 
-      mediaRecorderRef.current.start();
+      // Start recording (collect data every 100ms for smoother recording)
+      mediaRecorderRef.current.start(100);
       setIsRecording(true);
       
-      console.log('🎤 Recording started with optimized settings for Thai');
+      console.log('🎤 Recording started with MIME type:', selectedMimeType);
+
+      // Auto-stop after 60 seconds to prevent excessively long recordings
+      silenceTimeoutRef.current = setTimeout(() => {
+        if (isRecording) {
+          console.log('⏰ Auto-stopping recording after 60 seconds');
+          stopRecording();
+        }
+      }, 60000);
       
     } catch (error) {
       console.error('🚨 Microphone access error:', error);
       
-      // Thai error messages based on error type
-      if (error.name === 'NotAllowedError') {
+      // Provide user-friendly error messages in Thai
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
         setSttError('ไม่ได้รับอนุญาตให้ใช้ไมโครโฟน กรุณาอนุญาตการเข้าถึงไมโครโฟนในการตั้งค่าเบราว์เซอร์');
       } else if (error.name === 'NotFoundError') {
         setSttError('ไม่พบไมโครโฟน กรุณาเชื่อมต่อไมโครโฟนกับอุปกรณ์ของคุณ');
@@ -168,17 +226,24 @@ const ChatInterface = () => {
       }
     }
   };
-
-  // ============ NEW: STOP RECORDING FUNCTION ============
+  
+  // ============ STOP RECORDING FUNCTION ============
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+    // Clear timeout
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+      silenceTimeoutRef.current = null;
+    }
+
+    // Stop recording
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       console.log('🛑 Recording stopped');
     }
   };
 
-  // ============ NEW: PROCESS RECORDED AUDIO ============
+  // ============ PROCESS RECORDED AUDIO ============
   const processRecording = async () => {
     if (audioChunksRef.current.length === 0) {
       setSttError('ไม่มีข้อมูลเสียงที่บันทึก กรุณาลองอีกครั้ง');
@@ -189,22 +254,23 @@ const ChatInterface = () => {
     setSttError(null);
 
     try {
-      // Create audio blob
+      // Create audio blob from recorded chunks
       const audioBlob = new Blob(audioChunksRef.current, { 
         type: mediaRecorderRef.current.mimeType 
       });
 
-      console.log(`📊 Audio blob size: ${(audioBlob.size / 1024).toFixed(2)} KB`);
-      console.log(`🎵 Audio type: ${audioBlob.type}`);
+      const fileSizeKB = (audioBlob.size / 1024).toFixed(2);
+      console.log(`📊 Audio blob created: ${fileSizeKB} KB, type: ${audioBlob.type}`);
 
-      // Check if audio is too short (less than 0.5 seconds at 128kbps)
-      if (audioBlob.size < 8000) {
+      // Validate minimum audio size (at least 1KB to ensure actual recording)
+      if (audioBlob.size < 1000) {
         setSttError('เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง');
         setIsProcessingAudio(false);
         return;
       }
 
-      // Send to backend for transcription
+      // Send to backend for transcription via Whisper API
+      console.log('🔄 Sending audio to backend for transcription...');
       const transcription = await apiService.transcribeAudio(audioBlob);
 
       if (transcription.success && transcription.data.text) {
@@ -214,6 +280,9 @@ const ChatInterface = () => {
           // Set the transcribed text to input field
           setInput(transcribedText);
           console.log('✅ Transcription successful:', transcribedText);
+          
+          // Focus on input field so user can review before sending
+          inputRef.current?.focus();
         } else {
           setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
         }
@@ -224,11 +293,13 @@ const ChatInterface = () => {
     } catch (error) {
       console.error('🚨 Transcription error:', error);
       
-      // Thai error messages
+      // Thai error messages for different error types
       if (error.message.includes('timeout')) {
         setSttError('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
       } else if (error.message.includes('network')) {
         setSttError('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
+      } else if (error.message.includes('OpenAI API')) {
+        setSttError('เกิดข้อผิดพลาดกับ API กรุณาติดต่อผู้ดูแลระบบ');
       } else {
         setSttError('เกิดข้อผิดพลาดในการแปลงเสียง: ' + error.message);
       }
@@ -238,7 +309,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ NEW: TOGGLE RECORDING ============
+  // ============ TOGGLE RECORDING ============
   const toggleRecording = () => {
     if (isRecording) {
       stopRecording();
@@ -257,7 +328,7 @@ const ChatInterface = () => {
 
   return (
     <div className="chat-interface">
-      {/* ============ NEW: STT ERROR NOTIFICATION ============ */}
+      {/* ============ STT ERROR NOTIFICATION ============ */}
       {sttError && (
         <div className="stt-error-banner">
           <div className="stt-error-content">
@@ -294,7 +365,7 @@ const ChatInterface = () => {
           <div className="empty-chat">
             <div className="empty-icon">💬</div>
             <h3>Start the Conversation</h3>
-            <p>Begin by greeting the patient and asking about their concerns.</p>
+            <p>Begin by greeting the patient or click the microphone to speak.</p>
           </div>
         ) : (
           sessionData.messages.map((message, index) => (
@@ -339,13 +410,19 @@ const ChatInterface = () => {
           ref={inputRef}
           type="text"
           className="chat-input"
-          placeholder={isRecording ? "กำลังบันทึกเสียง..." : isProcessingAudio ? "กำลังประมวลผล..." : "พิมพ์ข้อความหรือกดไมโครโฟนเพื่อพูด..."}
+          placeholder={
+            isRecording 
+              ? "🔴 กำลังบันทึกเสียง..." 
+              : isProcessingAudio 
+                ? "⚙️ กำลังประมวลผล..." 
+                : "พิมพ์ข้อความหรือกดไมโครโฟนเพื่อพูด..."
+          }
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={isLoading || isRecording || isProcessingAudio}
         />
         
-        {/* ============ NEW: MIC BUTTON ============ */}
+        {/* ============ MIC BUTTON WITH RECORDING TIME ============ */}
         <button
           type="button"
           className={`btn chat-mic-btn ${isRecording ? 'recording' : ''}`}
@@ -356,7 +433,12 @@ const ChatInterface = () => {
           {isProcessingAudio ? (
             <Loader size={20} className="spinning" />
           ) : isRecording ? (
-            <Square size={20} />
+            <>
+              <Square size={18} />
+              <span style={{ marginLeft: '0.25rem', fontSize: '0.875rem' }}>
+                {formatRecordingTime(recordingTime)}
+              </span>
+            </>
           ) : (
             <Mic size={20} />
           )}

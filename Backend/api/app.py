@@ -135,7 +135,7 @@ app.include_router(chatbot.router, prefix="/api/chatbot", tags=["chatbot"])
 app.include_router(cases.router, prefix="/api/cases", tags=["cases"])
 app.include_router(documents.router, prefix="/api/documents", tags=["documents"])
 app.include_router(config.router, prefix="/api/config", tags=["config"])
-app.include_router(stt_routes.router, prefix="/api/stt_routes", tags=["speech-to-text"])
+app.include_router(stt_routes.router, prefix="/api/stt", tags=["Speech-to-Text"])
 
 # Register error handlers
 app.add_exception_handler(RequestValidationError, validation_exception_handler)

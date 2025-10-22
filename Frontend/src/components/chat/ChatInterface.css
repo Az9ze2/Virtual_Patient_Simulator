@@ -376,13 +376,16 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* ============ NEW: MIC BUTTON STYLES ============ */
+/* ============================================
+   NEW: MICROPHONE BUTTON STYLES
+   ============================================ */
 .chat-mic-btn {
   padding: 0.875rem 1rem;
   border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.25rem;
   min-width: 56px;
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
@@ -391,6 +394,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  font-weight: 500;
 }
 
 .chat-mic-btn::before {
@@ -413,11 +417,14 @@
   left: 100%;
 }
 
-/* ============ NEW: RECORDING STATE ============ */
+/* ============================================
+   NEW: RECORDING STATE (Red pulsing button)
+   ============================================ */
 .chat-mic-btn.recording {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
   animation: recordingPulse 1.5s ease-in-out infinite;
+  min-width: 80px; /* Wider to show timer */
 }
 
 @keyframes recordingPulse {
@@ -458,20 +465,35 @@
 .chat-mic-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* ============ NEW: PROCESSING STATE ============ */
+/* ============================================
+   NEW: PROCESSING STATE (Spinning loader)
+   ============================================ */
 .chat-mic-btn .spinning {
   animation: spin 1s linear infinite;
 }
 
-/* ============ UPDATE: INPUT FORM LAYOUT ============ */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   UPDATED: INPUT FORM LAYOUT
+   ============================================ */
 .chat-input-form {
   display: flex;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-color);
   background: var(--bg-secondary);
+  align-items: center;
 }
 
 .chat-input {
@@ -485,13 +507,31 @@
   transition: all 0.2s ease;
 }
 
+.chat-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
 .chat-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   background: var(--bg-tertiary);
 }
 
-/* ============ RESPONSIVE ADJUSTMENTS ============ */
+.chat-send-btn {
+  padding: 0.875rem 1.25rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  transition: all 0.3s ease;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
 @media (max-width: 768px) {
   .stt-error-banner {
     padding: 0.75rem 1rem;
@@ -506,13 +546,23 @@
     min-width: 48px;
   }
 
+  .chat-mic-btn.recording {
+    min-width: 72px;
+  }
+
   .chat-send-btn {
     padding: 0.75rem 1rem;
     min-width: 48px;
   }
+
+  .chat-input-form {
+    padding: 0.75rem 1rem;
+  }
 }
 
-/* ============ ACCESSIBILITY ============ */
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
 .chat-mic-btn:focus-visible {
   outline: 3px solid var(--accent-primary);
   outline-offset: 2px;
@@ -521,4 +571,22 @@
 .stt-error-close:focus-visible {
   outline: 2px solid white;
   outline-offset: 2px;
+}
+
+/* ============================================
+   ADDITIONAL ANIMATION FOR SMOOTH TRANSITIONS
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  animation: fadeIn 0.3s ease-out;
 }
