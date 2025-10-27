@@ -26,9 +26,9 @@ class TTSService:
         self.client = OpenAI(api_key=self.api_key)
         
         # Default configuration
-        self.default_model = "tts-1"  # or "tts-1-hd" for higher quality
+        self.default_model = "gpt-4o-mini-tts"  # or "tts-1-hd" for higher quality
         self.default_voice = "nova"  # female voice, good for Thai medical scenarios
-        self.default_speed = 1.0  # normal speed (0.25 to 4.0)
+        self.default_speed = 0.8  # normal speed (0.25 to 4.0)
     
     def text_to_speech(
         self,

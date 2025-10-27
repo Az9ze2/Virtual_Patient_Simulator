@@ -278,7 +278,7 @@ const ChatInterface = () => {
     
     // 🎯 LOWER THRESHOLDS FOR BETTER DETECTION
     const NOISE_THRESHOLD = 8;
-    const SPEECH_THRESHOLD = 15;
+    const SPEECH_THRESHOLD = 16;
     
     // Update audio level for visual feedback
     setAudioLevel(average);
@@ -306,8 +306,8 @@ const ChatInterface = () => {
     }
     
     // 🎯 SILENCE DETECTION: Check if silent for 1.5 seconds after speech was detected
-    const SILENCE_DURATION = 1500;       // Reduced from 2000 to 1500 (1.5 seconds)
-    const MIN_RECORDING_DURATION = 500;  // 0.5 seconds minimum
+    const SILENCE_DURATION = 1250;       // Reduced from 2000 to 1500 (1.5 seconds)
+    const MIN_RECORDING_DURATION = 1000;  // 0.5 seconds minimum
     
     const timeSinceLastSound = Date.now() - lastSoundTimeRef.current;
     const recordingDuration = Date.now() - (mediaRecorderRef.current?.startTime || Date.now());
