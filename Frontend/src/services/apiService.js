@@ -19,9 +19,11 @@ class ApiService {
       }
     };
 
+    this.baseURL = getApiUrl(); // ✅ ADDED: Store baseURL for use in transcribeAudio
+
     // Set up axios defaults
     this.api = axios.create({
-      baseURL: getApiUrl(),
+      baseURL: this.baseURL,
       timeout: 60000, // Increased to 1 minute for regular operations
       headers: {
         'Content-Type': 'application/json',
@@ -29,7 +31,7 @@ class ApiService {
     });
     
     // Log the API URL being used (helpful for debugging)
-    console.log('🌐 API Base URL:', getApiUrl());
+    console.log('🌐 API Base URL:', this.baseURL);
 
     // Add request interceptor for logging
     this.api.interceptors.request.use(
@@ -198,11 +200,11 @@ class ApiService {
       const contentDisposition = response.headers['content-disposition'];
       let filename = 'session_report.pdf';
       
-      console.log(`🔍 ALL RESPONSE HEADERS:`, response.headers);
-      console.log(`🔍 Content-Disposition (raw):`, contentDisposition);
+      console.log(`📋 ALL RESPONSE HEADERS:`, response.headers);
+      console.log(`📋 Content-Disposition (raw):`, contentDisposition);
       
       if (contentDisposition) {
-        console.log(`📎 Content-Disposition header: ${contentDisposition}`);
+        console.log(`🔎 Content-Disposition header: ${contentDisposition}`);
         
         // Simple pattern matching for filename="..." format
         const patterns = [
@@ -230,7 +232,7 @@ class ApiService {
       } else {
         // Fallback filename based on content type
         filename = contentType.includes('html') ? 'session_report.html' : 'session_report.pdf';
-        console.log(`🔄 No Content-Disposition header, using fallback: ${filename}`);
+        console.log(`📄 No Content-Disposition header, using fallback: ${filename}`);
       }
       
       console.log(`💾 Downloading as: ${filename}`);
@@ -387,6 +389,92 @@ class ApiService {
   async getConfigPresets() {
     const response = await this.api.get('/api/config/presets/list');
     return response.data;
+  }
+  
+  // ============================================
+  // Text-to-Speech API
+  // ============================================
+  async sendMessageWithTTS(sessionId, message, enableTTS = true, voice = 'nova', speed = 1.0) {
+    const response = await this.api.post(`/api/chatbot/${sessionId}/chat-with-tts`, {
+      message: message,
+      enable_tts: enableTTS,
+      voice: voice,
+      tts_speed: speed
+    });
+    return response.data;
+  }
+
+  async generateTTS(text, voice = 'nova', model = 'tts-1', speed = 1.0, format = 'mp3') {
+    const response = await this.api.post('/api/tts/generate', {
+      text: text,
+      voice: voice,
+      model: model,
+      speed: speed,
+      format: format
+    });
+    return response.data;
+  }
+
+  async getTTSVoices() {
+    const response = await this.api.get('/api/tts/voices');
+    return response.data;
+  }
+
+  async getTTSHealth() {
+    const response = await this.api.get('/api/tts/health');
+    return response.data;
+  }
+
+  // ============================================
+  // ✅ FIXED: Speech-to-Text API
+  // ============================================
+  async transcribeAudio(audioBlob) {
+    try {
+      console.log('🎤 Starting audio transcription...');
+      console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
+      console.log('🎵 Audio blob type:', audioBlob.type);
+      
+      const formData = new FormData();
+      
+      // Determine file extension based on MIME type
+      let filename = 'recording.webm';
+      if (audioBlob.type.includes('mp4')) {
+        filename = 'recording.mp4';
+      } else if (audioBlob.type.includes('ogg')) {
+        filename = 'recording.ogg';
+      } else if (audioBlob.type.includes('wav')) {
+        filename = 'recording.wav';
+      }
+      
+      formData.append('audio', audioBlob, filename);
+      
+      console.log('📤 Sending audio to:', `${this.baseURL}/api/stt/transcribe`);
+
+      // ✅ FIXED: Use this.api instead of fetch, and correct endpoint
+      const response = await this.api.post('/api/stt/transcribe', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 120000, // 2 minutes timeout for audio processing
+      });
+
+      console.log('✅ Transcription response:', response.data);
+      return response.data;
+      
+    } catch (error) {
+      console.error('🚨 Transcription API Error:', error);
+      
+      // Better error messages
+      if (error.message.includes('timeout')) {
+        throw new Error('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
+      } else if (error.message.includes('Network error')) {
+        throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
+      } else if (error.message.includes('OpenAI API key not configured')) {
+        throw new Error('ระบบยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแล');
+      } else {
+        throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง');
+      }
+    }
   }
 }
 

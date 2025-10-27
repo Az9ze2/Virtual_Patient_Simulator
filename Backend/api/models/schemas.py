@@ -145,3 +145,31 @@ class ConfigUpdateRequest(BaseModel):
     memory_mode: Optional[MemoryMode] = None
     temperature: Optional[float] = Field(None, ge=0.0, le=2.0)
     exam_mode: Optional[bool] = None
+
+# TTS Models
+class VoiceType(str, Enum):
+    ALLOY = "alloy"
+    ECHO = "echo"
+    FABLE = "fable"
+    ONYX = "onyx"
+    NOVA = "nova"
+    SHIMMER = "shimmer"
+
+class TTSRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=4096)
+    voice: Optional[VoiceType] = VoiceType.NOVA
+    model: Optional[str] = Field("tts-1", pattern="^(tts-1|tts-1-hd)$")
+    speed: Optional[float] = Field(1.0, ge=0.25, le=4.0)
+    format: Optional[str] = Field("mp3", pattern="^(mp3|opus|aac|flac)$")
+
+class TTSResponse(BaseModel):
+    audio_base64: str
+    format: str
+    voice: str
+    text_length: int
+
+class ChatMessageWithTTS(BaseModel):
+    message: str = Field(..., min_length=1)
+    enable_tts: bool = False
+    voice: Optional[VoiceType] = VoiceType.NOVA
+    tts_speed: Optional[float] = Field(1.0, ge=0.25, le=4.0)

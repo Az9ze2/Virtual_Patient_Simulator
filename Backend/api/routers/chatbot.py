@@ -11,9 +11,10 @@ from fastapi import APIRouter, HTTPException
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from api.models.schemas import (
-    ChatMessage, ChatResponse, APIResponse
+    ChatMessage, ChatResponse, APIResponse, ChatMessageWithTTS
 )
 from api.utils.session_manager import session_manager
+from services.tts_service import tts_service
 
 router = APIRouter()
 
@@ -69,6 +70,97 @@ async def send_message(session_id: str, message: ChatMessage):
                     "total_tokens": chatbot.total_tokens
                 }
             }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process message: {str(e)}"
+        )
+
+@router.post("/{session_id}/chat-with-tts")
+async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
+    """
+    Send a message to the chatbot and get response with optional TTS audio
+    
+    This endpoint extends the regular chat with TTS capabilities.
+    If enable_tts is True, the response will include audio data.
+    """
+    try:
+        # Get session and chatbot
+        session = session_manager.get_session(session_id)
+        if not session:
+            raise HTTPException(
+                status_code=404,
+                detail="Session not found"
+            )
+        
+        chatbot = session_manager.get_chatbot(session_id)
+        if not chatbot:
+            raise HTTPException(
+                status_code=500,
+                detail="Chatbot instance not found"
+            )
+        
+        # Log incoming message
+        tts_status = "with TTS" if message.enable_tts else "without TTS"
+        print(f"💬 [CHATBOT] Processing message from user ({tts_status}): {message.message[:100]}...")
+        print(f"   📋 Session: {session_id[:8]}... | Case: {chatbot.case_type} | Model: {chatbot.model_choice}")
+        
+        # Send message to chatbot
+        start_time = time.time()
+        response, response_time = chatbot.chat_turn(message.message)
+        
+        print(f"   🤖 Bot response: {response[:100]}...")
+        print(f"   ⏱️ Response time: {response_time:.3f}s | Tokens: {chatbot.total_tokens}")
+        
+        # Update session chat history
+        session_manager.update_chat_history(
+            session_id=session_id,
+            user_message=message.message,
+            bot_response=response
+        )
+        
+        # Prepare response data
+        response_data = {
+            "response": response,
+            "response_time": response_time,
+            "session_id": session_id,
+            "token_usage": {
+                "input_tokens": chatbot.input_tokens,
+                "output_tokens": chatbot.output_tokens,
+                "total_tokens": chatbot.total_tokens
+            }
+        }
+        
+        # Generate TTS if requested
+        if message.enable_tts:
+            try:
+                print(f"   🔊 Generating TTS audio...")
+                audio_base64 = tts_service.text_to_speech_base64(
+                    text=response,
+                    voice=message.voice.value if message.voice else "nova",
+                    speed=message.tts_speed,
+                    output_format="mp3"
+                )
+                response_data["audio"] = {
+                    "audio_base64": audio_base64,
+                    "format": "mp3",
+                    "voice": message.voice.value if message.voice else "nova",
+                    "speed": message.tts_speed
+                }
+                print(f"   ✅ TTS audio generated successfully")
+            except Exception as tts_error:
+                print(f"   ⚠️ TTS generation failed: {tts_error}")
+                # Continue without TTS if it fails
+                response_data["audio_error"] = str(tts_error)
+        
+        return APIResponse(
+            success=True,
+            message="Message sent successfully" + (" with TTS audio" if message.enable_tts and "audio" in response_data else ""),
+            data=response_data
         )
         
     except HTTPException:
