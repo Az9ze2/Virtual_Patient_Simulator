@@ -303,7 +303,8 @@
     min-width: 48px;
   }
 }
-/* ============ NEW: STT ERROR BANNER ============ */
+
+/* ============ STT ERROR BANNER ============ */
 .stt-error-banner {
   position: absolute;
   top: 0;
@@ -377,7 +378,7 @@
 }
 
 /* ============================================
-   NEW: MICROPHONE BUTTON STYLES
+   🎯 ENHANCED: MICROPHONE BUTTON STYLES
    ============================================ */
 .chat-mic-btn {
   padding: 0.875rem 1rem;
@@ -418,13 +419,13 @@
 }
 
 /* ============================================
-   NEW: RECORDING STATE (Red pulsing button)
+   🎯 NEW: RECORDING STATE (Red pulsing)
    ============================================ */
 .chat-mic-btn.recording {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
   animation: recordingPulse 1.5s ease-in-out infinite;
-  min-width: 80px; /* Wider to show timer */
+  min-width: 80px;
 }
 
 @keyframes recordingPulse {
@@ -462,6 +463,42 @@
   }
 }
 
+/* ============================================
+   🎯 NEW: LISTENING STATE (Blue glowing)
+   ============================================ */
+.chat-mic-btn.recording.listening {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  animation: listeningPulse 2s ease-in-out infinite;
+}
+
+@keyframes listeningPulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(59, 130, 246, 0.8), 0 0 0 10px rgba(59, 130, 246, 0.2);
+  }
+}
+
+.chat-mic-btn.recording.listening::after {
+  border-color: rgba(59, 130, 246, 0.6);
+  animation: listeningRing 2s ease-in-out infinite;
+}
+
+@keyframes listeningRing {
+  0% {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 150%;
+    height: 150%;
+    opacity: 0;
+  }
+}
+
 .chat-mic-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -469,7 +506,7 @@
 }
 
 /* ============================================
-   NEW: PROCESSING STATE (Spinning loader)
+   PROCESSING STATE (Spinning loader)
    ============================================ */
 .chat-mic-btn .spinning {
   animation: spin 1s linear infinite;
@@ -482,6 +519,21 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ============================================
+   🎯 NEW: AUDIO LEVEL INDICATOR
+   ============================================ */
+.chat-mic-btn.recording::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  transition: height 0.1s ease;
+  pointer-events: none;
 }
 
 /* ============================================
@@ -574,7 +626,7 @@
 }
 
 /* ============================================
-   ADDITIONAL ANIMATION FOR SMOOTH TRANSITIONS
+   ANIMATION FOR SMOOTH TRANSITIONS
    ============================================ */
 @keyframes fadeIn {
   from {
