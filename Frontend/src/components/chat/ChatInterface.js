@@ -268,10 +268,10 @@ const ChatInterface = () => {
     const average = sum / bufferLength;
     
     // 🎯 NOISE THRESHOLD: Adjust this value (20-40 is good for filtering background noise)
-    const NOISE_THRESHOLD = 20;
+    const NOISE_THRESHOLD = 30;
     
     // 🎯 SPEECH THRESHOLD: Volume level that indicates speech (higher than noise)
-    const SPEECH_THRESHOLD = 45;
+    const SPEECH_THRESHOLD = 60;
     
     // Update audio level for visual feedback
     setAudioLevel(average);
