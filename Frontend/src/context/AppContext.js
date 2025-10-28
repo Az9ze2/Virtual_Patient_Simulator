@@ -48,6 +48,7 @@ export const AppProvider = ({ children }) => {
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
+  const recordingBlobRef = useRef(null); // Ref for immediate access
 
   // Apply theme
   useEffect(() => {
@@ -185,7 +186,10 @@ export const AppProvider = ({ children }) => {
   };
 
   const endSession = async () => {
-    console.log('📁 Ending session, recording blob:', recordingBlob ? `${recordingBlob.size} bytes` : 'none');
+    // Use ref for immediate access to blob
+    const currentBlob = recordingBlobRef.current || recordingBlob;
+    console.log('📁 Ending session, recording blob:', currentBlob ? `${currentBlob.size} bytes` : 'none');
+    
     if (sessionData && sessionData.sessionId) {
       try {
         const response = await apiService.endSession(sessionData.sessionId);
@@ -196,7 +200,7 @@ export const AppProvider = ({ children }) => {
             ...response.data.summary,
             endTime: Date.now(),
             duration: Date.now() - sessionData.startTime,
-            recordingBlob: recordingBlob // Include recording blob
+            recordingBlob: currentBlob // Use ref blob
           };
           console.log('✅ Session completed with recording blob:', completedSession.recordingBlob ? `${completedSession.recordingBlob.size} bytes` : 'none');
           
@@ -215,11 +219,12 @@ export const AppProvider = ({ children }) => {
     
     // Fallback for local session end
     if (sessionData) {
+      const currentBlob = recordingBlobRef.current || recordingBlob;
       const completedSession = {
         ...sessionData,
         endTime: Date.now(),
         duration: Date.now() - sessionData.startTime,
-        recordingBlob: recordingBlob // Include recording blob
+        recordingBlob: currentBlob // Use ref blob
       };
       console.log('✅ Session completed (fallback) with recording blob:', completedSession.recordingBlob ? `${completedSession.recordingBlob.size} bytes` : 'none');
       
@@ -236,6 +241,7 @@ export const AppProvider = ({ children }) => {
   const clearSession = () => {
     setSessionData(null);
     setRecordingBlob(null);
+    recordingBlobRef.current = null;
   };
 
   const saveRecording = (blob) => {
@@ -278,7 +284,8 @@ export const AppProvider = ({ children }) => {
 
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: options.mimeType });
-        setRecordingBlob(blob);
+        recordingBlobRef.current = blob; // Store in ref immediately
+        setRecordingBlob(blob); // Also update state for UI
         setIsRecording(false);
         console.log('✅ Recording stopped and saved, blob size:', blob.size);
       };
@@ -303,17 +310,31 @@ export const AppProvider = ({ children }) => {
   };
 
   const stopRecording = () => {
-    console.log('📹 Attempting to stop recording...');
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-        streamRef.current = null;
+    return new Promise((resolve) => {
+      console.log('📹 Attempting to stop recording...');
+      
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        // Set up one-time listener for when recording stops
+        const handleStop = () => {
+          console.log('📹 Stop event fired, blob will be available shortly');
+          // Give a small delay for the onstop callback to complete
+          setTimeout(() => {
+            resolve({ success: true });
+          }, 100);
+        };
+        
+        mediaRecorderRef.current.addEventListener('stop', handleStop, { once: true });
+        mediaRecorderRef.current.stop();
+        
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+      } else {
+        console.warn('⚠️ No active recording to stop');
+        resolve({ success: false });
       }
-      return { success: true };
-    }
-    console.warn('⚠️ No active recording to stop');
-    return { success: false };
+    });
   };
 
   const value = {

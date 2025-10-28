@@ -73,10 +73,11 @@ const ChatbotPage = () => {
       // Stop recording if active
       if (isRecording) {
         console.log('📹 Stopping video recording...');
-        stopRecording();
+        await stopRecording();
+        console.log('📹 Recording stopped, blob should be saved now');
         
-        // Wait a bit for the recording to finalize
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Give extra time for state to update
+        await new Promise(resolve => setTimeout(resolve, 200));
       }
       
       // Then end the session
