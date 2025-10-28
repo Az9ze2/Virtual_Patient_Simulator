@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Play, Download, Clock, MessageSquare, Cpu, CheckCircle } from 'lucide-react';
+import { Home, Play, Download, Clock, MessageSquare, Cpu, CheckCircle, Video } from 'lucide-react';
 import './SummaryPage.css';
 import apiService from '../services/apiService';
 
@@ -8,6 +8,42 @@ const SummaryPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { sessionData, diagnosis, treatmentPlan } = location.state || {};
+  const [videoURL, setVideoURL] = useState(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  
+  // Create video URL from blob if available
+  useEffect(() => {
+    console.log('📹 SummaryPage - sessionData:', sessionData);
+    console.log('📹 SummaryPage - recordingBlob:', sessionData?.recordingBlob ? `${sessionData.recordingBlob.size} bytes` : 'none');
+    
+    if (sessionData?.recordingBlob) {
+      setVideoLoading(true);
+      
+      // Use setTimeout to allow UI to render before processing
+      setTimeout(() => {
+        try {
+          const url = URL.createObjectURL(sessionData.recordingBlob);
+          setVideoURL(url);
+          setVideoLoading(false);
+          console.log('✅ Video URL created:', url);
+        } catch (error) {
+          console.error('❌ Error creating video URL:', error);
+          setVideoError(true);
+          setVideoLoading(false);
+        }
+      }, 100);
+      
+      // Cleanup URL on unmount
+      return () => {
+        if (videoURL) {
+          URL.revokeObjectURL(videoURL);
+        }
+      };
+    } else {
+      console.warn('⚠️ No recording blob found in session data');
+    }
+  }, [sessionData]);
 
   const handleDownload = async () => {
     if (!sessionData?.sessionId) {
@@ -19,6 +55,37 @@ const SummaryPage = () => {
     } catch (error) {
       console.error('Download failed:', error);
       alert('Failed to download report. Please try again.');
+    }
+  };
+
+  const handleDownloadVideo = () => {
+    if (!sessionData?.recordingBlob) {
+      alert('No video recording available.');
+      return;
+    }
+    
+    try {
+      const url = URL.createObjectURL(sessionData.recordingBlob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      
+      // Generate filename with student info and timestamp
+      const timestamp = new Date(sessionData.startTime).toISOString().split('T')[0];
+      const studentId = sessionData.userInfo?.student_id || 'unknown';
+      a.download = `session-recording_${studentId}_${timestamp}.webm`;
+      
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    } catch (error) {
+      console.error('Video download failed:', error);
+      alert('Failed to download video. Please try again.');
     }
   };
 
@@ -144,9 +211,59 @@ const SummaryPage = () => {
             </div>
           </div>
 
+          {/* Video Recording */}
+          {sessionData?.recordingBlob && (
+            <div className="video-card fade-in" style={{ animationDelay: '0.3s' }}>
+              <h3 className="card-section-title">Session Recording</h3>
+              
+              {videoLoading ? (
+                <div className="video-loading-state">
+                  <div className="loading-spinner"></div>
+                  <p className="loading-text">Processing video preview...</p>
+                  <p className="loading-subtext">
+                    Large videos may take a moment to load. You can download the video below while waiting.
+                  </p>
+                </div>
+              ) : videoError ? (
+                <div className="video-error-state">
+                  <p className="error-text">Unable to load video preview</p>
+                  <p className="error-subtext">
+                    The video was recorded successfully but cannot be previewed. You can still download it below.
+                  </p>
+                </div>
+              ) : videoURL ? (
+                <div className="video-preview-container">
+                  <video 
+                    className="video-preview"
+                    controls
+                    preload="metadata"
+                    src={videoURL}
+                    onLoadStart={() => console.log('📹 Video loading started')}
+                    onLoadedData={() => console.log('✅ Video loaded successfully')}
+                    onError={(e) => {
+                      console.error('❌ Video playback error:', e);
+                      setVideoError(true);
+                    }}
+                  >
+                    Your browser does not support video playback.
+                  </video>
+                </div>
+              ) : null}
+              
+              <button 
+                className="btn btn-outline" 
+                onClick={handleDownloadVideo}
+                disabled={!sessionData?.recordingBlob}
+              >
+                <Download size={18} />
+                Download Video ({sessionData?.recordingBlob ? `${(sessionData.recordingBlob.size / 1024 / 1024).toFixed(2)} MB` : ''})
+              </button>
+            </div>
+          )}
+
           {/* Diagnosis */}
           {(diagnosis || treatmentPlan) && (
-            <div className="diagnosis-card fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="diagnosis-card fade-in" style={{ animationDelay: '0.4s' }}>
               <h3 className="card-section-title">Your Assessment</h3>
               
               {diagnosis && (
@@ -166,7 +283,7 @@ const SummaryPage = () => {
           )}
 
           {/* Conversation Preview */}
-          <div className="conversation-card fade-in" style={{ animationDelay: '0.4s' }}>
+          <div className="conversation-card fade-in" style={{ animationDelay: '0.5s' }}>
             <h3 className="card-section-title">Conversation History</h3>
             <div className="conversation-preview">
               {Array.isArray(messages) && messages.length > 0 && messages.slice(0, 5).map((msg, idx) => {
@@ -190,7 +307,7 @@ const SummaryPage = () => {
           </div>
 
           {/* Actions */}
-          <div className="action-buttons fade-in" style={{ animationDelay: '0.5s' }}>
+          <div className="action-buttons fade-in" style={{ animationDelay: '0.6s' }}>
             <button className="btn btn-primary btn-large" onClick={handleDownload}>
               <Download size={20} />
               Download PDF Report

@@ -5,13 +5,13 @@ import ChatInterface from '../components/chat/ChatInterface';
 import PatientInfo from '../components/chat/PatientInfo';
 import DiagnosisSection from '../components/chat/DiagnosisSection';
 import SessionTimer from '../components/chat/SessionTimer';
-import { ArrowLeft, StopCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, StopCircle, AlertTriangle, Video } from 'lucide-react';
 import apiService from '../services/apiService';
 import './ChatbotPage.css';
 
 const ChatbotPage = () => {
   const navigate = useNavigate();
-  const { sessionData, endSession, settings } = useApp();
+  const { sessionData, endSession, settings, isRecording, stopRecording, recordingBlob } = useApp();
   const [showEndConfirm, setShowEndConfirm] = useState(false);
   const [diagnosis, setDiagnosis] = useState('');
   const [treatmentPlan, setTreatmentPlan] = useState('');
@@ -70,6 +70,16 @@ const ChatbotPage = () => {
         }
       }
       
+      // Stop recording if active
+      if (isRecording) {
+        console.log('📹 Stopping video recording...');
+        await stopRecording();
+        console.log('📹 Recording stopped, blob should be saved now');
+        
+        // Give extra time for state to update
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+      
       // Then end the session
       const completedSession = await endSession();
       navigate('/summary', { state: { sessionData: completedSession, diagnosis, treatmentPlan } });
@@ -101,6 +111,12 @@ const ChatbotPage = () => {
           </div>
         </div>
         <div className="header-right">
+          {isRecording && (
+            <div className="recording-indicator">
+              <div className="recording-dot"></div>
+              <span>Recording</span>
+            </div>
+          )}
           {settings.showTimer && <SessionTimer startTime={sessionData.startTime} />}
           <button className="btn btn-danger btn-icon" onClick={handleEndSession}>
             <StopCircle size={20} />
