@@ -597,3 +597,36 @@
   font-weight: 600;
   animation: pulse 1s ease-in-out infinite;
 }
+
+/* ============ RECORDING INDICATOR ============ */
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  color: #991b1b;
+  animation: fadeIn 0.5s ease;
+}
+
+.recording-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #dc2626;
+  animation: recordingPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+@keyframes recordingPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}

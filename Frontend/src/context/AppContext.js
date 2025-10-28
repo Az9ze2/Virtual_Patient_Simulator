@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import apiService from '../services/apiService';
 
 const AppContext = createContext();
@@ -41,6 +41,13 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('currentSession');
     return saved ? JSON.parse(saved) : null;
   });
+
+  // Video recording state
+  const [recordingBlob, setRecordingBlob] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
 
   // Apply theme
   useEffect(() => {
@@ -178,6 +185,7 @@ export const AppProvider = ({ children }) => {
   };
 
   const endSession = async () => {
+    console.log('📁 Ending session, recording blob:', recordingBlob ? `${recordingBlob.size} bytes` : 'none');
     if (sessionData && sessionData.sessionId) {
       try {
         const response = await apiService.endSession(sessionData.sessionId);
@@ -187,8 +195,10 @@ export const AppProvider = ({ children }) => {
             ...sessionData,
             ...response.data.summary,
             endTime: Date.now(),
-            duration: Date.now() - sessionData.startTime
+            duration: Date.now() - sessionData.startTime,
+            recordingBlob: recordingBlob // Include recording blob
           };
+          console.log('✅ Session completed with recording blob:', completedSession.recordingBlob ? `${completedSession.recordingBlob.size} bytes` : 'none');
           
           // Save to session history
           const history = JSON.parse(localStorage.getItem('sessionHistory') || '[]');
@@ -208,8 +218,10 @@ export const AppProvider = ({ children }) => {
       const completedSession = {
         ...sessionData,
         endTime: Date.now(),
-        duration: Date.now() - sessionData.startTime
+        duration: Date.now() - sessionData.startTime,
+        recordingBlob: recordingBlob // Include recording blob
       };
+      console.log('✅ Session completed (fallback) with recording blob:', completedSession.recordingBlob ? `${completedSession.recordingBlob.size} bytes` : 'none');
       
       const history = JSON.parse(localStorage.getItem('sessionHistory') || '[]');
       history.unshift(completedSession);
@@ -223,6 +235,85 @@ export const AppProvider = ({ children }) => {
 
   const clearSession = () => {
     setSessionData(null);
+    setRecordingBlob(null);
+  };
+
+  const saveRecording = (blob) => {
+    setRecordingBlob(blob);
+  };
+
+  // Recording control functions
+  const startRecording = async () => {
+    try {
+      // Request camera permission
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        },
+        audio: true
+      });
+
+      streamRef.current = stream;
+      chunksRef.current = [];
+
+      // Create MediaRecorder
+      const options = { mimeType: 'video/webm;codecs=vp9' };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/webm;codecs=vp8';
+      }
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/webm';
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, options);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: options.mimeType });
+        setRecordingBlob(blob);
+        setIsRecording(false);
+        console.log('✅ Recording stopped and saved, blob size:', blob.size);
+      };
+
+      mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event.error);
+        setIsRecording(false);
+      };
+
+      mediaRecorder.start(1000);
+      setIsRecording(true);
+      console.log('📹 Recording started successfully');
+      return { success: true };
+    } catch (err) {
+      console.error('Start recording error:', err);
+      let errorMessage = 'Failed to access camera';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errorMessage = 'Camera permission denied';
+      }
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const stopRecording = () => {
+    console.log('📹 Attempting to stop recording...');
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+      return { success: true };
+    }
+    console.warn('⚠️ No active recording to stop');
+    return { success: false };
   };
 
   const value = {
@@ -236,7 +327,12 @@ export const AppProvider = ({ children }) => {
     updateSession,
     addMessage,
     endSession,
-    clearSession
+    clearSession,
+    recordingBlob,
+    saveRecording,
+    isRecording,
+    startRecording,
+    stopRecording
   };
 
   return (
