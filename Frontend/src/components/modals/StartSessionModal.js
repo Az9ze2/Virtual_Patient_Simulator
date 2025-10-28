@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
-import { X, User, CreditCard, ChevronRight, FileText, Loader } from 'lucide-react';
+import { X, User, CreditCard, ChevronRight, FileText, Loader, Video } from 'lucide-react';
 import apiService from '../../services/apiService';
 import './Modal.css';
 
 
 const StartSessionModal = ({ onClose, onStart }) => {
-  const { startSession } = useApp();
+  const { startSession, settings, startRecording } = useApp();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -17,6 +17,8 @@ const StartSessionModal = ({ onClose, onStart }) => {
   const [loading, setLoading] = useState(false);
   const [cases, setCases] = useState([]);
   const [loadingCases, setLoadingCases] = useState(false);
+  const [showRecordingConsent, setShowRecordingConsent] = useState(false);
+  const [recordingError, setRecordingError] = useState('');
   
   // Refs and state for gradient overlay
   const caseListRef = useRef(null);
@@ -149,6 +151,17 @@ const StartSessionModal = ({ onClose, onStart }) => {
       return;
     }
 
+    // If exam mode is enabled, show recording consent
+    if (settings.examMode) {
+      setShowRecordingConsent(true);
+      return;
+    }
+
+    // Start session without recording
+    await startSessionWithoutRecording();
+  };
+
+  const startSessionWithoutRecording = async () => {
     try {
       setLoading(true);
       const userInfo = {
@@ -165,6 +178,47 @@ const StartSessionModal = ({ onClose, onStart }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAcceptRecording = async () => {
+    try {
+      setLoading(true);
+      setShowRecordingConsent(false);
+      
+      // Start the session first
+      const userInfo = {
+        name: formData.name,
+        student_id: formData.studentId
+      };
+      
+      const session = await startSession(userInfo, formData.selectedCase.filename, {});
+      
+      // Start recording (this will request camera permission)
+      console.log('📹 Starting recording...');
+      const recordResult = await startRecording();
+      
+      if (!recordResult.success) {
+        console.error('Failed to start recording:', recordResult.error);
+        setRecordingError(recordResult.error || 'Failed to start recording');
+        // Show error but continue with session
+        setTimeout(() => {
+          alert('Recording failed: ' + recordResult.error + '\nContinuing without recording.');
+        }, 500);
+      }
+      
+      onStart(session);
+      onClose();
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      setErrors({ api: error.message || 'Failed to start session. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeclineRecording = async () => {
+    setShowRecordingConsent(false);
+    await startSessionWithoutRecording();
   };
 
   const handleOverlayClick = (e) => {
@@ -335,6 +389,51 @@ const StartSessionModal = ({ onClose, onStart }) => {
           )}
         </div>
       </div>
+
+      {/* Recording Consent Modal */}
+      {showRecordingConsent && (
+        <div className="modal-overlay" style={{ zIndex: 1001 }}>
+          <div className="modal consent-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-title-section">
+                <div className="warning-icon">
+                  <Video size={24} />
+                </div>
+                <h2 className="modal-title">Camera Recording Consent</h2>
+              </div>
+            </div>
+            <div className="modal-body">
+              <p>This session is in <strong>exam mode</strong> and requires video recording.</p>
+              <p className="text-muted">
+                We will request access to your camera to record the session. The recording will be saved and included in your session report.
+              </p>
+              {recordingError && (
+                <div className="error-banner">
+                  <span className="error-text">{recordingError}</span>
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-outline" onClick={handleDeclineRecording} disabled={loading}>
+                Continue Without Recording
+              </button>
+              <button className="btn btn-primary" onClick={handleAcceptRecording} disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader className="spinning" size={18} />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Video size={18} />
+                    Accept & Start Recording
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

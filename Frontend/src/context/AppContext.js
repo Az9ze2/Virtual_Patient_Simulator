@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import apiService from '../services/apiService';
 
 const AppContext = createContext();
@@ -41,6 +41,14 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('currentSession');
     return saved ? JSON.parse(saved) : null;
   });
+
+  // Video recording state
+  const [recordingBlob, setRecordingBlob] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const recordingBlobRef = useRef(null); // Ref for immediate access
 
   // Apply theme
   useEffect(() => {
@@ -178,6 +186,10 @@ export const AppProvider = ({ children }) => {
   };
 
   const endSession = async () => {
+    // Use ref for immediate access to blob
+    const currentBlob = recordingBlobRef.current || recordingBlob;
+    console.log('📁 Ending session, recording blob:', currentBlob ? `${currentBlob.size} bytes` : 'none');
+    
     if (sessionData && sessionData.sessionId) {
       try {
         const response = await apiService.endSession(sessionData.sessionId);
@@ -187,8 +199,10 @@ export const AppProvider = ({ children }) => {
             ...sessionData,
             ...response.data.summary,
             endTime: Date.now(),
-            duration: Date.now() - sessionData.startTime
+            duration: Date.now() - sessionData.startTime,
+            recordingBlob: currentBlob // Use ref blob
           };
+          console.log('✅ Session completed with recording blob:', completedSession.recordingBlob ? `${completedSession.recordingBlob.size} bytes` : 'none');
           
           // Save to session history
           const history = JSON.parse(localStorage.getItem('sessionHistory') || '[]');
@@ -205,11 +219,14 @@ export const AppProvider = ({ children }) => {
     
     // Fallback for local session end
     if (sessionData) {
+      const currentBlob = recordingBlobRef.current || recordingBlob;
       const completedSession = {
         ...sessionData,
         endTime: Date.now(),
-        duration: Date.now() - sessionData.startTime
+        duration: Date.now() - sessionData.startTime,
+        recordingBlob: currentBlob // Use ref blob
       };
+      console.log('✅ Session completed (fallback) with recording blob:', completedSession.recordingBlob ? `${completedSession.recordingBlob.size} bytes` : 'none');
       
       const history = JSON.parse(localStorage.getItem('sessionHistory') || '[]');
       history.unshift(completedSession);
@@ -223,6 +240,101 @@ export const AppProvider = ({ children }) => {
 
   const clearSession = () => {
     setSessionData(null);
+    setRecordingBlob(null);
+    recordingBlobRef.current = null;
+  };
+
+  const saveRecording = (blob) => {
+    setRecordingBlob(blob);
+  };
+
+  // Recording control functions
+  const startRecording = async () => {
+    try {
+      // Request camera permission
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        },
+        audio: true
+      });
+
+      streamRef.current = stream;
+      chunksRef.current = [];
+
+      // Create MediaRecorder
+      const options = { mimeType: 'video/webm;codecs=vp9' };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/webm;codecs=vp8';
+      }
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/webm';
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, options);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: options.mimeType });
+        recordingBlobRef.current = blob; // Store in ref immediately
+        setRecordingBlob(blob); // Also update state for UI
+        setIsRecording(false);
+        console.log('✅ Recording stopped and saved, blob size:', blob.size);
+      };
+
+      mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event.error);
+        setIsRecording(false);
+      };
+
+      mediaRecorder.start(1000);
+      setIsRecording(true);
+      console.log('📹 Recording started successfully');
+      return { success: true };
+    } catch (err) {
+      console.error('Start recording error:', err);
+      let errorMessage = 'Failed to access camera';
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errorMessage = 'Camera permission denied';
+      }
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  const stopRecording = () => {
+    return new Promise((resolve) => {
+      console.log('📹 Attempting to stop recording...');
+      
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        // Set up one-time listener for when recording stops
+        const handleStop = () => {
+          console.log('📹 Stop event fired, blob will be available shortly');
+          // Give a small delay for the onstop callback to complete
+          setTimeout(() => {
+            resolve({ success: true });
+          }, 100);
+        };
+        
+        mediaRecorderRef.current.addEventListener('stop', handleStop, { once: true });
+        mediaRecorderRef.current.stop();
+        
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
+      } else {
+        console.warn('⚠️ No active recording to stop');
+        resolve({ success: false });
+      }
+    });
   };
 
   const value = {
@@ -236,7 +348,12 @@ export const AppProvider = ({ children }) => {
     updateSession,
     addMessage,
     endSession,
-    clearSession
+    clearSession,
+    recordingBlob,
+    saveRecording,
+    isRecording,
+    startRecording,
+    stopRecording
   };
 
   return (

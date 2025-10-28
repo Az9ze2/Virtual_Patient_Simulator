@@ -422,7 +422,7 @@ const ChatInterface = () => {
         setAudioLevel(0);
         setIsListeningForSilence(false);
         
-        await processRecording();
+        await processRecording(); 
       };
 
       mediaRecorderRef.current.start(100);
