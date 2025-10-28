@@ -442,6 +442,11 @@ class ApiService {
       console.log('🎵 Audio blob type:', audioBlob.type);
       console.log('🧠 Conversation context:', conversationContext ? 'Provided' : 'None');
       
+      if (audioBlob.size < 5000) { // Less than 5KB
+      console.warn('⚠️ Audio blob too small:', audioBlob.size, 'bytes');
+      throw new Error('ไฟล์เสียงเล็กเกินไป กรุณาบันทึกเสียงให้ยาวขึ้น');
+      }
+      
       // ✅ CREATE FORMDATA WITH ALL REQUIRED FIELDS
       const formData = new FormData();
       

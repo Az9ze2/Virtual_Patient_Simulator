@@ -529,6 +529,13 @@ const ChatInterface = () => {
           console.log('   Corrected:', transcribedText);
         }
         
+        if (!transcribedText || transcribedText.length < 2) {
+        console.log('❌ Transcribed text is empty or too short');
+        setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
+        setIsProcessingAudio(false);
+        return;
+        }
+
         if (transcribedText) {
           console.log('🚀 Auto-sending transcribed message...');
           await autoSendTranscribedMessage(transcribedText);

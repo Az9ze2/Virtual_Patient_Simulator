@@ -126,8 +126,42 @@ async def transcribe_audio(
                     prompt="นี่คือการสนทนาทางการแพทย์เกี่ยวกับอาการของผู้ป่วย ใช้คำศัพท์ทางการแพทย์ภาษาไทย"
                 )
             
-            transcribed_text = transcript.text
+            transcribed_text = transcript.text.strip()
             logger.info(f"✅ Whisper transcription: {transcribed_text[:100]}...")
+            
+            # 🔧 FIX: Check for silent/empty audio patterns
+            silent_patterns = [
+                "โปรดติดตามตอนต่อไป",
+                "ขอบคุณที่รับชม",
+                "ขอบคุณครับ",
+                "ขอบคุณค่ะ",
+                ""  # Empty string
+            ]
+            
+            # Check if transcription is suspiciously short or matches silent patterns
+            if not transcribed_text or transcribed_text in silent_patterns:
+                logger.warning(f"⚠️ Silent or invalid audio detected: '{transcribed_text}'")
+                raise HTTPException(
+                    status_code=400,
+                    detail={
+                        "error": "silent_audio",
+                        "message": "ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง",
+                        "transcribed_text": transcribed_text,
+                        "hint": "ตรวจสอบว่าไมโครโฟนทำงานปกติและพูดในระยะที่ใกล้พอ"
+                    }
+                )
+            
+            # Check if transcription is too short (less than 3 characters)
+            if len(transcribed_text) < 3:
+                logger.warning(f"⚠️ Transcription too short: '{transcribed_text}'")
+                raise HTTPException(
+                    status_code=400,
+                    detail={
+                        "error": "audio_too_short",
+                        "message": "เสียงที่บันทึกสั้นเกินไป กรุณาพูดให้ชัดเจนและยาวขึ้น",
+                        "transcribed_text": transcribed_text
+                    }
+                )
             
             # ============ STEP 4: WORD CORRECTION (Optional) ============
             correction_result = None
@@ -180,6 +214,10 @@ async def transcribe_audio(
                 os.remove(temp_file_path)
                 logger.info(f"🗑️  Cleaned up temporary file: {temp_file_path}")
     
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    
     except openai.APIError as e:
         logger.error(f"🚨 OpenAI API Error: {str(e)}")
         raise HTTPException(
@@ -213,11 +251,6 @@ async def transcribe_audio(
 async def stt_status() -> Dict[str, Any]:
     """
     Check STT service status and configuration
-    
-    Returns:
-    - success: Boolean indicating if service is ready
-    - data: Service configuration details
-    - message: Status message
     """
     
     api_key_configured = bool(openai.api_key)
@@ -236,7 +269,8 @@ async def stt_status() -> Dict[str, Any]:
                 "whisper_transcription": True,
                 "word_correction": True,
                 "medical_terminology": True,
-                "context_aware": True
+                "context_aware": True,
+                "silent_audio_detection": True
             },
             "optimal_settings": {
                 "sample_rate": "16kHz",
@@ -255,10 +289,6 @@ async def stt_status() -> Dict[str, Any]:
 async def stt_health() -> Dict[str, Any]:
     """
     Health check endpoint for STT service
-    
-    Returns:
-    - status: Service health status
-    - api_available: Whether OpenAI API is accessible
     """
     
     api_key_configured = bool(openai.api_key)
@@ -269,72 +299,7 @@ async def stt_health() -> Dict[str, Any]:
         "service": "STT + Word Correction",
         "components": {
             "whisper": api_key_configured,
-            "word_correction": api_key_configured
+            "word_correction": api_key_configured,
+            "silent_detection": True
         }
     }
-
-
-# ============ PIPELINE DOCUMENTATION ============
-"""
-📋 STT PIPELINE WITH WORD CORRECTION
-
-🎯 PIPELINE FLOW:
-
-1. 🎤 Audio Input
-   └─> User records voice in Thai language
-   └─> Audio file (webm/mp4/wav/mp3)
-
-2. 🔊 Whisper STT (OpenAI)
-   └─> Transcribe audio to text
-   └─> Optimized for Thai medical terminology
-   └─> Output: Raw transcribed text
-
-3. 🔧 Word Correction AI (GPT-4o-mini)
-   └─> Correct medical terms
-   └─> Fix common STT errors
-   └─> Preserve original meaning
-   └─> Output: Corrected text
-
-4. 💬 Main Chatbot
-   └─> Receive corrected text
-   └─> Generate response
-   └─> Continue conversation
-
-⚡ FEATURES:
-
-✅ Medical Terminology Correction
-   - ไข้, ปวดหัว, ท้องเสีย, etc.
-   
-✅ Common STT Error Fixes
-   - Homophones: "ไข้" vs "ขาย"
-   - Similar sounds: "ปวด" vs "บวม"
-   
-✅ Context-Aware Correction
-   - Uses conversation history
-   - Medical domain knowledge
-   
-✅ Meaning Preservation
-   - No added information
-   - Original intent maintained
-   - Tone preserved
-
-💰 COST OPTIMIZATION:
-
-- Whisper: $0.006 per minute
-- Word Correction: ~$0.0001 per correction
-- Total: ~$0.0061 per 30-second message
-
-📊 EXPECTED PERFORMANCE:
-
-- Whisper Accuracy: 90-95% (Thai)
-- Correction Improvement: +5-10%
-- Final Accuracy: 95-98%
-- Processing Time: 2-5 seconds
-
-🔧 CONFIGURATION:
-
-- enable_correction: True/False
-- conversation_context: Optional string
-- Whisper temperature: 0.0 (deterministic)
-- Correction temperature: 0.1 (minimal creativity)
-"""
