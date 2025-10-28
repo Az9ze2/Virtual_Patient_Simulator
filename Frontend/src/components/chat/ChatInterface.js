@@ -15,7 +15,7 @@ const ChatInterface = () => {
   const [sttError, setSttError] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
   
-  // ============ 🎯 NEW: SILENCE DETECTION STATE ============
+  // ============ SILENCE DETECTION STATE ============
   const [isListeningForSilence, setIsListeningForSilence] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   
@@ -33,7 +33,7 @@ const ChatInterface = () => {
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
   
-  // ============ 🎯 NEW: AUDIO ANALYSIS REFS ============
+  // ============ AUDIO ANALYSIS REFS ============
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const animationFrameRef = useRef(null);
@@ -127,6 +127,14 @@ const ChatInterface = () => {
     }
   };
 
+  // ============ 🎯 NEW: BUILD CONVERSATION CONTEXT FOR AI CORRECTION ============
+  const getConversationContext = () => {
+    return apiService.buildConversationContext(
+      sessionData?.messages || [], 
+      sessionData?.caseData
+    );
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !sessionData?.sessionId) return;
@@ -190,7 +198,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 NEW: AUTO-SEND MESSAGE AFTER TRANSCRIPTION ============
+  // ============ AUTO-SEND MESSAGE AFTER TRANSCRIPTION ============
   const autoSendTranscribedMessage = async (transcribedText) => {
     if (!transcribedText.trim() || !sessionData?.sessionId) return;
 
@@ -250,9 +258,8 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 NEW: AUDIO LEVEL DETECTION WITH NOISE CANCELLATION ============
+  // ============ AUDIO LEVEL DETECTION WITH NOISE CANCELLATION ============
   const detectAudioLevel = () => {
-    // 🎯 FIX: Check refs directly, not state
     if (!analyserRef.current) {
       console.log('⚠️ Analyser not available - cannot detect audio levels');
       return;
@@ -269,21 +276,17 @@ const ChatInterface = () => {
     
     analyser.getByteFrequencyData(dataArray);
     
-    // Calculate average volume
     let sum = 0;
     for (let i = 0; i < bufferLength; i++) {
       sum += dataArray[i];
     }
     const average = sum / bufferLength;
     
-    // 🎯 LOWER THRESHOLDS FOR BETTER DETECTION
     const NOISE_THRESHOLD = 8;
     const SPEECH_THRESHOLD = 16;
     
-    // Update audio level for visual feedback
     setAudioLevel(average);
     
-    // 🎯 DEBUG: Log audio levels every 500ms
     const now = Date.now();
     if (!window.lastLogTime || now - window.lastLogTime > 500) {
       console.log('📊 Audio Level:', average.toFixed(2), 
@@ -293,11 +296,9 @@ const ChatInterface = () => {
       window.lastLogTime = now;
     }
     
-    // Detect if there's actual speech (above speech threshold)
     if (average > SPEECH_THRESHOLD) {
       lastSoundTimeRef.current = Date.now();
       
-      // Mark that we've detected speech
       if (!hasSpeechDetectedRef.current) {
         hasSpeechDetectedRef.current = true;
         setIsListeningForSilence(true);
@@ -305,14 +306,12 @@ const ChatInterface = () => {
       }
     }
     
-    // 🎯 SILENCE DETECTION: Check if silent for 1.5 seconds after speech was detected
-    const SILENCE_DURATION = 1250;       // Reduced from 2000 to 1500 (1.5 seconds)
-    const MIN_RECORDING_DURATION = 1000;  // 0.5 seconds minimum
+    const SILENCE_DURATION = 1250;
+    const MIN_RECORDING_DURATION = 1000;
     
     const timeSinceLastSound = Date.now() - lastSoundTimeRef.current;
     const recordingDuration = Date.now() - (mediaRecorderRef.current?.startTime || Date.now());
     
-    // 🎯 DEBUG: Show timing info
     if (hasSpeechDetectedRef.current) {
       if (!window.lastTimingLog || now - window.lastTimingLog > 500) {
         console.log('⏱️ Time since last sound:', (timeSinceLastSound/1000).toFixed(1) + 's',
@@ -331,11 +330,10 @@ const ChatInterface = () => {
       return;
     }
     
-    // Continue monitoring
     animationFrameRef.current = requestAnimationFrame(detectAudioLevel);
   };
 
-  // ============ 🎯 MODIFIED: START RECORDING WITH AUDIO ANALYSIS ============
+  // ============ START RECORDING WITH AUDIO ANALYSIS ============
   const startRecording = async () => {
     try {
       setSttError(null);
@@ -345,30 +343,26 @@ const ChatInterface = () => {
         return;
       }
 
-      // 🎯 ENHANCED: Request microphone with NOISE CANCELLATION enabled
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           channelCount: 1,
           sampleRate: 16000,
-          echoCancellation: true,        // ✅ Enable echo cancellation
-          noiseSuppression: true,        // ✅ Enable noise suppression
-          autoGainControl: true,         // ✅ Enable auto gain control
-          // 🎯 NEW: Advanced noise cancellation (supported in modern browsers)
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
           noiseSuppression: { ideal: true },
           echoCancellation: { ideal: true },
           autoGainControl: { ideal: true }
         } 
       });
 
-      // 🎯 NEW: Set up audio analysis for silence detection
       try {
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
         const source = audioContextRef.current.createMediaStreamSource(stream);
         analyserRef.current = audioContextRef.current.createAnalyser();
         
-        // 🎯 Configure analyser for better noise detection
         analyserRef.current.fftSize = 2048;
-        analyserRef.current.smoothingTimeConstant = 0.8; // Smooth out noise spikes
+        analyserRef.current.smoothingTimeConstant = 0.8;
         
         source.connect(analyserRef.current);
         
@@ -377,7 +371,6 @@ const ChatInterface = () => {
         console.log('   - Frequency Bin Count:', analyserRef.current.frequencyBinCount);
       } catch (error) {
         console.error('❌ Failed to initialize audio analyser:', error);
-        // Continue without analyser - recording will still work, just no auto-stop
       }
 
       const mimeTypes = [
@@ -404,7 +397,6 @@ const ChatInterface = () => {
         audioBitsPerSecond: 128000
       });
 
-      // 🎯 NEW: Store start time for minimum duration check
       mediaRecorderRef.current.startTime = Date.now();
 
       audioChunksRef.current = [];
@@ -420,7 +412,6 @@ const ChatInterface = () => {
       mediaRecorderRef.current.onstop = async () => {
         stream.getTracks().forEach(track => track.stop());
         
-        // 🎯 NEW: Clean up audio analysis
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
         }
@@ -438,11 +429,9 @@ const ChatInterface = () => {
       setIsRecording(true);
       
       console.log('🎤 Recording started with noise cancellation enabled');
-      console.log('📊 Thresholds: Noise=20, Speech=35, Silence=1.5s');
+      console.log('📊 Thresholds: Noise=8, Speech=16, Silence=1.25s');
       console.log('🔍 Analyser available:', !!analyserRef.current);
 
-      // 🎯 NEW: Start audio level detection AFTER everything is set up
-      // Use setTimeout to ensure MediaRecorder has started
       setTimeout(() => {
         console.log('🎯 Starting audio level detection...');
         console.log('   - isRecording:', isRecording);
@@ -450,7 +439,6 @@ const ChatInterface = () => {
         detectAudioLevel();
       }, 100);
 
-      // 🎯 MODIFIED: Safety timeout increased to 60 seconds
       silenceTimeoutRef.current = setTimeout(() => {
         console.log('⏰ Auto-stopping recording after 60 seconds');
         stopRecording();
@@ -484,7 +472,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 MODIFIED: AUTO-SEND AFTER SUCCESSFUL TRANSCRIPTION ============
+  // ============ 🎯 MODIFIED: PROCESS RECORDING WITH AI CORRECTION ============
   const processRecording = async () => {
     if (audioChunksRef.current.length === 0) {
       console.log('❌ No audio chunks recorded');
@@ -510,8 +498,21 @@ const ChatInterface = () => {
         return;
       }
 
-      console.log('📤 Sending audio to backend for transcription...');
-      const transcription = await apiService.transcribeAudio(audioBlob);
+      console.log('📤 Sending audio to backend for transcription with AI correction...');
+      
+      // 🎯 NEW: Get conversation context for AI correction
+      const conversationContext = getConversationContext();
+      console.log('🧠 Building conversation context for medical term correction');
+      
+      if (conversationContext) {
+        console.log('   Context length:', conversationContext.length, 'characters');
+        console.log('   Preview:', conversationContext.slice(0, 150) + '...');
+      } else {
+        console.log('   No context available (first message)');
+      }
+      
+      // 🎯 NEW: Pass context to transcription API for AI-powered correction
+      const transcription = await apiService.transcribeAudio(audioBlob, conversationContext);
 
       console.log('📥 Transcription response:', transcription);
 
@@ -520,8 +521,15 @@ const ChatInterface = () => {
         
         console.log('✅ Transcription successful:', transcribedText);
         
+        // 🎯 NEW: Show correction info if available
+        if (transcription.data.original_text && 
+            transcription.data.original_text !== transcribedText) {
+          console.log('🔧 AI Correction applied:');
+          console.log('   Original:', transcription.data.original_text);
+          console.log('   Corrected:', transcribedText);
+        }
+        
         if (transcribedText) {
-          // 🎯 AUTO-SEND: Immediately send the message
           console.log('🚀 Auto-sending transcribed message...');
           await autoSendTranscribedMessage(transcribedText);
           console.log('✅ Message auto-sent successfully!');
@@ -553,7 +561,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 MODIFIED: TOGGLE RECORDING (SINGLE BUTTON) ============
+  // ============ TOGGLE RECORDING (SINGLE BUTTON) ============
   const toggleRecording = () => {
     if (isRecording) {
       stopRecording();
@@ -593,7 +601,6 @@ const ChatInterface = () => {
           <div className="patient-avatar">👩‍⚕️</div>
           <div>
             <h3 className="chat-title">Virtual Patient</h3>
-            {/* 🎯 NEW: Show listening status */}
             <p className="chat-subtitle">
               {isPlayingAudio ? '🔊 Speaking...' : 
                isListeningForSilence ? '👂 Listening...' : 
@@ -615,6 +622,9 @@ const ChatInterface = () => {
             <div className="empty-icon">💬</div>
             <h3>Start the Conversation</h3>
             <p>Click the microphone to speak or type your message.</p>
+            <p className="text-sm text-muted" style={{ marginTop: '0.5rem' }}>
+              🧠 AI correction enabled for medical terminology
+            </p>
           </div>
         ) : (
           sessionData.messages.map((message, index) => (
@@ -688,7 +698,6 @@ const ChatInterface = () => {
           {ttsEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
         </button>
         
-        {/* 🎯 MODIFIED: Single microphone button with visual feedback */}
         <button
           type="button"
           className={`btn chat-mic-btn ${isRecording ? 'recording' : ''} ${isListeningForSilence ? 'listening' : ''}`}
@@ -698,7 +707,6 @@ const ChatInterface = () => {
           style={{ 
             height: '52px',
             minHeight: '52px',
-            // 🎯 NEW: Visual feedback based on audio level
             boxShadow: isRecording && audioLevel > 30 
               ? `0 4px 25px rgba(239, 68, 68, ${0.3 + (audioLevel / 255) * 0.5})` 
               : undefined

@@ -426,17 +426,26 @@ class ApiService {
   }
 
   // ============================================
-  // ✅ FIXED: Speech-to-Text API
+  // ✅ Speech-to-Text API with AI Correction
   // ============================================
-  async transcribeAudio(audioBlob) {
+  
+  /**
+   * Transcribe audio with AI-powered word correction
+   * @param {Blob} audioBlob - Audio blob from MediaRecorder
+   * @param {string|null} conversationContext - Optional conversation context for better correction
+   * @returns {Promise<Object>} Transcription result with corrections
+   */
+  async transcribeAudio(audioBlob, conversationContext = null) {
     try {
-      console.log('🎤 Starting audio transcription...');
+      console.log('🎤 Starting audio transcription with AI correction...');
       console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
       console.log('🎵 Audio blob type:', audioBlob.type);
+      console.log('🧠 Conversation context:', conversationContext ? 'Provided' : 'None');
       
+      // ✅ CREATE FORMDATA WITH ALL REQUIRED FIELDS
       const formData = new FormData();
       
-      // Determine file extension based on MIME type
+      // Determine filename based on MIME type
       let filename = 'recording.webm';
       if (audioBlob.type.includes('mp4')) {
         filename = 'recording.mp4';
@@ -446,11 +455,21 @@ class ApiService {
         filename = 'recording.wav';
       }
       
+      // Append audio file
       formData.append('audio', audioBlob, filename);
       
-      console.log('📤 Sending audio to:', `${this.baseURL}/api/stt/transcribe`);
+      // ✅ APPEND CORRECTION FLAG (matches backend Form field)
+      formData.append('enable_correction', 'true');
+      
+      // ✅ APPEND CONVERSATION CONTEXT (if provided)
+      if (conversationContext) {
+        formData.append('conversation_context', conversationContext);
+        console.log('📝 Context length:', conversationContext.length, 'characters');
+      }
+      
+      console.log('📤 Sending to:', `${this.baseURL}/api/stt/transcribe`);
 
-      // ✅ FIXED: Use this.api instead of fetch, and correct endpoint
+      // ✅ USE AXIOS (this.api) WITH PROPER CONFIG
       const response = await this.api.post('/api/stt/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -459,6 +478,20 @@ class ApiService {
       });
 
       console.log('✅ Transcription response:', response.data);
+      
+      // ✅ LOG CORRECTION DETAILS
+      if (response.data.success && response.data.data.correction) {
+        const correction = response.data.data.correction;
+        if (correction.corrections_made) {
+          console.log('🔧 AI Corrections applied:');
+          console.log('   Original:', response.data.data.original_text);
+          console.log('   Corrected:', response.data.data.text);
+          console.log('   Changes:', correction.changes);
+        } else {
+          console.log('✓ No corrections needed - text was already accurate');
+        }
+      }
+      
       return response.data;
       
     } catch (error) {
@@ -474,6 +507,86 @@ class ApiService {
       } else {
         throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง');
       }
+    }
+  }
+
+  /**
+   * Get STT service status
+   * @returns {Promise<Object>} Service status and configuration
+   */
+  async getSTTStatus() {
+    try {
+      const response = await this.api.get('/api/stt/status');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting STT status:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check STT service health
+   * @returns {Promise<Object>} Health check result
+   */
+  async checkSTTHealth() {
+    try {
+      const response = await this.api.get('/api/stt/health');
+      return response.data;
+    } catch (error) {
+      console.error('Error checking STT health:', error);
+      throw error;
+    }
+  }
+
+  // ============================================
+  // 🧠 UTILITY: Build Conversation Context
+  // ============================================
+  
+  /**
+   * Build conversation context for better AI corrections
+   * @param {Array} chatHistory - Recent chat messages
+   * @param {Object} caseData - Current case information
+   * @returns {string} Context string for correction AI
+   */
+  buildConversationContext(chatHistory, caseData) {
+    try {
+      // Take last 5 messages for context (not too much, not too little)
+      const recentMessages = (chatHistory || []).slice(-5);
+      
+      let context = '';
+      
+      // Add case metadata for medical context
+      if (caseData && caseData.case_metadata) {
+        context += `Medical Case: ${caseData.case_metadata.case_title || 'Unknown'}\n`;
+        context += `Specialty: ${caseData.case_metadata.medical_specialty || 'General'}\n`;
+        
+        // Add chief complaint for better medical term detection
+        if (caseData.chief_complaint) {
+          context += `Chief Complaint: ${caseData.chief_complaint}\n`;
+        }
+        
+        context += '\n';
+      }
+      
+      // Add recent conversation for context
+      if (recentMessages.length > 0) {
+        context += 'Recent conversation:\n';
+        recentMessages.forEach(msg => {
+          const role = msg.role === 'user' ? 'Doctor' : 'Patient';
+          // Truncate long messages to keep context focused
+          const content = msg.content.length > 150 
+            ? msg.content.substring(0, 150) + '...'
+            : msg.content;
+          context += `${role}: ${content}\n`;
+        });
+      }
+      
+      console.log('🧠 Built conversation context:', context.length, 'characters');
+      return context;
+      
+    } catch (error) {
+      console.error('Error building conversation context:', error);
+      return ''; // Return empty string on error, don't crash
     }
   }
 }
