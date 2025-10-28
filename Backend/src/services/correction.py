@@ -200,7 +200,7 @@ class WordCorrectionService:
                         "content": correction_prompt
                     }
                 ],
-                temperature=0.05,  # Very low for consistency
+                temperature=0.01,  # Very low for consistency
                 max_tokens=500,
                 top_p=0.9
             )
