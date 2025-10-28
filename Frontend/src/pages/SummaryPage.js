@@ -9,6 +9,8 @@ const SummaryPage = () => {
   const location = useLocation();
   const { sessionData, diagnosis, treatmentPlan } = location.state || {};
   const [videoURL, setVideoURL] = useState(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   
   // Create video URL from blob if available
   useEffect(() => {
@@ -16,13 +18,27 @@ const SummaryPage = () => {
     console.log('📹 SummaryPage - recordingBlob:', sessionData?.recordingBlob ? `${sessionData.recordingBlob.size} bytes` : 'none');
     
     if (sessionData?.recordingBlob) {
-      const url = URL.createObjectURL(sessionData.recordingBlob);
-      setVideoURL(url);
-      console.log('✅ Video URL created:', url);
+      setVideoLoading(true);
+      
+      // Use setTimeout to allow UI to render before processing
+      setTimeout(() => {
+        try {
+          const url = URL.createObjectURL(sessionData.recordingBlob);
+          setVideoURL(url);
+          setVideoLoading(false);
+          console.log('✅ Video URL created:', url);
+        } catch (error) {
+          console.error('❌ Error creating video URL:', error);
+          setVideoError(true);
+          setVideoLoading(false);
+        }
+      }, 100);
       
       // Cleanup URL on unmount
       return () => {
-        URL.revokeObjectURL(url);
+        if (videoURL) {
+          URL.revokeObjectURL(videoURL);
+        }
       };
     } else {
       console.warn('⚠️ No recording blob found in session data');
@@ -196,21 +212,51 @@ const SummaryPage = () => {
           </div>
 
           {/* Video Recording */}
-          {videoURL && (
+          {sessionData?.recordingBlob && (
             <div className="video-card fade-in" style={{ animationDelay: '0.3s' }}>
               <h3 className="card-section-title">Session Recording</h3>
-              <div className="video-preview-container">
-                <video 
-                  className="video-preview"
-                  controls
-                  src={videoURL}
-                >
-                  Your browser does not support video playback.
-                </video>
-              </div>
-              <button className="btn btn-outline" onClick={handleDownloadVideo}>
+              
+              {videoLoading ? (
+                <div className="video-loading-state">
+                  <div className="loading-spinner"></div>
+                  <p className="loading-text">Processing video preview...</p>
+                  <p className="loading-subtext">
+                    Large videos may take a moment to load. You can download the video below while waiting.
+                  </p>
+                </div>
+              ) : videoError ? (
+                <div className="video-error-state">
+                  <p className="error-text">Unable to load video preview</p>
+                  <p className="error-subtext">
+                    The video was recorded successfully but cannot be previewed. You can still download it below.
+                  </p>
+                </div>
+              ) : videoURL ? (
+                <div className="video-preview-container">
+                  <video 
+                    className="video-preview"
+                    controls
+                    preload="metadata"
+                    src={videoURL}
+                    onLoadStart={() => console.log('📹 Video loading started')}
+                    onLoadedData={() => console.log('✅ Video loaded successfully')}
+                    onError={(e) => {
+                      console.error('❌ Video playback error:', e);
+                      setVideoError(true);
+                    }}
+                  >
+                    Your browser does not support video playback.
+                  </video>
+                </div>
+              ) : null}
+              
+              <button 
+                className="btn btn-outline" 
+                onClick={handleDownloadVideo}
+                disabled={!sessionData?.recordingBlob}
+              >
                 <Download size={18} />
-                Download Video
+                Download Video ({sessionData?.recordingBlob ? `${(sessionData.recordingBlob.size / 1024 / 1024).toFixed(2)} MB` : ''})
               </button>
             </div>
           )}
