@@ -425,18 +425,29 @@ class ApiService {
     return response.data;
   }
 
-  // ============================================
-  // ✅ FIXED: Speech-to-Text API
-  // ============================================
-  async transcribeAudio(audioBlob) {
+  /**
+   * Transcribe audio with optional correction and conversation context
+   * @param {Blob} audioBlob - Audio blob from MediaRecorder
+   * @param {string|null} conversationContext - Recent conversation for context-aware correction
+   * @param {boolean|null} enableCorrection - Override global correction setting
+   * @returns {Promise<Object>} Transcription result with correction metadata
+  */
+  async transcribeAudioWithContext(audioBlob, conversationContext = null, enableCorrection = null) {
     try {
-      console.log('🎤 Starting audio transcription...');
+      console.log('🎤 Starting context-aware audio transcription...');
       console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
-      console.log('🎵 Audio blob type:', audioBlob.type);
+      console.log('🧠 Context provided:', conversationContext ? 'YES' : 'NO');
+      console.log('🔧 Correction:', enableCorrection === null ? 'DEFAULT' : enableCorrection ? 'ENABLED' : 'DISABLED');
       
+      if (audioBlob.size < 5000) {
+        console.warn('⚠️ Audio blob too small:', audioBlob.size, 'bytes');
+        throw new Error('ไฟล์เสียงเล็กเกินไป กรุณาบันทึกเสียงให้ยาวขึ้น');
+      }
+      
+      // Create FormData with audio and optional parameters
       const formData = new FormData();
       
-      // Determine file extension based on MIME type
+      // Determine filename based on MIME type
       let filename = 'recording.webm';
       if (audioBlob.type.includes('mp4')) {
         filename = 'recording.mp4';
@@ -448,32 +459,165 @@ class ApiService {
       
       formData.append('audio', audioBlob, filename);
       
-      console.log('📤 Sending audio to:', `${this.baseURL}/api/stt/transcribe`);
+      // Add conversation context if provided
+      if (conversationContext) {
+        formData.append('conversation_context', conversationContext);
+      }
+      
+      // Add correction override if specified
+      if (enableCorrection !== null) {
+        formData.append('enable_correction', enableCorrection.toString());
+      }
+      
+      console.log('📤 Sending to:', `${this.baseURL}/api/stt/transcribe`);
+      const startTime = performance.now();
 
-      // ✅ FIXED: Use this.api instead of fetch, and correct endpoint
+      // Send request with extended timeout
       const response = await this.api.post('/api/stt/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 120000, // 2 minutes timeout for audio processing
+        timeout: 120000, // 2 minutes
       });
 
-      console.log('✅ Transcription response:', response.data);
+      const elapsedTime = performance.now() - startTime;
+      console.log(`✅ Transcription complete in ${elapsedTime.toFixed(0)}ms`);
+      console.log('📝 Response:', response.data);
+      
+      // Log correction results if available
+      if (response.data.data?.correction) {
+        const correction = response.data.data.correction;
+        console.log('🧠 Correction applied:', correction.was_corrected ? 'YES' : 'NO');
+        if (correction.was_corrected) {
+          console.log('   Original:', correction.original_text);
+          console.log('   Corrected:', correction.corrected_text);
+        }
+      }
+      
       return response.data;
       
     } catch (error) {
       console.error('🚨 Transcription API Error:', error);
       
-      // Better error messages
-      if (error.message.includes('timeout')) {
-        throw new Error('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
-      } else if (error.message.includes('Network error')) {
-        throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
-      } else if (error.message.includes('OpenAI API key not configured')) {
-        throw new Error('ระบบยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแล');
-      } else {
-        throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง');
+      // Enhanced error handling
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail;
+        
+        if (typeof detail === 'object') {
+          if (detail.error === 'silent_audio') {
+            throw new Error(detail.message || 'ไม่พบเสียงพูดในการบันทึก');
+          } else if (detail.error === 'audio_too_short') {
+            throw new Error(detail.message || 'เสียงที่บันทึกสั้นเกินไป');
+          } else if (detail.message) {
+            throw new Error(detail.message);
+          }
+        } else if (typeof detail === 'string') {
+          throw new Error(detail);
+        }
       }
+      
+      if (error.response?.status === 400) {
+        throw new Error('ข้อมูลเสียงไม่ถูกต้อง กรุณาลองบันทึกใหม่');
+      } else if (error.response?.status === 429) {
+        throw new Error('มีการใช้งานมากเกินไป กรุณารอสักครู่');
+      } else if (error.response?.status === 500) {
+        throw new Error('เกิดข้อผิดพลาดของระบบ กรุณาลองอีกครั้ง');
+      }
+      
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        throw new Error('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
+      }
+      
+      if (error.message.includes('Network error') || error.code === 'ERR_NETWORK') {
+        throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
+      }
+      
+      throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง');
+    }
+  }
+
+  /**
+   * Get STT configuration and status
+   */
+  async getSTTConfig() {
+    try {
+      const response = await this.api.get('/api/stt/status');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting STT config:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update STT configuration at runtime
+   * @param {Object} config - Configuration updates
+   * @example
+   * updateSTTConfig({
+   *   enable_correction: true,
+   *   correction_model: "gpt-4o-mini",
+   *   correction_temperature: 0.1
+   * })
+   */
+  async updateSTTConfig(config) {
+    try {
+      const response = await this.api.post('/api/stt/config', config);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating STT config:', error);
+      throw error;
+    }
+  }
+
+  // ============================================
+  // 🧠 UTILITY: Build Conversation Context
+  // ============================================
+  
+  /**
+   * Build conversation context for better AI corrections
+   * @param {Array} chatHistory - Recent chat messages
+   * @param {Object} caseData - Current case information
+   * @returns {string} Context string for correction AI
+   */
+  buildConversationContext(chatHistory, caseData) {
+    try {
+      // Take last 5 messages for context (not too much, not too little)
+      const recentMessages = (chatHistory || []).slice(-5);
+      
+      let context = '';
+      
+      // Add case metadata for medical context
+      if (caseData && caseData.case_metadata) {
+        context += `Medical Case: ${caseData.case_metadata.case_title || 'Unknown'}\n`;
+        context += `Specialty: ${caseData.case_metadata.medical_specialty || 'General'}\n`;
+        
+        // Add chief complaint for better medical term detection
+        if (caseData.chief_complaint) {
+          context += `Chief Complaint: ${caseData.chief_complaint}\n`;
+        }
+        
+        context += '\n';
+      }
+      
+      // Add recent conversation for context
+      if (recentMessages.length > 0) {
+        context += 'Recent conversation:\n';
+        recentMessages.forEach(msg => {
+          const role = msg.role === 'user' ? 'Doctor' : 'Patient';
+          // Truncate long messages to keep context focused
+          const content = msg.content.length > 150 
+            ? msg.content.substring(0, 150) + '...'
+            : msg.content;
+          context += `${role}: ${content}\n`;
+        });
+      }
+      
+      console.log('🧠 Built conversation context:', context.length, 'characters');
+      return context;
+      
+    } catch (error) {
+      console.error('Error building conversation context:', error);
+      return ''; // Return empty string on error, don't crash
     }
   }
 }

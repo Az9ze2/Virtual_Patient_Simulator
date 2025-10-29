@@ -15,7 +15,7 @@ const ChatInterface = () => {
   const [sttError, setSttError] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
   
-  // ============ 🎯 NEW: SILENCE DETECTION STATE ============
+  // ============ SILENCE DETECTION STATE ============
   const [isListeningForSilence, setIsListeningForSilence] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   
@@ -33,7 +33,7 @@ const ChatInterface = () => {
   const chatContainerRef = useRef(null);
   const inputRef = useRef(null);
   
-  // ============ 🎯 NEW: AUDIO ANALYSIS REFS ============
+  // ============ AUDIO ANALYSIS REFS ============
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const animationFrameRef = useRef(null);
@@ -127,6 +127,14 @@ const ChatInterface = () => {
     }
   };
 
+  // ============ 🎯 NEW: BUILD CONVERSATION CONTEXT FOR AI CORRECTION ============
+  const getConversationContext = () => {
+    return apiService.buildConversationContext(
+      sessionData?.messages || [], 
+      sessionData?.caseData
+    );
+  };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !sessionData?.sessionId) return;
@@ -190,7 +198,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 NEW: AUTO-SEND MESSAGE AFTER TRANSCRIPTION ============
+  // ============ AUTO-SEND MESSAGE AFTER TRANSCRIPTION ============
   const autoSendTranscribedMessage = async (transcribedText) => {
     if (!transcribedText.trim() || !sessionData?.sessionId) return;
 
@@ -250,9 +258,8 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 NEW: AUDIO LEVEL DETECTION WITH NOISE CANCELLATION ============
+  // ============ AUDIO LEVEL DETECTION WITH NOISE CANCELLATION ============
   const detectAudioLevel = () => {
-    // 🎯 FIX: Check refs directly, not state
     if (!analyserRef.current) {
       console.log('⚠️ Analyser not available - cannot detect audio levels');
       return;
@@ -269,21 +276,17 @@ const ChatInterface = () => {
     
     analyser.getByteFrequencyData(dataArray);
     
-    // Calculate average volume
     let sum = 0;
     for (let i = 0; i < bufferLength; i++) {
       sum += dataArray[i];
     }
     const average = sum / bufferLength;
     
-    // 🎯 LOWER THRESHOLDS FOR BETTER DETECTION
-    const NOISE_THRESHOLD = 8;
-    const SPEECH_THRESHOLD = 16;
+    const NOISE_THRESHOLD = 12;
+    const SPEECH_THRESHOLD = 32;
     
-    // Update audio level for visual feedback
     setAudioLevel(average);
     
-    // 🎯 DEBUG: Log audio levels every 500ms
     const now = Date.now();
     if (!window.lastLogTime || now - window.lastLogTime > 500) {
       console.log('📊 Audio Level:', average.toFixed(2), 
@@ -293,11 +296,9 @@ const ChatInterface = () => {
       window.lastLogTime = now;
     }
     
-    // Detect if there's actual speech (above speech threshold)
     if (average > SPEECH_THRESHOLD) {
       lastSoundTimeRef.current = Date.now();
       
-      // Mark that we've detected speech
       if (!hasSpeechDetectedRef.current) {
         hasSpeechDetectedRef.current = true;
         setIsListeningForSilence(true);
@@ -305,14 +306,12 @@ const ChatInterface = () => {
       }
     }
     
-    // 🎯 SILENCE DETECTION: Check if silent for 1.5 seconds after speech was detected
-    const SILENCE_DURATION = 1250;       // Reduced from 2000 to 1500 (1.5 seconds)
-    const MIN_RECORDING_DURATION = 1000;  // 0.5 seconds minimum
+    const SILENCE_DURATION = 1250;
+    const MIN_RECORDING_DURATION = 1000;
     
     const timeSinceLastSound = Date.now() - lastSoundTimeRef.current;
     const recordingDuration = Date.now() - (mediaRecorderRef.current?.startTime || Date.now());
     
-    // 🎯 DEBUG: Show timing info
     if (hasSpeechDetectedRef.current) {
       if (!window.lastTimingLog || now - window.lastTimingLog > 500) {
         console.log('⏱️ Time since last sound:', (timeSinceLastSound/1000).toFixed(1) + 's',
@@ -331,11 +330,10 @@ const ChatInterface = () => {
       return;
     }
     
-    // Continue monitoring
     animationFrameRef.current = requestAnimationFrame(detectAudioLevel);
   };
 
-  // ============ 🎯 MODIFIED: START RECORDING WITH AUDIO ANALYSIS ============
+  // ============ START RECORDING WITH AUDIO ANALYSIS ============
   const startRecording = async () => {
     try {
       setSttError(null);
@@ -345,30 +343,26 @@ const ChatInterface = () => {
         return;
       }
 
-      // 🎯 ENHANCED: Request microphone with NOISE CANCELLATION enabled
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           channelCount: 1,
           sampleRate: 16000,
-          echoCancellation: true,        // ✅ Enable echo cancellation
-          noiseSuppression: true,        // ✅ Enable noise suppression
-          autoGainControl: true,         // ✅ Enable auto gain control
-          // 🎯 NEW: Advanced noise cancellation (supported in modern browsers)
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
           noiseSuppression: { ideal: true },
           echoCancellation: { ideal: true },
           autoGainControl: { ideal: true }
         } 
       });
 
-      // 🎯 NEW: Set up audio analysis for silence detection
       try {
         audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
         const source = audioContextRef.current.createMediaStreamSource(stream);
         analyserRef.current = audioContextRef.current.createAnalyser();
         
-        // 🎯 Configure analyser for better noise detection
         analyserRef.current.fftSize = 2048;
-        analyserRef.current.smoothingTimeConstant = 0.8; // Smooth out noise spikes
+        analyserRef.current.smoothingTimeConstant = 0.8;
         
         source.connect(analyserRef.current);
         
@@ -377,7 +371,6 @@ const ChatInterface = () => {
         console.log('   - Frequency Bin Count:', analyserRef.current.frequencyBinCount);
       } catch (error) {
         console.error('❌ Failed to initialize audio analyser:', error);
-        // Continue without analyser - recording will still work, just no auto-stop
       }
 
       const mimeTypes = [
@@ -404,7 +397,6 @@ const ChatInterface = () => {
         audioBitsPerSecond: 128000
       });
 
-      // 🎯 NEW: Store start time for minimum duration check
       mediaRecorderRef.current.startTime = Date.now();
 
       audioChunksRef.current = [];
@@ -420,7 +412,6 @@ const ChatInterface = () => {
       mediaRecorderRef.current.onstop = async () => {
         stream.getTracks().forEach(track => track.stop());
         
-        // 🎯 NEW: Clean up audio analysis
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
         }
@@ -438,11 +429,8 @@ const ChatInterface = () => {
       setIsRecording(true);
       
       console.log('🎤 Recording started with noise cancellation enabled');
-      console.log('📊 Thresholds: Noise=20, Speech=35, Silence=1.5s');
       console.log('🔍 Analyser available:', !!analyserRef.current);
 
-      // 🎯 NEW: Start audio level detection AFTER everything is set up
-      // Use setTimeout to ensure MediaRecorder has started
       setTimeout(() => {
         console.log('🎯 Starting audio level detection...');
         console.log('   - isRecording:', isRecording);
@@ -450,7 +438,6 @@ const ChatInterface = () => {
         detectAudioLevel();
       }, 100);
 
-      // 🎯 MODIFIED: Safety timeout increased to 60 seconds
       silenceTimeoutRef.current = setTimeout(() => {
         console.log('⏰ Auto-stopping recording after 60 seconds');
         stopRecording();
@@ -484,7 +471,8 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 MODIFIED: AUTO-SEND AFTER SUCCESSFUL TRANSCRIPTION ============
+  // Replace your processRecording function in ChatInterface.js with this enhanced version
+
   const processRecording = async () => {
     if (audioChunksRef.current.length === 0) {
       console.log('❌ No audio chunks recorded');
@@ -510,25 +498,63 @@ const ChatInterface = () => {
         return;
       }
 
-      console.log('📤 Sending audio to backend for transcription...');
-      const transcription = await apiService.transcribeAudio(audioBlob);
+      console.log('📤 Sending audio to backend with context...');
+      
+      // 🎯 BUILD CONVERSATION CONTEXT
+      const conversationContext = getConversationContext();
+      console.log('🧠 Context length:', conversationContext.length, 'characters');
+      
+      // 🚀 TRANSCRIBE WITH CONTEXT AND CORRECTION
+      // Note: enableCorrection=null uses backend's default setting
+      // You can pass true/false to override: apiService.transcribeAudioWithContext(audioBlob, conversationContext, true)
+      const transcription = await apiService.transcribeAudioWithContext(
+        audioBlob,
+        conversationContext,
+        null  // Use backend default (change to true/false to override)
+      );
 
       console.log('📥 Transcription response:', transcription);
 
       if (transcription.success && transcription.data.text) {
-        const transcribedText = transcription.data.text.trim();
+        const finalText = transcription.data.text.trim();
         
-        console.log('✅ Transcription successful:', transcribedText);
+        console.log('✅ Transcription successful:', finalText);
         
-        if (transcribedText) {
-          // 🎯 AUTO-SEND: Immediately send the message
-          console.log('🚀 Auto-sending transcribed message...');
-          await autoSendTranscribedMessage(transcribedText);
-          console.log('✅ Message auto-sent successfully!');
-        } else {
-          console.log('❌ Transcribed text is empty');
-          setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
+        // Log correction details if available
+        if (transcription.data.correction) {
+          const correction = transcription.data.correction;
+          console.log('🧠 Correction Details:');
+          console.log('   - Was corrected:', correction.was_corrected);
+          console.log('   - Original:', correction.original_text);
+          console.log('   - Final:', correction.corrected_text);
+          console.log('   - Model:', correction.model_used);
+          console.log('   - Time:', correction.processing_time_ms, 'ms');
+          
+          // Show user if significant changes were made
+          if (correction.was_corrected && correction.original_text !== correction.corrected_text) {
+            console.log('✏️ Text was automatically corrected for better accuracy');
+          }
         }
+        
+        // Log processing times
+        if (transcription.data.processing_time) {
+          console.log('⏱️ Performance:');
+          console.log('   - Whisper:', transcription.data.processing_time.whisper_ms, 'ms');
+          console.log('   - Total:', transcription.data.processing_time.total_ms, 'ms');
+        }
+        
+        if (!finalText || finalText.length < 2) {
+          console.log('❌ Transcribed text is empty or too short');
+          setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
+          setIsProcessingAudio(false);
+          return;
+        }
+
+        // Auto-send the corrected message
+        console.log('🚀 Auto-sending transcribed message...');
+        await autoSendTranscribedMessage(finalText);
+        console.log('✅ Message auto-sent successfully!');
+        
       } else {
         console.log('❌ Transcription failed:', transcription.error);
         throw new Error(transcription.error || 'Transcription failed');
@@ -537,23 +563,67 @@ const ChatInterface = () => {
     } catch (error) {
       console.error('🚨 Transcription error:', error);
       
-      if (error.message.includes('timeout')) {
-        setSttError('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
-      } else if (error.message.includes('network')) {
-        setSttError('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
-      } else if (error.message.includes('OpenAI API')) {
-        setSttError('เกิดข้อผิดพลาดกับ API กรุณาติดต่อผู้ดูแลระบบ');
-      } else {
-        setSttError('เกิดข้อผิดพลาดในการแปลงเสียง: ' + error.message);
+      let userFriendlyMessage = 'เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง';
+      
+      if (error.response?.data?.detail) {
+        const errorData = error.response.data;
+        
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'object') {
+            // Handle structured errors with specific types
+            if (errorData.detail.error === 'unclear_audio') {
+              userFriendlyMessage = errorData.detail.message || 'ไม่สามารถแปลงเสียงให้เป็นข้อความที่มีความหมายได้';
+              
+              // Log helpful hints for debugging
+              if (errorData.detail.hints) {
+                console.log('💡 คำแนะนำ:');
+                errorData.detail.hints.forEach(hint => console.log('   -', hint));
+              }
+              if (errorData.detail.detected_text) {
+                console.log('🔍 ข้อความที่ตรวจพบ:', errorData.detail.detected_text);
+              }
+              if (errorData.detail.detection_reason) {
+                console.log('❓ เหตุผล:', errorData.detail.detection_reason);
+              }
+            } else if (errorData.detail.error === 'silent_audio') {
+              userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาตรวจสอบไมโครโฟนและพูดให้ชัดเจน';
+            } else if (errorData.detail.error === 'audio_too_short') {
+              userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
+            } else if (errorData.detail.message) {
+              userFriendlyMessage = errorData.detail.message;
+            }
+          } else if (typeof errorData.detail === 'string') {
+            userFriendlyMessage = errorData.detail;
+          }
+        }
       }
+      
+      if (error.message) {
+        if (error.message.includes('timeout') || error.message.includes('หมดเวลา')) {
+          userFriendlyMessage = 'หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง';
+        } else if (error.message.includes('network') || error.message.includes('Network error')) {
+          userFriendlyMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบอินเทอร์เน็ต';
+        } else if (error.message.includes('OpenAI API') || error.message.includes('API key')) {
+          userFriendlyMessage = 'เกิดข้อผิดพลาดกับระบบ กรุณาติดต่อผู้ดูแล';
+        } else if (error.message.includes('unclear') || error.message.includes('ไม่สามารถแปลง')) {
+          // Already handled above, keep the message
+        } else if (error.message.includes('silent') || error.message.includes('ไม่พบเสียง')) {
+          userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง';
+        } else if (error.message.includes('too short') || error.message.includes('สั้นเกินไป')) {
+          userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
+        } else if (error.message.includes('ไม่สามารถ') || error.message.includes('เกิดข้อผิดพลาด')) {
+          userFriendlyMessage = error.message;
+        }
+      }
+      
+      setSttError(userFriendlyMessage);
     } finally {
       setIsProcessingAudio(false);
       audioChunksRef.current = [];
       console.log('🧹 Cleanup complete');
     }
   };
-
-  // ============ 🎯 MODIFIED: TOGGLE RECORDING (SINGLE BUTTON) ============
+  // ============ TOGGLE RECORDING (SINGLE BUTTON) ============
   const toggleRecording = () => {
     if (isRecording) {
       stopRecording();
@@ -593,7 +663,6 @@ const ChatInterface = () => {
           <div className="patient-avatar">👩‍⚕️</div>
           <div>
             <h3 className="chat-title">Virtual Patient</h3>
-            {/* 🎯 NEW: Show listening status */}
             <p className="chat-subtitle">
               {isPlayingAudio ? '🔊 Speaking...' : 
                isListeningForSilence ? '👂 Listening...' : 
@@ -615,6 +684,9 @@ const ChatInterface = () => {
             <div className="empty-icon">💬</div>
             <h3>Start the Conversation</h3>
             <p>Click the microphone to speak or type your message.</p>
+            <p className="text-sm text-muted" style={{ marginTop: '0.5rem' }}>
+              🧠 AI correction enabled for medical terminology
+            </p>
           </div>
         ) : (
           sessionData.messages.map((message, index) => (
@@ -688,7 +760,6 @@ const ChatInterface = () => {
           {ttsEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
         </button>
         
-        {/* 🎯 MODIFIED: Single microphone button with visual feedback */}
         <button
           type="button"
           className={`btn chat-mic-btn ${isRecording ? 'recording' : ''} ${isListeningForSilence ? 'listening' : ''}`}
@@ -698,7 +769,6 @@ const ChatInterface = () => {
           style={{ 
             height: '52px',
             minHeight: '52px',
-            // 🎯 NEW: Visual feedback based on audio level
             boxShadow: isRecording && audioLevel > 30 
               ? `0 4px 25px rgba(239, 68, 68, ${0.3 + (audioLevel / 255) * 0.5})` 
               : undefined
