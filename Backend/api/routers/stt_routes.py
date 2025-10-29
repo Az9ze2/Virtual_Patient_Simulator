@@ -1,5 +1,5 @@
 """
-Enhanced Speech-to-Text (STT) Routes with Word Correction
+Enhanced Speech-to-Text (STT) Routes with Better Error Handling
 Uses OpenAI Whisper API + Word Correction AI for Thai medical conversations
 """
 
@@ -40,23 +40,17 @@ async def transcribe_audio(
 ) -> Dict[str, Any]:
     """
     Transcribe audio to text using OpenAI Whisper API with optional word correction
-    
-    Parameters:
-    - audio: Audio file (webm, mp4, mpeg, wav, ogg)
-    - enable_correction: Whether to apply word correction (default: True)
-    - conversation_context: Optional context for better correction
-    
-    Returns:
-    - success: Boolean indicating success
-    - data: Object containing transcribed text, corrected text, and metadata
-    - message: Status message
     """
     
     # Check if API key is available
     if not openai.api_key:
         raise HTTPException(
             status_code=500,
-            detail="OpenAI API key not configured. Please set OPENAI_API_KEY environment variable."
+            detail={
+                "error": "api_not_configured",
+                "message": "ระบบยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแลระบบ",
+                "technical_detail": "OpenAI API key not configured"
+            }
         )
     
     try:
@@ -75,7 +69,11 @@ async def transcribe_audio(
         if audio.content_type not in allowed_types:
             raise HTTPException(
                 status_code=400,
-                detail=f"Unsupported audio format: {audio.content_type}"
+                detail={
+                    "error": "unsupported_format",
+                    "message": f"รูปแบบไฟล์เสียงไม่รองรับ: {audio.content_type}",
+                    "supported_formats": ["webm", "mp4", "mpeg", "wav", "ogg"]
+                }
             )
         
         # Read and validate file size
@@ -87,13 +85,22 @@ async def transcribe_audio(
         if file_size_mb > 25:
             raise HTTPException(
                 status_code=400,
-                detail=f"File too large: {file_size_mb:.2f} MB. Maximum size is 25 MB."
+                detail={
+                    "error": "file_too_large",
+                    "message": f"ไฟล์เสียงใหญ่เกินไป ({file_size_mb:.2f} MB) ขนาดสูงสุดคือ 25 MB",
+                    "file_size_mb": round(file_size_mb, 2),
+                    "max_size_mb": 25
+                }
             )
         
-        if file_size_mb < 0.001:
+        if file_size_mb < 0.001:  # Less than 1KB
             raise HTTPException(
                 status_code=400,
-                detail="Audio file is too small or empty."
+                detail={
+                    "error": "file_too_small",
+                    "message": "ไฟล์เสียงเล็กเกินไปหรือว่างเปล่า กรุณาบันทึกเสียงใหม่",
+                    "file_size_mb": round(file_size_mb, 2)
+                }
             )
         
         # ============ STEP 2: SAVE TO TEMP FILE ============
@@ -129,58 +136,47 @@ async def transcribe_audio(
             transcribed_text = transcript.text.strip()
             logger.info(f"✅ Whisper transcription: {transcribed_text[:100]}...")
             
-            # 🔧 FIX: Check for silent/empty audio patterns
+            # ============ STEP 4: CHECK FOR TRULY SILENT/EMPTY AUDIO ONLY ============
+            # Only reject if completely empty or whitespace
             silent_patterns = [
                 "โปรดติดตามตอนต่อไป",
-                "ขอบคุณที่รับชม",
-                "ขอบคุณครับ",
-                "ขอบคุณค่ะ",
                 ""  # Empty string
             ]
-            
-            # Check if transcription is suspiciously short or matches silent patterns
-            if not transcribed_text or transcribed_text in silent_patterns:
-                logger.warning(f"⚠️ Silent or invalid audio detected: '{transcribed_text}'")
+            if not transcribed_text or (len(transcribed_text.strip()) == 0 or transcribed_text in silent_patterns):
+                logger.warning(f"⚠️ Empty transcription - no audio detected")
                 raise HTTPException(
                     status_code=400,
                     detail={
                         "error": "silent_audio",
-                        "message": "ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง",
+                        "message": "ไม่พบเสียงพูดในการบันทึก กรุณาตรวจสอบไมโครโฟนและพูดให้ชัดเจน",
                         "transcribed_text": transcribed_text,
                         "hint": "ตรวจสอบว่าไมโครโฟนทำงานปกติและพูดในระยะที่ใกล้พอ"
                     }
                 )
             
-            # Check if transcription is too short (less than 3 characters)
-            if len(transcribed_text) < 3:
-                logger.warning(f"⚠️ Transcription too short: '{transcribed_text}'")
-                raise HTTPException(
-                    status_code=400,
-                    detail={
-                        "error": "audio_too_short",
-                        "message": "เสียงที่บันทึกสั้นเกินไป กรุณาพูดให้ชัดเจนและยาวขึ้น",
-                        "transcribed_text": transcribed_text
-                    }
-                )
-            
-            # ============ STEP 4: WORD CORRECTION (Optional) ============
+            # ============ STEP 5: WORD CORRECTION (Optional) ============
             correction_result = None
             final_text = transcribed_text
             
             if enable_correction:
                 logger.info(f"🔧 Applying word correction...")
-                correction_result = word_correction_service.correct_text(
-                    transcribed_text=transcribed_text,
-                    context=conversation_context or ""
-                )
-                final_text = correction_result["corrected_text"]
-                
-                if correction_result["corrections_made"]:
-                    logger.info(f"📝 Corrections applied: {correction_result['changes']}")
-                else:
-                    logger.info(f"✓ No corrections needed")
+                try:
+                    correction_result = word_correction_service.correct_text(
+                        transcribed_text=transcribed_text,
+                        context=conversation_context or ""
+                    )
+                    final_text = correction_result["corrected_text"]
+                    
+                    if correction_result["corrections_made"]:
+                        logger.info(f"📝 Corrections applied: {correction_result['changes']}")
+                    else:
+                        logger.info(f"✓ No corrections needed")
+                except Exception as correction_error:
+                    # If correction fails, use original transcription
+                    logger.warning(f"⚠️ Correction failed, using original text: {str(correction_error)}")
+                    final_text = transcribed_text
             
-            # ============ STEP 5: PREPARE RESPONSE ============
+            # ============ STEP 6: PREPARE RESPONSE ============
             response_data = {
                 "text": final_text,  # Final text to use
                 "original_text": transcribed_text,  # Original Whisper output
@@ -215,44 +211,57 @@ async def transcribe_audio(
                 logger.info(f"🗑️  Cleaned up temporary file: {temp_file_path}")
     
     except HTTPException:
-        # Re-raise HTTP exceptions as-is
+        # Re-raise HTTP exceptions as-is (they already have proper error messages)
         raise
     
     except openai.APIError as e:
         logger.error(f"🚨 OpenAI API Error: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"OpenAI API error: {str(e)}"
+            detail={
+                "error": "openai_api_error",
+                "message": "เกิดข้อผิดพลาดจาก OpenAI กรุณาลองอีกครั้ง",
+                "technical_detail": str(e)
+            }
         )
     
     except openai.RateLimitError as e:
         logger.error(f"🚨 Rate Limit Error: {str(e)}")
         raise HTTPException(
             status_code=429,
-            detail="Rate limit exceeded. Please try again later."
+            detail={
+                "error": "rate_limit_exceeded",
+                "message": "มีการใช้งานมากเกินไป กรุณารอสักครู่แล้วลองใหม่",
+                "technical_detail": "OpenAI API rate limit exceeded"
+            }
         )
     
     except openai.APIConnectionError as e:
         logger.error(f"🚨 Connection Error: {str(e)}")
         raise HTTPException(
             status_code=503,
-            detail="Failed to connect to OpenAI API."
+            detail={
+                "error": "connection_failed",
+                "message": "ไม่สามารถเชื่อมต่อกับระบบแปลงเสียงได้ กรุณาลองอีกครั้ง",
+                "technical_detail": "Failed to connect to OpenAI API"
+            }
         )
     
     except Exception as e:
         logger.error(f"🚨 Transcription Error: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to transcribe audio: {str(e)}"
+            detail={
+                "error": "transcription_failed",
+                "message": "เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง",
+                "technical_detail": str(e)
+            }
         )
 
 
 @router.get("/status")
 async def stt_status() -> Dict[str, Any]:
-    """
-    Check STT service status and configuration
-    """
-    
+    """Check STT service status and configuration"""
     api_key_configured = bool(openai.api_key)
     
     return {
@@ -271,14 +280,6 @@ async def stt_status() -> Dict[str, Any]:
                 "medical_terminology": True,
                 "context_aware": True,
                 "silent_audio_detection": True
-            },
-            "optimal_settings": {
-                "sample_rate": "16kHz",
-                "channels": "mono",
-                "bit_rate": "128kbps",
-                "temperature": 0.0,
-                "echo_cancellation": True,
-                "noise_suppression": True
             }
         },
         "message": "STT service with word correction is ready" if api_key_configured else "OpenAI API key not configured"
@@ -287,10 +288,7 @@ async def stt_status() -> Dict[str, Any]:
 
 @router.get("/health")
 async def stt_health() -> Dict[str, Any]:
-    """
-    Health check endpoint for STT service
-    """
-    
+    """Health check endpoint for STT service"""
     api_key_configured = bool(openai.api_key)
     
     return {

@@ -472,7 +472,8 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 MODIFIED: PROCESS RECORDING WITH AI CORRECTION ============
+  // In ChatInterface.js - Update the processRecording function
+
   const processRecording = async () => {
     if (audioChunksRef.current.length === 0) {
       console.log('❌ No audio chunks recorded');
@@ -500,7 +501,6 @@ const ChatInterface = () => {
 
       console.log('📤 Sending audio to backend for transcription with AI correction...');
       
-      // 🎯 NEW: Get conversation context for AI correction
       const conversationContext = getConversationContext();
       console.log('🧠 Building conversation context for medical term correction');
       
@@ -511,7 +511,6 @@ const ChatInterface = () => {
         console.log('   No context available (first message)');
       }
       
-      // 🎯 NEW: Pass context to transcription API for AI-powered correction
       const transcription = await apiService.transcribeAudio(audioBlob, conversationContext);
 
       console.log('📥 Transcription response:', transcription);
@@ -521,7 +520,6 @@ const ChatInterface = () => {
         
         console.log('✅ Transcription successful:', transcribedText);
         
-        // 🎯 NEW: Show correction info if available
         if (transcription.data.original_text && 
             transcription.data.original_text !== transcribedText) {
           console.log('🔧 AI Correction applied:');
@@ -530,10 +528,10 @@ const ChatInterface = () => {
         }
         
         if (!transcribedText || transcribedText.length < 2) {
-        console.log('❌ Transcribed text is empty or too short');
-        setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
-        setIsProcessingAudio(false);
-        return;
+          console.log('❌ Transcribed text is empty or too short');
+          setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
+          setIsProcessingAudio(false);
+          return;
         }
 
         if (transcribedText) {
@@ -552,15 +550,50 @@ const ChatInterface = () => {
     } catch (error) {
       console.error('🚨 Transcription error:', error);
       
-      if (error.message.includes('timeout')) {
-        setSttError('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
-      } else if (error.message.includes('network')) {
-        setSttError('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
-      } else if (error.message.includes('OpenAI API')) {
-        setSttError('เกิดข้อผิดพลาดกับ API กรุณาติดต่อผู้ดูแลระบบ');
-      } else {
-        setSttError('เกิดข้อผิดพลาดในการแปลงเสียง: ' + error.message);
+      // 🎯 NEW: Better error message handling
+      let userFriendlyMessage = 'เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง';
+      
+      // Check for specific error types from backend
+      if (error.response && error.response.data) {
+        const errorData = error.response.data;
+        
+        // Handle structured error responses
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'object') {
+            // Structured error with custom message
+            if (errorData.detail.error === 'silent_audio') {
+              userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาตรวจสอบไมโครโฟนและพูดให้ชัดเจน';
+            } else if (errorData.detail.error === 'audio_too_short') {
+              userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
+            } else if (errorData.detail.message) {
+              userFriendlyMessage = errorData.detail.message;
+            }
+          } else if (typeof errorData.detail === 'string') {
+            // Simple string error
+            userFriendlyMessage = errorData.detail;
+          }
+        }
       }
+      
+      // Check error message content
+      if (error.message) {
+        if (error.message.includes('timeout') || error.message.includes('หมดเวลา')) {
+          userFriendlyMessage = 'หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง';
+        } else if (error.message.includes('network') || error.message.includes('Network error')) {
+          userFriendlyMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบอินเทอร์เน็ต';
+        } else if (error.message.includes('OpenAI API') || error.message.includes('API key')) {
+          userFriendlyMessage = 'เกิดข้อผิดพลาดกับระบบ กรุณาติดต่อผู้ดูแล';
+        } else if (error.message.includes('silent') || error.message.includes('ไม่พบเสียง')) {
+          userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง';
+        } else if (error.message.includes('too short') || error.message.includes('สั้นเกินไป')) {
+          userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
+        } else if (error.message.includes('ไม่สามารถ') || error.message.includes('เกิดข้อผิดพลาด')) {
+          // Already in Thai, use as-is
+          userFriendlyMessage = error.message;
+        }
+      }
+      
+      setSttError(userFriendlyMessage);
     } finally {
       setIsProcessingAudio(false);
       audioChunksRef.current = [];

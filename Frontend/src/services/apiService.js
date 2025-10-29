@@ -425,8 +425,8 @@ class ApiService {
     return response.data;
   }
 
-  // ============================================
-  // ✅ Speech-to-Text API with AI Correction
+    // ============================================
+  // ✅ Speech-to-Text API with AI Correction and Better Error Handling
   // ============================================
   
   /**
@@ -443,8 +443,8 @@ class ApiService {
       console.log('🧠 Conversation context:', conversationContext ? 'Provided' : 'None');
       
       if (audioBlob.size < 5000) { // Less than 5KB
-      console.warn('⚠️ Audio blob too small:', audioBlob.size, 'bytes');
-      throw new Error('ไฟล์เสียงเล็กเกินไป กรุณาบันทึกเสียงให้ยาวขึ้น');
+        console.warn('⚠️ Audio blob too small:', audioBlob.size, 'bytes');
+        throw new Error('ไฟล์เสียงเล็กเกินไป กรุณาบันทึกเสียงให้ยาวขึ้น');
       }
       
       // ✅ CREATE FORMDATA WITH ALL REQUIRED FIELDS
@@ -502,16 +502,52 @@ class ApiService {
     } catch (error) {
       console.error('🚨 Transcription API Error:', error);
       
-      // Better error messages
-      if (error.message.includes('timeout')) {
-        throw new Error('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
-      } else if (error.message.includes('Network error')) {
-        throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
-      } else if (error.message.includes('OpenAI API key not configured')) {
-        throw new Error('ระบบยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแล');
-      } else {
-        throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง');
+      // 🎯 Better error message handling
+      if (error.response) {
+        const errorData = error.response.data;
+        
+        // Handle structured error responses from backend
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'object') {
+            // Structured error with custom fields
+            if (errorData.detail.error === 'silent_audio') {
+              throw new Error(errorData.detail.message || 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจน');
+            } else if (errorData.detail.error === 'audio_too_short') {
+              throw new Error(errorData.detail.message || 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้น');
+            } else if (errorData.detail.message) {
+              throw new Error(errorData.detail.message);
+            }
+          } else if (typeof errorData.detail === 'string') {
+            // Simple string error
+            if (errorData.detail.includes('not configured') || errorData.detail.includes('API key')) {
+              throw new Error('ระบบยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแล');
+            }
+            throw new Error(errorData.detail);
+          }
+        }
+        
+        // Handle HTTP status codes
+        if (error.response.status === 400) {
+          throw new Error('ข้อมูลเสียงไม่ถูกต้อง กรุณาลองบันทึกใหม่');
+        } else if (error.response.status === 429) {
+          throw new Error('มีการใช้งานมากเกินไป กรุณารอสักครู่แล้วลองใหม่');
+        } else if (error.response.status === 500) {
+          throw new Error('เกิดข้อผิดพลาดของระบบ กรุณาลองอีกครั้ง');
+        }
       }
+      
+      // Handle timeout errors
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        throw new Error('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
+      }
+      
+      // Handle network errors
+      if (error.message.includes('Network error') || error.code === 'ERR_NETWORK') {
+        throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
+      }
+      
+      // Default error message
+      throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง');
     }
   }
 
