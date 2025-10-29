@@ -471,116 +471,158 @@ const ChatInterface = () => {
     }
   };
 
+  // Replace your processRecording function in ChatInterface.js with this enhanced version
+
   const processRecording = async () => {
-      if (audioChunksRef.current.length === 0) {
-        console.log('❌ No audio chunks recorded');
-        setSttError('ไม่มีข้อมูลเสียงที่บันทึก กรุณาลองอีกครั้ง');
+    if (audioChunksRef.current.length === 0) {
+      console.log('❌ No audio chunks recorded');
+      setSttError('ไม่มีข้อมูลเสียงที่บันทึก กรุณาลองอีกครั้ง');
+      return;
+    }
+
+    setIsProcessingAudio(true);
+    setSttError(null);
+
+    try {
+      const audioBlob = new Blob(audioChunksRef.current, { 
+        type: mediaRecorderRef.current.mimeType 
+      });
+
+      const fileSizeKB = (audioBlob.size / 1024).toFixed(2);
+      console.log(`📊 Audio blob created: ${fileSizeKB} KB, type: ${audioBlob.type}`);
+
+      if (audioBlob.size < 1000) {
+        console.log('❌ Audio too small:', audioBlob.size, 'bytes');
+        setSttError('เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง');
+        setIsProcessingAudio(false);
         return;
       }
 
-      setIsProcessingAudio(true);
-      setSttError(null);
+      console.log('📤 Sending audio to backend with context...');
+      
+      // 🎯 BUILD CONVERSATION CONTEXT
+      const conversationContext = getConversationContext();
+      console.log('🧠 Context length:', conversationContext.length, 'characters');
+      
+      // 🚀 TRANSCRIBE WITH CONTEXT AND CORRECTION
+      // Note: enableCorrection=null uses backend's default setting
+      // You can pass true/false to override: apiService.transcribeAudioWithContext(audioBlob, conversationContext, true)
+      const transcription = await apiService.transcribeAudioWithContext(
+        audioBlob,
+        conversationContext,
+        null  // Use backend default (change to true/false to override)
+      );
 
-      try {
-        const audioBlob = new Blob(audioChunksRef.current, { 
-          type: mediaRecorderRef.current.mimeType 
-        });
+      console.log('📥 Transcription response:', transcription);
 
-        const fileSizeKB = (audioBlob.size / 1024).toFixed(2);
-        console.log(`📊 Audio blob created: ${fileSizeKB} KB, type: ${audioBlob.type}`);
-
-        if (audioBlob.size < 1000) {
-          console.log('❌ Audio too small:', audioBlob.size, 'bytes');
-          setSttError('เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง');
+      if (transcription.success && transcription.data.text) {
+        const finalText = transcription.data.text.trim();
+        
+        console.log('✅ Transcription successful:', finalText);
+        
+        // Log correction details if available
+        if (transcription.data.correction) {
+          const correction = transcription.data.correction;
+          console.log('🧠 Correction Details:');
+          console.log('   - Was corrected:', correction.was_corrected);
+          console.log('   - Original:', correction.original_text);
+          console.log('   - Final:', correction.corrected_text);
+          console.log('   - Model:', correction.model_used);
+          console.log('   - Time:', correction.processing_time_ms, 'ms');
+          
+          // Show user if significant changes were made
+          if (correction.was_corrected && correction.original_text !== correction.corrected_text) {
+            console.log('✏️ Text was automatically corrected for better accuracy');
+          }
+        }
+        
+        // Log processing times
+        if (transcription.data.processing_time) {
+          console.log('⏱️ Performance:');
+          console.log('   - Whisper:', transcription.data.processing_time.whisper_ms, 'ms');
+          console.log('   - Total:', transcription.data.processing_time.total_ms, 'ms');
+        }
+        
+        if (!finalText || finalText.length < 2) {
+          console.log('❌ Transcribed text is empty or too short');
+          setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
           setIsProcessingAudio(false);
           return;
         }
 
-        console.log('📤 Sending audio to backend for transcription...');
+        // Auto-send the corrected message
+        console.log('🚀 Auto-sending transcribed message...');
+        await autoSendTranscribedMessage(finalText);
+        console.log('✅ Message auto-sent successfully!');
         
-        // Simple transcription without correction
-        const transcription = await apiService.transcribeAudio(audioBlob);
-
-        console.log('📥 Transcription response:', transcription);
-
-        if (transcription.success && transcription.data.text) {
-          const transcribedText = transcription.data.text.trim();
-          
-          console.log('✅ Transcription successful:', transcribedText);
-          
-          if (!transcribedText || transcribedText.length < 2) {
-            console.log('❌ Transcribed text is empty or too short');
-            setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
-            setIsProcessingAudio(false);
-            return;
-          }
-
-          if (transcribedText) {
-            console.log('🚀 Auto-sending transcribed message...');
-            await autoSendTranscribedMessage(transcribedText);
-            console.log('✅ Message auto-sent successfully!');
-          } else {
-            console.log('❌ Transcribed text is empty');
-            setSttError('ไม่สามารถแปลงเสียงเป็นข้อความได้ กรุณาลองพูดชัดขึ้น');
-          }
-        } else {
-          console.log('❌ Transcription failed:', transcription.error);
-          throw new Error(transcription.error || 'Transcription failed');
-        }
-
-      } catch (error) {
-        console.error('🚨 Transcription error:', error);
-        
-        // Better error message handling
-        let userFriendlyMessage = 'เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง';
-        
-        // Check for specific error types from backend
-        if (error.response && error.response.data) {
-          const errorData = error.response.data;
-          
-          // Handle structured error responses
-          if (errorData.detail) {
-            if (typeof errorData.detail === 'object') {
-              // Structured error with custom message
-              if (errorData.detail.error === 'silent_audio') {
-                userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาตรวจสอบไมโครโฟนและพูดให้ชัดเจน';
-              } else if (errorData.detail.error === 'audio_too_short') {
-                userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
-              } else if (errorData.detail.message) {
-                userFriendlyMessage = errorData.detail.message;
-              }
-            } else if (typeof errorData.detail === 'string') {
-              // Simple string error
-              userFriendlyMessage = errorData.detail;
-            }
-          }
-        }
-        
-        // Check error message content
-        if (error.message) {
-          if (error.message.includes('timeout') || error.message.includes('หมดเวลา')) {
-            userFriendlyMessage = 'หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง';
-          } else if (error.message.includes('network') || error.message.includes('Network error')) {
-            userFriendlyMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบอินเทอร์เน็ต';
-          } else if (error.message.includes('OpenAI API') || error.message.includes('API key')) {
-            userFriendlyMessage = 'เกิดข้อผิดพลาดกับระบบ กรุณาติดต่อผู้ดูแล';
-          } else if (error.message.includes('silent') || error.message.includes('ไม่พบเสียง')) {
-            userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง';
-          } else if (error.message.includes('too short') || error.message.includes('สั้นเกินไป')) {
-            userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
-          } else if (error.message.includes('ไม่สามารถ') || error.message.includes('เกิดข้อผิดพลาด')) {
-            // Already in Thai, use as-is
-            userFriendlyMessage = error.message;
-          }
-        }
-        
-        setSttError(userFriendlyMessage);
-      } finally {
-        setIsProcessingAudio(false);
-        audioChunksRef.current = [];
-        console.log('🧹 Cleanup complete');
+      } else {
+        console.log('❌ Transcription failed:', transcription.error);
+        throw new Error(transcription.error || 'Transcription failed');
       }
-    };
+
+    } catch (error) {
+      console.error('🚨 Transcription error:', error);
+      
+      let userFriendlyMessage = 'เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง';
+      
+      if (error.response?.data?.detail) {
+        const errorData = error.response.data;
+        
+        if (errorData.detail) {
+          if (typeof errorData.detail === 'object') {
+            // Handle structured errors with specific types
+            if (errorData.detail.error === 'unclear_audio') {
+              userFriendlyMessage = errorData.detail.message || 'ไม่สามารถแปลงเสียงให้เป็นข้อความที่มีความหมายได้';
+              
+              // Log helpful hints for debugging
+              if (errorData.detail.hints) {
+                console.log('💡 คำแนะนำ:');
+                errorData.detail.hints.forEach(hint => console.log('   -', hint));
+              }
+              if (errorData.detail.detected_text) {
+                console.log('🔍 ข้อความที่ตรวจพบ:', errorData.detail.detected_text);
+              }
+              if (errorData.detail.detection_reason) {
+                console.log('❓ เหตุผล:', errorData.detail.detection_reason);
+              }
+            } else if (errorData.detail.error === 'silent_audio') {
+              userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาตรวจสอบไมโครโฟนและพูดให้ชัดเจน';
+            } else if (errorData.detail.error === 'audio_too_short') {
+              userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
+            } else if (errorData.detail.message) {
+              userFriendlyMessage = errorData.detail.message;
+            }
+          } else if (typeof errorData.detail === 'string') {
+            userFriendlyMessage = errorData.detail;
+          }
+        }
+      }
+      
+      if (error.message) {
+        if (error.message.includes('timeout') || error.message.includes('หมดเวลา')) {
+          userFriendlyMessage = 'หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง';
+        } else if (error.message.includes('network') || error.message.includes('Network error')) {
+          userFriendlyMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบอินเทอร์เน็ต';
+        } else if (error.message.includes('OpenAI API') || error.message.includes('API key')) {
+          userFriendlyMessage = 'เกิดข้อผิดพลาดกับระบบ กรุณาติดต่อผู้ดูแล';
+        } else if (error.message.includes('unclear') || error.message.includes('ไม่สามารถแปลง')) {
+          // Already handled above, keep the message
+        } else if (error.message.includes('silent') || error.message.includes('ไม่พบเสียง')) {
+          userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง';
+        } else if (error.message.includes('too short') || error.message.includes('สั้นเกินไป')) {
+          userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
+        } else if (error.message.includes('ไม่สามารถ') || error.message.includes('เกิดข้อผิดพลาด')) {
+          userFriendlyMessage = error.message;
+        }
+      }
+      
+      setSttError(userFriendlyMessage);
+    } finally {
+      setIsProcessingAudio(false);
+      audioChunksRef.current = [];
+      console.log('🧹 Cleanup complete');
+    }
+  };
   // ============ TOGGLE RECORDING (SINGLE BUTTON) ============
   const toggleRecording = () => {
     if (isRecording) {

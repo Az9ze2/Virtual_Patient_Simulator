@@ -425,27 +425,26 @@ class ApiService {
     return response.data;
   }
 
-  // ============================================
-  // Speech-to-Text API (Simplified - No Correction)
-  // ============================================
-  
   /**
-   * Transcribe audio using Whisper API
+   * Transcribe audio with optional correction and conversation context
    * @param {Blob} audioBlob - Audio blob from MediaRecorder
-   * @returns {Promise<Object>} Transcription result
-   */
-  async transcribeAudio(audioBlob) {
+   * @param {string|null} conversationContext - Recent conversation for context-aware correction
+   * @param {boolean|null} enableCorrection - Override global correction setting
+   * @returns {Promise<Object>} Transcription result with correction metadata
+  */
+  async transcribeAudioWithContext(audioBlob, conversationContext = null, enableCorrection = null) {
     try {
-      console.log('🎤 Starting audio transcription...');
+      console.log('🎤 Starting context-aware audio transcription...');
       console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
-      console.log('🎵 Audio blob type:', audioBlob.type);
+      console.log('🧠 Context provided:', conversationContext ? 'YES' : 'NO');
+      console.log('🔧 Correction:', enableCorrection === null ? 'DEFAULT' : enableCorrection ? 'ENABLED' : 'DISABLED');
       
-      if (audioBlob.size < 5000) { // Less than 5KB
+      if (audioBlob.size < 5000) {
         console.warn('⚠️ Audio blob too small:', audioBlob.size, 'bytes');
         throw new Error('ไฟล์เสียงเล็กเกินไป กรุณาบันทึกเสียงให้ยาวขึ้น');
       }
       
-      // CREATE FORMDATA
+      // Create FormData with audio and optional parameters
       const formData = new FormData();
       
       // Determine filename based on MIME type
@@ -458,99 +457,114 @@ class ApiService {
         filename = 'recording.wav';
       }
       
-      // Append audio file
       formData.append('audio', audioBlob, filename);
       
+      // Add conversation context if provided
+      if (conversationContext) {
+        formData.append('conversation_context', conversationContext);
+      }
+      
+      // Add correction override if specified
+      if (enableCorrection !== null) {
+        formData.append('enable_correction', enableCorrection.toString());
+      }
+      
       console.log('📤 Sending to:', `${this.baseURL}/api/stt/transcribe`);
+      const startTime = performance.now();
 
-      // USE AXIOS WITH PROPER CONFIG
+      // Send request with extended timeout
       const response = await this.api.post('/api/stt/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 120000, // 2 minutes timeout for audio processing
+        timeout: 120000, // 2 minutes
       });
 
-      console.log('✅ Transcription response:', response.data);
+      const elapsedTime = performance.now() - startTime;
+      console.log(`✅ Transcription complete in ${elapsedTime.toFixed(0)}ms`);
+      console.log('📝 Response:', response.data);
+      
+      // Log correction results if available
+      if (response.data.data?.correction) {
+        const correction = response.data.data.correction;
+        console.log('🧠 Correction applied:', correction.was_corrected ? 'YES' : 'NO');
+        if (correction.was_corrected) {
+          console.log('   Original:', correction.original_text);
+          console.log('   Corrected:', correction.corrected_text);
+        }
+      }
       
       return response.data;
       
     } catch (error) {
       console.error('🚨 Transcription API Error:', error);
       
-      // Better error message handling
-      if (error.response) {
-        const errorData = error.response.data;
+      // Enhanced error handling
+      if (error.response?.data?.detail) {
+        const detail = error.response.data.detail;
         
-        // Handle structured error responses from backend
-        if (errorData.detail) {
-          if (typeof errorData.detail === 'object') {
-            // Structured error with custom fields
-            if (errorData.detail.error === 'silent_audio') {
-              throw new Error(errorData.detail.message || 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจน');
-            } else if (errorData.detail.error === 'audio_too_short') {
-              throw new Error(errorData.detail.message || 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้น');
-            } else if (errorData.detail.message) {
-              throw new Error(errorData.detail.message);
-            }
-          } else if (typeof errorData.detail === 'string') {
-            // Simple string error
-            if (errorData.detail.includes('not configured') || errorData.detail.includes('API key')) {
-              throw new Error('ระบบยังไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแล');
-            }
-            throw new Error(errorData.detail);
+        if (typeof detail === 'object') {
+          if (detail.error === 'silent_audio') {
+            throw new Error(detail.message || 'ไม่พบเสียงพูดในการบันทึก');
+          } else if (detail.error === 'audio_too_short') {
+            throw new Error(detail.message || 'เสียงที่บันทึกสั้นเกินไป');
+          } else if (detail.message) {
+            throw new Error(detail.message);
           }
-        }
-        
-        // Handle HTTP status codes
-        if (error.response.status === 400) {
-          throw new Error('ข้อมูลเสียงไม่ถูกต้อง กรุณาลองบันทึกใหม่');
-        } else if (error.response.status === 429) {
-          throw new Error('มีการใช้งานมากเกินไป กรุณารอสักครู่แล้วลองใหม่');
-        } else if (error.response.status === 500) {
-          throw new Error('เกิดข้อผิดพลาดของระบบ กรุณาลองอีกครั้ง');
+        } else if (typeof detail === 'string') {
+          throw new Error(detail);
         }
       }
       
-      // Handle timeout errors
+      if (error.response?.status === 400) {
+        throw new Error('ข้อมูลเสียงไม่ถูกต้อง กรุณาลองบันทึกใหม่');
+      } else if (error.response?.status === 429) {
+        throw new Error('มีการใช้งานมากเกินไป กรุณารอสักครู่');
+      } else if (error.response?.status === 500) {
+        throw new Error('เกิดข้อผิดพลาดของระบบ กรุณาลองอีกครั้ง');
+      }
+      
       if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
         throw new Error('หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง');
       }
       
-      // Handle network errors
       if (error.message.includes('Network error') || error.code === 'ERR_NETWORK') {
         throw new Error('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย');
       }
       
-      // Default error message
-      throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง กรุณาลองอีกครั้ง');
+      throw new Error(error.message || 'เกิดข้อผิดพลาดในการแปลงเสียง');
     }
   }
 
   /**
-   * Get STT service status
-   * @returns {Promise<Object>} Service status and configuration
+   * Get STT configuration and status
    */
-  async getSTTStatus() {
+  async getSTTConfig() {
     try {
       const response = await this.api.get('/api/stt/status');
       return response.data;
     } catch (error) {
-      console.error('Error getting STT status:', error);
+      console.error('Error getting STT config:', error);
       throw error;
     }
   }
 
   /**
-   * Check STT service health
-   * @returns {Promise<Object>} Health check result
+   * Update STT configuration at runtime
+   * @param {Object} config - Configuration updates
+   * @example
+   * updateSTTConfig({
+   *   enable_correction: true,
+   *   correction_model: "gpt-4o-mini",
+   *   correction_temperature: 0.1
+   * })
    */
-  async checkSTTHealth() {
+  async updateSTTConfig(config) {
     try {
-      const response = await this.api.get('/api/stt/health');
+      const response = await this.api.post('/api/stt/config', config);
       return response.data;
     } catch (error) {
-      console.error('Error checking STT health:', error);
+      console.error('Error updating STT config:', error);
       throw error;
     }
   }
