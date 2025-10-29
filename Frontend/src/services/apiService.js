@@ -425,29 +425,27 @@ class ApiService {
     return response.data;
   }
 
-    // ============================================
-  // ✅ Speech-to-Text API with AI Correction and Better Error Handling
+  // ============================================
+  // Speech-to-Text API (Simplified - No Correction)
   // ============================================
   
   /**
-   * Transcribe audio with AI-powered word correction
+   * Transcribe audio using Whisper API
    * @param {Blob} audioBlob - Audio blob from MediaRecorder
-   * @param {string|null} conversationContext - Optional conversation context for better correction
-   * @returns {Promise<Object>} Transcription result with corrections
+   * @returns {Promise<Object>} Transcription result
    */
-  async transcribeAudio(audioBlob, conversationContext = null) {
+  async transcribeAudio(audioBlob) {
     try {
-      console.log('🎤 Starting audio transcription with AI correction...');
+      console.log('🎤 Starting audio transcription...');
       console.log('📊 Audio blob size:', audioBlob.size, 'bytes');
       console.log('🎵 Audio blob type:', audioBlob.type);
-      console.log('🧠 Conversation context:', conversationContext ? 'Provided' : 'None');
       
       if (audioBlob.size < 5000) { // Less than 5KB
         console.warn('⚠️ Audio blob too small:', audioBlob.size, 'bytes');
         throw new Error('ไฟล์เสียงเล็กเกินไป กรุณาบันทึกเสียงให้ยาวขึ้น');
       }
       
-      // ✅ CREATE FORMDATA WITH ALL REQUIRED FIELDS
+      // CREATE FORMDATA
       const formData = new FormData();
       
       // Determine filename based on MIME type
@@ -463,18 +461,9 @@ class ApiService {
       // Append audio file
       formData.append('audio', audioBlob, filename);
       
-      // ✅ APPEND CORRECTION FLAG (matches backend Form field)
-      formData.append('enable_correction', 'true');
-      
-      // ✅ APPEND CONVERSATION CONTEXT (if provided)
-      if (conversationContext) {
-        formData.append('conversation_context', conversationContext);
-        console.log('📝 Context length:', conversationContext.length, 'characters');
-      }
-      
       console.log('📤 Sending to:', `${this.baseURL}/api/stt/transcribe`);
 
-      // ✅ USE AXIOS (this.api) WITH PROPER CONFIG
+      // USE AXIOS WITH PROPER CONFIG
       const response = await this.api.post('/api/stt/transcribe', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -484,25 +473,12 @@ class ApiService {
 
       console.log('✅ Transcription response:', response.data);
       
-      // ✅ LOG CORRECTION DETAILS
-      if (response.data.success && response.data.data.correction) {
-        const correction = response.data.data.correction;
-        if (correction.corrections_made) {
-          console.log('🔧 AI Corrections applied:');
-          console.log('   Original:', response.data.data.original_text);
-          console.log('   Corrected:', response.data.data.text);
-          console.log('   Changes:', correction.changes);
-        } else {
-          console.log('✓ No corrections needed - text was already accurate');
-        }
-      }
-      
       return response.data;
       
     } catch (error) {
       console.error('🚨 Transcription API Error:', error);
       
-      // 🎯 Better error message handling
+      // Better error message handling
       if (error.response) {
         const errorData = error.response.data;
         

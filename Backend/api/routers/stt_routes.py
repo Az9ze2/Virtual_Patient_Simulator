@@ -1,20 +1,15 @@
 """
-Enhanced Speech-to-Text (STT) Routes with Better Error Handling
-Uses OpenAI Whisper API + Word Correction AI for Thai medical conversations
+Enhanced Speech-to-Text (STT) Routes
+Uses OpenAI Whisper API for Thai medical conversations
 """
 
-from fastapi import APIRouter, UploadFile, File, HTTPException, Form
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 import openai
 import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 import tempfile
 import logging
-
-# Import the word correction service
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
-from services.correction import word_correction_service
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,12 +29,10 @@ else:
 
 @router.post("/transcribe")
 async def transcribe_audio(
-    audio: UploadFile = File(...),
-    enable_correction: bool = Form(True),
-    conversation_context: Optional[str] = Form(None)
+    audio: UploadFile = File(...)
 ) -> Dict[str, Any]:
     """
-    Transcribe audio to text using OpenAI Whisper API with optional word correction
+    Transcribe audio to text using OpenAI Whisper API
     """
     
     # Check if API key is available
@@ -136,8 +129,7 @@ async def transcribe_audio(
             transcribed_text = transcript.text.strip()
             logger.info(f"✅ Whisper transcription: {transcribed_text[:100]}...")
             
-            # ============ STEP 4: CHECK FOR TRULY SILENT/EMPTY AUDIO ONLY ============
-            # Only reject if completely empty or whitespace
+            # ============ STEP 4: CHECK FOR EMPTY AUDIO ============
             silent_patterns = [
                 "โปรดติดตามตอนต่อไป",
                 ""  # Empty string
@@ -154,54 +146,20 @@ async def transcribe_audio(
                     }
                 )
             
-            # ============ STEP 5: WORD CORRECTION (Optional) ============
-            correction_result = None
-            final_text = transcribed_text
-            
-            if enable_correction:
-                logger.info(f"🔧 Applying word correction...")
-                try:
-                    correction_result = word_correction_service.correct_text(
-                        transcribed_text=transcribed_text,
-                        context=conversation_context or ""
-                    )
-                    final_text = correction_result["corrected_text"]
-                    
-                    if correction_result["corrections_made"]:
-                        logger.info(f"📝 Corrections applied: {correction_result['changes']}")
-                    else:
-                        logger.info(f"✓ No corrections needed")
-                except Exception as correction_error:
-                    # If correction fails, use original transcription
-                    logger.warning(f"⚠️ Correction failed, using original text: {str(correction_error)}")
-                    final_text = transcribed_text
-            
-            # ============ STEP 6: PREPARE RESPONSE ============
+            # ============ STEP 5: PREPARE RESPONSE ============
             response_data = {
-                "text": final_text,  # Final text to use
-                "original_text": transcribed_text,  # Original Whisper output
+                "text": transcribed_text,
                 "language": "th",
                 "model": "whisper-1",
-                "file_size_mb": round(file_size_mb, 2),
-                "correction_enabled": enable_correction
+                "file_size_mb": round(file_size_mb, 2)
             }
             
-            # Add correction details if enabled
-            if enable_correction and correction_result:
-                response_data["correction"] = {
-                    "corrections_made": correction_result["corrections_made"],
-                    "changes": correction_result.get("changes", []),
-                    "model_used": correction_result.get("model_used", "gpt-4o-mini")
-                }
-            
-            logger.info(f"✅ STT pipeline complete: '{transcribed_text}' → '{final_text}'")
+            logger.info(f"✅ STT pipeline complete: '{transcribed_text}'")
             
             return {
                 "success": True,
                 "data": response_data,
-                "message": "Transcription completed successfully" + (
-                    " with word correction" if enable_correction else ""
-                )
+                "message": "Transcription completed successfully"
             }
             
         finally:
@@ -267,22 +225,18 @@ async def stt_status() -> Dict[str, Any]:
     return {
         "success": api_key_configured,
         "data": {
-            "service": "OpenAI Whisper + Word Correction",
+            "service": "OpenAI Whisper",
             "stt_model": "whisper-1",
-            "correction_model": "gpt-4o-mini",
             "language": "th",
             "api_key_configured": api_key_configured,
             "max_file_size_mb": 25,
             "supported_formats": ["webm", "mp4", "mpeg", "wav", "ogg"],
             "features": {
                 "whisper_transcription": True,
-                "word_correction": True,
-                "medical_terminology": True,
-                "context_aware": True,
                 "silent_audio_detection": True
             }
         },
-        "message": "STT service with word correction is ready" if api_key_configured else "OpenAI API key not configured"
+        "message": "STT service is ready" if api_key_configured else "OpenAI API key not configured"
     }
 
 
@@ -294,10 +248,9 @@ async def stt_health() -> Dict[str, Any]:
     return {
         "status": "healthy" if api_key_configured else "degraded",
         "api_available": api_key_configured,
-        "service": "STT + Word Correction",
+        "service": "STT",
         "components": {
             "whisper": api_key_configured,
-            "word_correction": api_key_configured,
             "silent_detection": True
         }
     }
