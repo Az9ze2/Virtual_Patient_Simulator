@@ -5,6 +5,8 @@ from psycopg import sql
 from psycopg.types.json import Json
 from .pool import get_conn
 from .time_utils import now_th
+import json
+from datetime import datetime, date
 
 # Users
 
@@ -98,6 +100,23 @@ def get_case_data(case_id: str) -> Optional[Dict[str, Any]]:
         return row["case_data"] if row else None
 
 
+def get_latest_session_report_summary(session_id: str) -> Optional[Dict[str, Any]]:
+    """Fetch the most recent session report summary JSON for a session."""
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT summary
+            FROM session_reports
+            WHERE session_id=%s
+            ORDER BY generated_at DESC
+            LIMIT 1
+            """,
+            (session_id,),
+        )
+        row = cur.fetchone()
+        return row["summary"] if row else None
+
+
 # Sessions
 
 def create_session(session_id: str, user_id: str, case_id: str, started_at) -> None:
@@ -116,7 +135,7 @@ def complete_session(session_id: str, total_tokens: int, ended_at, duration_seco
         cur.execute(
             """
             UPDATE sessions
-            SET status='completed', ended_at=%s, duration_seconds=%s, total_tokens=%s
+            SET status='complete', ended_at=%s, duration_seconds=%s, total_tokens=%s
             WHERE session_id=%s
             """,
             (ended_at, duration_seconds, total_tokens, session_id),
@@ -141,17 +160,51 @@ def add_chat_message(session_id: str, role: str, content: str, timestamp, tokens
 
 # Session reports
 
-def insert_session_report(session_id: str, summary: Dict[str, Any], generated_at, report_id: Optional[str] = None) -> str:
-    rid = report_id or str(uuid.uuid4())
+def _json_dumps_handle_dt(obj):
+    return json.dumps(
+        obj,
+        default=lambda o: o.isoformat() if isinstance(o, (datetime, date)) else str(o)
+    )
+
+
+def insert_session_report(session_id: str, summary: Dict[str, Any], generated_at):
+    """Insert a session report and return the report id (str or int depending on schema).
+    Supports both VARCHAR report_id (UUID) and BIGSERIAL report_id.
+    """
+    print(f"[DB] Attempting to insert session_report for session {session_id}")
     with get_conn() as conn, conn.cursor() as cur:
-        cur.execute(
-            """
-            INSERT INTO session_reports (report_id, session_id, generated_at, summary)
-            VALUES (%s, %s, %s, %s)
-            """,
-            (rid, session_id, generated_at, Json(summary)),
-        )
-    return rid
+        # Try BIGSERIAL (no explicit id) first
+        try:
+            print(f"[DB] Trying BIGSERIAL insert for session_reports")
+            cur.execute(
+                """
+                INSERT INTO session_reports (session_id, generated_at, summary)
+                VALUES (%s, %s, %s)
+                RETURNING report_id
+                """,
+                (session_id, generated_at, Json(summary, dumps=_json_dumps_handle_dt)),
+            )
+            row = cur.fetchone()
+            result = row["report_id"] if row else None
+            print(f"[DB] BIGSERIAL insert successful, report_id={result}")
+            return result
+        except Exception as e1:
+            print(f"[DB] BIGSERIAL insert failed: {e1}, trying VARCHAR fallback")
+            # Fallback to explicit UUID for VARCHAR schema
+            try:
+                rid = str(uuid.uuid4())
+                cur.execute(
+                    """
+                    INSERT INTO session_reports (report_id, session_id, generated_at, summary)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (rid, session_id, generated_at, Json(summary, dumps=_json_dumps_handle_dt)),
+                )
+                print(f"[DB] VARCHAR insert successful, report_id={rid}")
+                return rid
+            except Exception as e2:
+                print(f"[DB] VARCHAR insert also failed: {e2}")
+                raise e2
 
 
 # Audit log
@@ -168,3 +221,10 @@ def add_audit_log(user_id: Optional[str], session_id: Optional[str], action_type
         )
         row = cur.fetchone()
         return int(row["log_id"]) if row else 0
+
+
+def get_user_id_by_student_id(student_id: str) -> Optional[str]:
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT user_id FROM users WHERE student_id=%s", (student_id,))
+        row = cur.fetchone()
+        return row["user_id"] if row else None

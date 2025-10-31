@@ -57,7 +57,7 @@ CREATE TABLE chat_messages (
 
 -- Session reports
 CREATE TABLE session_reports (
-  report_id VARCHAR PRIMARY KEY,
+  report_id BIGSERIAL PRIMARY KEY,
   session_id VARCHAR NOT NULL REFERENCES sessions(session_id) ON DELETE CASCADE,
   generated_at TIMESTAMP NOT NULL,
   summary JSONB

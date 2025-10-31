@@ -243,25 +243,37 @@ async def end_session(session_id: str):
             if repo and now_th:
                 total_tokens = int((summary.token_usage or {}).get("total_tokens", 0))
                 duration_seconds = int(summary.duration_minutes * 60)
+                # Update session row
                 repo.complete_session(
                     session_id=session_id,
                     total_tokens=total_tokens,
                     ended_at=now_th().replace(tzinfo=None),
                     duration_seconds=duration_seconds,
                 )
-                # Save report
-                repo.insert_session_report(
-                    session_id=session_id,
-                    summary=summary.dict(),
-                    generated_at=now_th().replace(tzinfo=None),
-                )
-                # Audit log
+                print(f"[DB] Marked session {session_id} as complete (tokens={total_tokens}, duration={duration_seconds}s)")
+                # Save report (robust to schema)
+                try:
+                    rid = repo.insert_session_report(
+                        session_id=session_id,
+                        summary=summary.dict(),
+                        generated_at=now_th().replace(tzinfo=None),
+                    )
+                    print(f"[DB] Inserted session_report id={rid} for session {session_id}")
+                except Exception as rep_err:
+                    print(f"[DB][ERROR] Failed to insert session_report: {rep_err}")
+                # Audit log with user_id resolved via student_id (always attempt)
+                uid = None
+                try:
+                    uid = repo.get_user_id_by_student_id(summary.user_info.student_id)
+                except Exception:
+                    uid = None
                 repo.add_audit_log(
-                    user_id=None,
+                    user_id=uid,
                     session_id=session_id,
                     action_type="session_end",
                     performed_at=now_th().replace(tzinfo=None),
                 )
+                print(f"[DB] Audit log session_end for {session_id} (user_id={uid})")
         except Exception as e:
             print(f"[DB][ERROR] Failed to persist session end to DB: {e}")
         
@@ -286,43 +298,61 @@ async def download_session_report(session_id: str):
     """
     try:
         session = session_manager.get_session(session_id)
-        if not session:
-            # Try to generate summary for ended session
-            summary = session_manager.end_session(session_id)
-            if not summary:
-                raise HTTPException(
-                    status_code=404,
-                    detail="Session not found"
-                )
-            report_data = summary.dict()
-        else:
-            # Active session - create report from current state
-            chatbot = session_manager.get_chatbot(session_id)
-            duration = (datetime.now() - session.created_at).total_seconds() / 60.0
+        report_data = None
+        used_source = None
 
-            token_usage = {}
-            if chatbot:
-                token_usage = {
-                    "input_tokens": chatbot.input_tokens,
-                    "output_tokens": chatbot.output_tokens,
-                    "total_tokens": chatbot.total_tokens
+        # Prefer DB-saved summary first
+        try:
+            if repo:
+                db_summary = repo.get_latest_session_report_summary(session_id)
+                if db_summary:
+                    report_data = db_summary
+                    used_source = "db"
+                    print(f"[DB] Loaded session report JSON from DB for session {session_id}")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to load report JSON from DB: {e}")
+
+        if report_data is None:
+            if not session:
+                # Try to generate summary for ended session
+                summary = session_manager.end_session(session_id)
+                if not summary:
+                    raise HTTPException(
+                        status_code=404,
+                        detail="Session not found"
+                    )
+                report_data = summary.dict()
+                used_source = "generated"
+            else:
+                # Active session - create report from current state
+                chatbot = session_manager.get_chatbot(session_id)
+                duration = (datetime.now() - session.created_at).total_seconds() / 60.0
+
+                token_usage = {}
+                if chatbot:
+                    token_usage = {
+                        "input_tokens": chatbot.input_tokens,
+                        "output_tokens": chatbot.output_tokens,
+                        "total_tokens": chatbot.total_tokens
+                    }
+
+                report_data = {
+                    "session_id": session_id,
+                    "user_info": session.user_info.dict(),
+                    "case_info": session.case_info.dict(),
+                    "patient_info": session.patient_info.dict() if session.patient_info else None,
+                    "duration_minutes": duration,
+                    "total_messages": len(session.chat_history),
+                    "token_usage": token_usage,
+                    "diagnosis_treatment": session.diagnosis_treatment.dict(),
+                    "chat_history": session.chat_history,
+                    "created_at": session.created_at.isoformat(),
+                    "downloaded_at": datetime.now().isoformat(),
+                    "status": "active"
                 }
+                used_source = "memory"
 
-            report_data = {
-                "session_id": session_id,
-                "user_info": session.user_info.dict(),
-                "case_info": session.case_info.dict(),
-                "patient_info": session.patient_info.dict() if session.patient_info else None,
-                "duration_minutes": duration,
-                "total_messages": len(session.chat_history),
-                "token_usage": token_usage,
-                "diagnosis_treatment": session.diagnosis_treatment.dict(),
-                "chat_history": session.chat_history,
-                "created_at": session.created_at.isoformat(),
-                "downloaded_at": datetime.now().isoformat(),
-                "status": "active"
-            }
-
+        print(f"[PDF] Using report data source: {used_source}")
         # Generate PDF report using FPDF2
         try:
             import logging
@@ -673,6 +703,27 @@ async def download_session_report(session_id: str):
                 content_disposition = f'attachment; filename="{ascii_filename}"'
                 print(f"📝 Content-Disposition: {content_disposition}")
                 
+                # Audit log: download_report (best-effort)
+                try:
+                    if repo and now_th:
+                        uid = None
+                        try:
+                            # Try resolve user id from session manager data
+                            session_obj = session_manager.get_session(session_id)
+                            if session_obj:
+                                uid = repo.get_user_id_by_student_id(session_obj.user_info.student_id)
+                        except Exception:
+                            uid = None
+                        repo.add_audit_log(
+                            user_id=uid,
+                            session_id=session_id,
+                            action_type="download_report",
+                            performed_at=now_th().replace(tzinfo=None),
+                        )
+                        print(f"[DB] Audit log download_report for {session_id} (user_id={uid})")
+                except Exception as audit_err:
+                    print(f"[DB][ERROR] Failed to write download_report audit: {audit_err}")
+
                 return StreamingResponse(
                     buffer,
                     media_type="application/pdf",

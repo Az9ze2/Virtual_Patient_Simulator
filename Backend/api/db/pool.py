@@ -29,6 +29,11 @@ def get_pool() -> ConnectionPool:
 def get_conn():
     pool = get_pool()
     with pool.connection() as conn:
+        # Ensure autocommit so each statement persists immediately
+        try:
+            conn.autocommit = True
+        except Exception:
+            pass
         # Use dict_row for convenience
         conn.row_factory = dict_row
         # Ensure timezone session (for timestamptz rendering)
