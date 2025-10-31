@@ -20,6 +20,14 @@ from api.models.schemas import (
 )
 from api.utils.session_manager import session_manager
 
+# Database integration
+try:
+    from api.db import repository as repo
+    from api.db.time_utils import now_th
+except Exception as _db_import_err:
+    repo = None
+    now_th = None
+
 router = APIRouter()
 
 # Base path to cases
@@ -43,6 +51,37 @@ async def start_session(request: StartSessionRequest):
             config=request.config,
             case_data=case_data
         )
+
+        # Persist to DB (best-effort; do not fail request if DB unavailable)
+        try:
+            if repo and now_th:
+                # Ensure user exists
+                user_id = repo.create_or_get_user(
+                    student_id=request.user_info.student_id,
+                    name=request.user_info.name,
+                    email=None,
+                    preferences=None,
+                )
+                # Derive case_id from request (should match DB-ingested id)
+                cid = os.path.splitext(request.case_filename)[0]
+                # Create session row (will fail if case FK missing)
+                repo.create_session(
+                    session_id=session_id,
+                    user_id=user_id,
+                    case_id=cid,
+                    started_at=now_th().replace(tzinfo=None),
+                )
+                print(f"[DB] Created session: {session_id} for user {user_id} -> case {cid}")
+                # Audit log
+                repo.add_audit_log(
+                    user_id=user_id,
+                    session_id=session_id,
+                    action_type="session_start",
+                    performed_at=now_th().replace(tzinfo=None),
+                )
+                print(f"[DB] Audit log: session_start for {session_id}")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist session start to DB: {e}")
         
         return APIResponse(
             success=True,
@@ -198,6 +237,33 @@ async def end_session(session_id: str):
                 status_code=404,
                 detail="Session not found or already ended"
             )
+
+        # Persist completion to DB (best-effort)
+        try:
+            if repo and now_th:
+                total_tokens = int((summary.token_usage or {}).get("total_tokens", 0))
+                duration_seconds = int(summary.duration_minutes * 60)
+                repo.complete_session(
+                    session_id=session_id,
+                    total_tokens=total_tokens,
+                    ended_at=now_th().replace(tzinfo=None),
+                    duration_seconds=duration_seconds,
+                )
+                # Save report
+                repo.insert_session_report(
+                    session_id=session_id,
+                    summary=summary.dict(),
+                    generated_at=now_th().replace(tzinfo=None),
+                )
+                # Audit log
+                repo.add_audit_log(
+                    user_id=None,
+                    session_id=session_id,
+                    action_type="session_end",
+                    performed_at=now_th().replace(tzinfo=None),
+                )
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist session end to DB: {e}")
         
         return APIResponse(
             success=True,
@@ -854,45 +920,59 @@ def _determine_case_type_from_data(case_data: dict) -> CaseType:
 
 def _load_case_data(filename: str):
     """
-    Load case data and info from JSON file
+    Load case data and info by filename from disk; if not found, try DB by case_id.
     """
     try:
-        # Determine which folder to look in based on filename prefix
-        if filename.startswith("01_"):
+        # Normalize: strip any extension to get the base identifier
+        filename_base = os.path.splitext(filename)[0]
+        # First, try disk
+        cases_path = None
+        case_type = None
+        if filename_base.startswith("01_"):
             cases_path = os.path.join(CASES_BASE_PATH, "cases_01")
             case_type = CaseType.CHILD
-        elif filename.startswith("02_"):
+        elif filename_base.startswith("02_"):
             cases_path = os.path.join(CASES_BASE_PATH, "cases_02")
             case_type = CaseType.ADULT
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid case filename format: {filename}"
-            )
         
-        case_file_path = os.path.join(cases_path, filename)
+        if cases_path:
+            case_file_path = os.path.join(cases_path, filename_base + ".json")
+            if os.path.exists(case_file_path):
+                with open(case_file_path, 'r', encoding='utf-8') as f:
+                    case_data = json.load(f)
+                case_metadata = case_data.get('case_metadata', {})
+                case_info = CaseInfo(
+                    filename=filename,
+                    case_id=case_data.get('case_id', ''),
+                    case_title=case_metadata.get('case_title', ''),
+                    case_type=case_type or CaseType.CHILD,
+                    medical_specialty=case_metadata.get('medical_specialty', ''),
+                    exam_duration_minutes=case_metadata.get('exam_duration_minutes', 0)
+                )
+                return case_data, case_info
         
-        if not os.path.exists(case_file_path):
-            raise HTTPException(
-                status_code=404,
-                detail=f"Case file not found: {filename}"
-            )
+        # If not on disk, try to load from DB using the provided string as case_id
+        if repo:
+            data = repo.get_case_data(filename_base)
+            if data:
+                cid = data.get('case_id', filename)
+                meta = data.get('case_metadata', {})
+                prefix = cid.split('_')[0] if '_' in cid else '01'
+                ctype = CaseType(prefix) if prefix in (CaseType.CHILD.value, CaseType.ADULT.value) else CaseType.CHILD
+                case_info = CaseInfo(
+                    filename=cid,
+                    case_id=cid,
+                    case_title=meta.get('case_title', cid),
+                    case_type=ctype,
+                    medical_specialty=meta.get('medical_specialty', ''),
+                    exam_duration_minutes=meta.get('exam_duration_minutes', 0),
+                )
+                return data, case_info
         
-        with open(case_file_path, 'r', encoding='utf-8') as f:
-            case_data = json.load(f)
-        
-        # Create case info
-        case_metadata = case_data.get('case_metadata', {})
-        case_info = CaseInfo(
-            filename=filename,
-            case_id=case_data.get('case_id', ''),
-            case_title=case_metadata.get('case_title', ''),
-            case_type=case_type,
-            medical_specialty=case_metadata.get('medical_specialty', ''),
-            exam_duration_minutes=case_metadata.get('exam_duration_minutes', 0)
+        raise HTTPException(
+            status_code=404,
+            detail=f"Case not found on disk or database: {filename}"
         )
-        
-        return case_data, case_info
         
     except HTTPException:
         raise

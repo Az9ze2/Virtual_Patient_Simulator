@@ -16,6 +16,14 @@ from api.models.schemas import (
 from api.utils.session_manager import session_manager
 from services.tts_service import tts_service
 
+# Database integration
+try:
+    from api.db import repository as repo
+    from api.db.time_utils import now_th
+except Exception:
+    repo = None
+    now_th = None
+
 router = APIRouter()
 
 @router.post("/{session_id}/chat")
@@ -56,6 +64,30 @@ async def send_message(session_id: str, message: ChatMessage):
             user_message=message.message,
             bot_response=response
         )
+
+        # Persist chat messages (best-effort)
+        try:
+            if repo and now_th:
+                ts_user = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="user",
+                    content=message.message,
+                    timestamp=ts_user,
+                    tokens_used=0,
+                    response_time_ms=None,
+                )
+                ts_bot = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="simulator",
+                    content=response,
+                    timestamp=ts_bot,
+                    tokens_used=0,
+                    response_time_ms=int(response_time * 1000) if isinstance(response_time, (int, float)) else None,
+                )
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist chat messages: {e}")
         
         return APIResponse(
             success=True,
@@ -122,6 +154,30 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
             user_message=message.message,
             bot_response=response
         )
+
+        # Persist chat messages (best-effort)
+        try:
+            if repo and now_th:
+                ts_user = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="user",
+                    content=message.message,
+                    timestamp=ts_user,
+                    tokens_used=0,
+                    response_time_ms=None,
+                )
+                ts_bot = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="simulator",
+                    content=response,
+                    timestamp=ts_bot,
+                    tokens_used=0,
+                    response_time_ms=int(response_time * 1000) if isinstance(response_time, (int, float)) else None,
+                )
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist chat messages: {e}")
         
         # Prepare response data
         response_data = {

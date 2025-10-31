@@ -13,6 +13,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from api.models.schemas import CaseInfo, CaseType, APIResponse
 
+# Optional DB import
+try:
+    from api.db import repository as repo
+except Exception:
+    repo = None
+
 router = APIRouter()
 
 # Base path to cases
@@ -23,30 +29,50 @@ CASES_BASE_PATH = os.path.join(
 @router.get("/list", response_model=APIResponse)
 async def list_cases():
     """
-    List all available cases from both cases_01 and cases_02 folders
+    List available cases. Prefer DB if available; fallback to local files.
     """
     try:
         cases = []
+
+        # Try DB first
+        used_db = False
+        if repo:
+            try:
+                rows = repo.list_cases()
+                if rows:
+                    used_db = True
+                    for r in rows:
+                        try:
+                            cases.append(CaseInfo(
+                                filename=r['case_id'],  # pass case_id; backend can load from DB by id
+                                case_id=r['case_id'],
+                                case_title=r['case_name'],
+                                case_type=CaseType(r['case_type']),
+                                medical_specialty="",
+                                exam_duration_minutes=0,
+                            ))
+                        except Exception:
+                            continue
+            except Exception:
+                used_db = False
+
+        if not used_db:
+            # Fallback to files
+            cases_01_path = os.path.join(CASES_BASE_PATH, "cases_01")
+            if os.path.exists(cases_01_path):
+                for filename in os.listdir(cases_01_path):
+                    if filename.endswith('.json'):
+                        case_info = _load_case_info(cases_01_path, filename, CaseType.CHILD)
+                        if case_info:
+                            cases.append(case_info)
+            cases_02_path = os.path.join(CASES_BASE_PATH, "cases_02")
+            if os.path.exists(cases_02_path):
+                for filename in os.listdir(cases_02_path):
+                    if filename.endswith('.json'):
+                        case_info = _load_case_info(cases_02_path, filename, CaseType.ADULT)
+                        if case_info:
+                            cases.append(case_info)
         
-        # Process cases_01 (child/parent cases)
-        cases_01_path = os.path.join(CASES_BASE_PATH, "cases_01")
-        if os.path.exists(cases_01_path):
-            for filename in os.listdir(cases_01_path):
-                if filename.endswith('.json'):
-                    case_info = _load_case_info(cases_01_path, filename, CaseType.CHILD)
-                    if case_info:
-                        cases.append(case_info)
-        
-        # Process cases_02 (adult patient cases)
-        cases_02_path = os.path.join(CASES_BASE_PATH, "cases_02")
-        if os.path.exists(cases_02_path):
-            for filename in os.listdir(cases_02_path):
-                if filename.endswith('.json'):
-                    case_info = _load_case_info(cases_02_path, filename, CaseType.ADULT)
-                    if case_info:
-                        cases.append(case_info)
-        
-        # Sort cases by case_id for consistent ordering
         cases.sort(key=lambda x: x.case_id)
         
         return APIResponse(
