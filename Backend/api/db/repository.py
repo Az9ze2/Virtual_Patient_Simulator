@@ -55,6 +55,25 @@ def list_cases() -> List[Dict[str, Any]]:
         return cur.fetchall()
 
 
+def list_cases_detailed() -> List[Dict[str, Any]]:
+    """Return list of cases with fields needed by UI, extracted from JSONB."""
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            """
+            SELECT
+              case_id,
+              case_name,
+              case_type,
+              (case_data->'case_metadata'->>'case_title') AS case_title,
+              (case_data->'case_metadata'->>'medical_specialty') AS medical_specialty,
+              NULLIF((case_data->'case_metadata'->>'exam_duration_minutes'), '')::INT AS exam_duration_minutes
+            FROM cases
+            ORDER BY case_id
+            """
+        )
+        return cur.fetchall()
+
+
 def next_case_id(prefix: str) -> str:
     """Compute the next case_id for a given prefix (e.g., '01' -> '01_04')."""
     if not prefix or len(prefix) != 2 or not prefix.isdigit():
@@ -71,7 +90,6 @@ def next_case_id(prefix: str) -> str:
         row = cur.fetchone()
         max_n = int(list(row.values())[0]) if row else 0
         return f"{prefix}_{max_n + 1:02d}"
-
 
 def get_case_data(case_id: str) -> Optional[Dict[str, Any]]:
     with get_conn() as conn, conn.cursor() as cur:
