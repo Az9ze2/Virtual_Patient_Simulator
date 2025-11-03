@@ -25,7 +25,7 @@ async def generate_speech(request: TTSRequest):
     Parameters:
     - text: The text to convert to speech (max 4096 characters)
     - voice: Voice type (alloy, echo, fable, onyx, nova, shimmer)
-    - model: TTS model (tts-1 for standard, tts-1-hd for high quality)
+    - model: TTS model (gpt-4o-mini-tts)
     - speed: Speech speed (0.25 to 4.0, default 1.0)
     - format: Audio format (mp3, opus, aac, flac)
     
@@ -163,7 +163,7 @@ async def tts_health_check():
                 "default_model": tts_service.default_model,
                 "default_speed": tts_service.default_speed,
                 "available_voices": list(tts_service.get_available_voices().keys()),
-                "available_models": ["tts-1", "tts-1-hd"],
+                "available_models": ["gpt-4o-mini-tts"],
                 "available_formats": ["mp3", "opus", "aac", "flac"]
             }
         )
