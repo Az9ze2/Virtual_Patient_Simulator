@@ -1,5 +1,6 @@
 """
 Chatbot Router - Handle chat interactions with the unified chatbot
+ONLY TTS-RELATED CHANGES - All other code remains unchanged
 """
 
 import os
@@ -14,7 +15,13 @@ from api.models.schemas import (
     ChatMessage, ChatResponse, APIResponse, ChatMessageWithTTS
 )
 from api.utils.session_manager import session_manager
-from services.tts_service import tts_service
+
+# ============================================
+# ⚡ CHANGE 1: Import enhanced TTS service
+# ============================================
+# OLD: from services.tts_service import tts_service
+from services.enhanced_tts_service import enhanced_tts_service
+# ============================================
 
 router = APIRouter()
 
@@ -135,27 +142,62 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
             }
         }
         
+        # ============================================
+        # ⚡ CHANGE 2: Enhanced TTS generation with patient context
+        # ============================================
         # Generate TTS if requested
         if message.enable_tts:
             try:
-                print(f"   🔊 Generating TTS audio...")
-                audio_base64 = tts_service.text_to_speech_base64(
+                print(f"   🔊 Generating TTS audio with patient context...")
+                
+                # Get patient info from session for context-aware TTS
+                patient_info = {}
+                if session.patient_info:
+                    patient_info = session.patient_info.dict() if hasattr(session.patient_info, 'dict') else session.patient_info
+                    print(f"   📋 [DEBUG] Patient info retrieved: {patient_info}")
+                else:
+                    print(f"   ⚠️ [WARNING] No patient_info in session, using defaults")
+                
+                case_metadata = getattr(session, 'case_metadata', {})
+                
+                if patient_info:
+                    print(f"   🎭 Patient: {patient_info.get('name', 'Unknown')} | "
+                          f"Gender: {patient_info.get('sex', 'N/A')} | "
+                          f"Age: {patient_info.get('age', 'N/A')}")
+                
+                # Use enhanced TTS with patient context
+                audio_base64 = enhanced_tts_service.text_to_speech_base64_with_context(
                     text=response,
-                    voice=message.voice.value if message.voice else "nova",
+                    patient_info=patient_info,
+                    case_metadata=case_metadata,
+                    voice=message.voice.value if message.voice else None,  # Auto-select if None
                     speed=message.tts_speed,
-                    output_format="mp3"
+                    output_format="mp3",
+                    use_personality_prompt=True  # Enable personality enhancement
                 )
+                
+                # Determine which voice was used
+                if message.voice:
+                    selected_voice = message.voice.value
+                else:
+                    selected_voice = enhanced_tts_service._select_voice_for_patient(patient_info) if patient_info else "nova"
+                
                 response_data["audio"] = {
                     "audio_base64": audio_base64,
                     "format": "mp3",
-                    "voice": message.voice.value if message.voice else "nova",
+                    "voice": selected_voice,
+                    "voice_auto_selected": message.voice is None,
                     "speed": message.tts_speed
                 }
-                print(f"   ✅ TTS audio generated successfully")
+                print(f"   ✅ TTS audio generated successfully with voice: {selected_voice}")
+                
             except Exception as tts_error:
                 print(f"   ⚠️ TTS generation failed: {tts_error}")
+                import traceback
+                print(f"   📍 Traceback: {traceback.format_exc()}")
                 # Continue without TTS if it fails
                 response_data["audio_error"] = str(tts_error)
+        # ============================================
         
         return APIResponse(
             success=True,
@@ -294,6 +336,16 @@ async def get_chatbot_status(session_id: str):
                 detail="Chatbot instance not found"
             )
         
+        # ============================================
+        # ⚡ CHANGE 3: Add auto-selected voice info to status
+        # ============================================
+        # Get patient info for voice profile
+        patient_info = session.patient_info.dict() if session.patient_info else {}
+        selected_voice = None
+        if patient_info:
+            selected_voice = enhanced_tts_service._select_voice_for_patient(patient_info)
+        # ============================================
+        
         # Get chatbot configuration and status
         status_data = {
             "model_choice": chatbot.model_choice,
@@ -307,7 +359,14 @@ async def get_chatbot_status(session_id: str):
                 "input_tokens": chatbot.input_tokens,
                 "output_tokens": chatbot.output_tokens,
                 "total_tokens": chatbot.total_tokens
-            }
+            },
+            # ============================================
+            # ⚡ CHANGE 4: Add TTS voice info to status
+            # ============================================
+            "tts_voice": selected_voice,
+            "tts_available": True,
+            "tts_enhanced": True  # Indicate enhanced TTS is active
+            # ============================================
         }
         
         return APIResponse(

@@ -28,7 +28,7 @@ class TTSService:
         # Default configuration
         self.default_model = "gpt-4o-mini-tts"  # or "tts-1-hd" for higher quality
         self.default_voice = "nova"  # female voice, good for Thai medical scenarios
-        self.default_speed = 0.7  # normal speed (0.25 to 4.0)
+        self.default_speed = 1  # normal speed (0.25 to 4.0)
     
     def text_to_speech(
         self,
