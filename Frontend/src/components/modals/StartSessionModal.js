@@ -11,6 +11,7 @@ const StartSessionModal = ({ onClose, onStart }) => {
   const [formData, setFormData] = useState({
     name: '',
     studentId: '',
+    email: '',
     selectedCase: null
   });
   const [errors, setErrors] = useState({});
@@ -135,9 +136,23 @@ const StartSessionModal = ({ onClose, onStart }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep1()) {
+  const handleNext = async () => {
+    if (!validateStep1()) return;
+    try {
+      setLoading(true);
+      const userInfo = {
+        name: formData.name,
+        student_id: formData.studentId,
+        email: formData.email,
+        preferences: settings
+      };
+      await apiService.preLogin(userInfo);
       setStep(2);
+    } catch (e) {
+      console.error('Prelogin failed:', e);
+      setErrors({ api: e.message || 'Login failed. Please check your info.' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -166,7 +181,9 @@ const StartSessionModal = ({ onClose, onStart }) => {
       setLoading(true);
       const userInfo = {
         name: formData.name,
-        student_id: formData.studentId
+        student_id: formData.studentId,
+        email: formData.email,
+        preferences: settings
       };
       
       const session = await startSession(userInfo, formData.selectedCase.filename, {});
@@ -188,7 +205,9 @@ const StartSessionModal = ({ onClose, onStart }) => {
       // Start the session first
       const userInfo = {
         name: formData.name,
-        student_id: formData.studentId
+        student_id: formData.studentId,
+        email: formData.email,
+        preferences: settings
       };
       
       const session = await startSession(userInfo, formData.selectedCase.filename, {});
@@ -295,6 +314,20 @@ const StartSessionModal = ({ onClose, onStart }) => {
                   <span className="error-text">{errors.studentId}</span>
                 )}
               </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  Email (optional)
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  className="input"
+                  placeholder="your@email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
           ) : (
             <div className="step-content fade-in">
@@ -358,7 +391,7 @@ const StartSessionModal = ({ onClose, onStart }) => {
               <button className="btn btn-outline" onClick={onClose}>
                 Cancel
               </button>
-              <button className="btn btn-primary" onClick={handleNext}>
+              <button className="btn btn-primary" onClick={handleNext} disabled={loading}>
                 Next: Select Case
                 <ChevronRight size={18} />
               </button>

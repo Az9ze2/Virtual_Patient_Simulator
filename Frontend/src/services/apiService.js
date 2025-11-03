@@ -140,6 +140,14 @@ class ApiService {
   }
 
   // Sessions API
+  async preLogin(userInfo) {
+    const response = await this.api.post('/api/sessions/prelogin', {
+      user_info: userInfo,
+      case_filename: ''
+    });
+    return response.data;
+  }
+
   async startSession(userInfo, caseFilename, config = {}) {
     const response = await this.api.post('/api/sessions/start', {
       user_info: userInfo,

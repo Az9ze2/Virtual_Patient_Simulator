@@ -35,6 +35,55 @@ CASES_BASE_PATH = os.path.join(
     os.path.dirname(__file__), '..', '..', 'src', 'data'
 )
 
+@router.post("/prelogin")
+async def prelogin(request: StartSessionRequest):
+    """
+    Validate/create user on "Select Case" (login/new user login), update last_login, and write audit log.
+    No session is created here.
+    """
+    try:
+        if not (repo and now_th):
+            return APIResponse(success=True, message="DB not configured; skipping login persistence")
+        provided_email = getattr(request.user_info, 'email', None)
+        provided_name = request.user_info.name
+        student_id = request.user_info.student_id
+        # Check existing profile
+        existing = repo.get_user_profile_by_student_id(student_id)
+        created = False
+        if existing:
+            # Name must match ignoring case
+            existing_name = existing.get('name') or ''
+            if (provided_name or '').strip().lower() != (existing_name or '').strip().lower():
+                raise HTTPException(status_code=400, detail="Provided name does not match registered account for this student ID")
+            # Email must match if present, else set for first time
+            existing_email = existing.get('email')
+            if provided_email:
+                if existing_email and provided_email != existing_email:
+                    raise HTTPException(status_code=400, detail="Provided email does not match registered account for this student ID")
+                if not existing_email:
+                    repo.create_or_get_user(student_id=student_id, name=provided_name, email=provided_email, preferences=getattr(request.user_info, 'preferences', None))
+            user_id = existing.get('user_id')
+            login_type = 'login'
+        else:
+            # New user
+            user_id = repo.create_or_get_user(
+                student_id=student_id,
+                name=provided_name,
+                email=provided_email,
+                preferences=getattr(request.user_info, 'preferences', None),
+            )
+            login_type = 'nu-login'
+            created = True
+        # Update last_login
+        repo.update_user_last_login(user_id)
+        # Audit log
+        repo.add_audit_log(user_id=user_id, session_id=None, action_type=login_type, performed_at=now_th().replace(tzinfo=None))
+        return APIResponse(success=True, message=f"{login_type} recorded", data={"user_id": user_id, "login_type": login_type})
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to prelogin: {str(e)}")
+
 @router.post("/start")
 async def start_session(request: StartSessionRequest):
     """
@@ -43,25 +92,47 @@ async def start_session(request: StartSessionRequest):
     try:
         # Load case data
         case_data, case_info = _load_case_data(request.case_filename)
-        
-        # Create session in session manager
+
+        # Create session in memory (returns session_id)
         session_id = session_manager.create_session(
             user_info=request.user_info,
             case_info=case_info,
             config=request.config,
             case_data=case_data
         )
-
+        
         # Persist to DB (best-effort; do not fail request if DB unavailable)
         try:
             if repo and now_th:
-                # Ensure user exists
-                user_id = repo.create_or_get_user(
-                    student_id=request.user_info.student_id,
-                    name=request.user_info.name,
-                    email=None,
-                    preferences=None,
-                )
+                # Validate or create user profile
+                provided_email = getattr(request.user_info, 'email', None)
+                provided_name = request.user_info.name
+                student_id = request.user_info.student_id
+
+                existing = repo.get_user_profile_by_student_id(student_id)
+                if existing:
+                    # Name must match ignoring capitalization
+                    existing_name = existing.get('name') or ''
+                    if (provided_name or '').strip().lower() != (existing_name or '').strip().lower():
+                        raise HTTPException(status_code=400, detail="Provided name does not match registered account for this student ID")
+                    # Email must match exactly if stored
+                    existing_email = existing.get('email')
+                    if provided_email:
+                        if existing_email and provided_email != existing_email:
+                            raise HTTPException(status_code=400, detail="Provided email does not match registered account for this student ID")
+                        if not existing_email:
+                            # Set email for the first time
+                            repo.create_or_get_user(student_id=student_id, name=provided_name, email=provided_email, preferences=getattr(request.user_info, 'preferences', None))
+                    user_id = existing.get('user_id')
+                else:
+                    # New user: create with provided email/preferences
+                    user_id = repo.create_or_get_user(
+                        student_id=student_id,
+                        name=provided_name,
+                        email=provided_email,
+                        preferences=getattr(request.user_info, 'preferences', None),
+                    )
+                # Last login is now handled at prelogin step
                 # Derive case_id from request (should match DB-ingested id)
                 cid = os.path.splitext(request.case_filename)[0]
                 # Create session row (will fail if case FK missing)
@@ -251,14 +322,17 @@ async def end_session(session_id: str):
                     duration_seconds=duration_seconds,
                 )
                 print(f"[DB] Marked session {session_id} as complete (tokens={total_tokens}, duration={duration_seconds}s)")
-                # Save report (robust to schema)
+                # Save report (robust to schema) if not already present
                 try:
-                    rid = repo.insert_session_report(
-                        session_id=session_id,
-                        summary=summary.dict(),
-                        generated_at=now_th().replace(tzinfo=None),
-                    )
-                    print(f"[DB] Inserted session_report id={rid} for session {session_id}")
+                    if not repo.has_session_report(session_id):
+                        rid = repo.insert_session_report(
+                            session_id=session_id,
+                            summary=summary.dict(),
+                            generated_at=now_th().replace(tzinfo=None),
+                        )
+                        print(f"[DB] Inserted session_report id={rid} for session {session_id}")
+                    else:
+                        print(f"[DB] Session report already exists for {session_id}, skipping insert")
                 except Exception as rep_err:
                     print(f"[DB][ERROR] Failed to insert session_report: {rep_err}")
                 # Audit log with user_id resolved via student_id (always attempt)

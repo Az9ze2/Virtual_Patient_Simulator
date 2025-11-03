@@ -25,6 +25,8 @@ class MemoryMode(str, Enum):
 class UserInfo(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     student_id: str = Field(..., min_length=1, max_length=50)
+    email: Optional[str] = None
+    preferences: Optional[Dict[str, Any]] = None
 
 class SessionConfig(BaseModel):
     model_choice: ModelType = ModelType.GPT_4_1_MINI
@@ -129,6 +131,9 @@ class StartSessionRequest(BaseModel):
     user_info: UserInfo
     case_filename: str
     config: Optional[SessionConfig] = SessionConfig()
+
+class PreloginRequest(BaseModel):
+    user_info: UserInfo
 
 class StartSessionWithUploadedCaseRequest(BaseModel):
     user_info: UserInfo

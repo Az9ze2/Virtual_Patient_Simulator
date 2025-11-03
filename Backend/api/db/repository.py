@@ -11,13 +11,24 @@ from datetime import datetime, date
 # Users
 
 def create_or_get_user(student_id: str, name: str, email: Optional[str] = None, preferences: Optional[Dict[str, Any]] = None) -> str:
-    """Insert user if not exists by student_id, return user_id."""
+    """Insert user if not exists by student_id, return user_id. If exists, update email/preferences when provided."""
     with get_conn() as conn, conn.cursor() as cur:
         # Try to find existing
         cur.execute("SELECT user_id FROM users WHERE student_id=%s", (student_id,))
         row = cur.fetchone()
         if row:
-            return row["user_id"]
+            user_id = row["user_id"]
+            if email is not None or preferences is not None:
+                cur.execute(
+                    """
+                    UPDATE users SET
+                      email = COALESCE(%s, email),
+                      preferences = COALESCE(%s::jsonb, preferences)
+                    WHERE user_id=%s
+                    """,
+                    (email, Json(preferences) if preferences is not None else None, user_id),
+                )
+            return user_id
         user_id = str(uuid.uuid4())
         cur.execute(
             """
@@ -117,6 +128,16 @@ def get_latest_session_report_summary(session_id: str) -> Optional[Dict[str, Any
         return row["summary"] if row else None
 
 
+def get_user_profile_by_student_id(student_id: str) -> Optional[Dict[str, Any]]:
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "SELECT user_id, name, email FROM users WHERE student_id=%s",
+            (student_id,),
+        )
+        row = cur.fetchone()
+        return row if row else None
+
+
 # Sessions
 
 def create_session(session_id: str, user_id: str, case_id: str, started_at) -> None:
@@ -165,6 +186,12 @@ def _json_dumps_handle_dt(obj):
         obj,
         default=lambda o: o.isoformat() if isinstance(o, (datetime, date)) else str(o)
     )
+
+
+def has_session_report(session_id: str) -> bool:
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT 1 FROM session_reports WHERE session_id=%s LIMIT 1", (session_id,))
+        return cur.fetchone() is not None
 
 
 def insert_session_report(session_id: str, summary: Dict[str, Any], generated_at):
