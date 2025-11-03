@@ -1,6 +1,6 @@
 """
 Chatbot Router - Handle chat interactions with the unified chatbot
-ONLY TTS-RELATED CHANGES - All other code remains unchanged
+OPTIMIZED for natural Thai TTS with child patient handling
 """
 
 import os
@@ -15,13 +15,7 @@ from api.models.schemas import (
     ChatMessage, ChatResponse, APIResponse, ChatMessageWithTTS
 )
 from api.utils.session_manager import session_manager
-
-# ============================================
-# ⚡ CHANGE 1: Import enhanced TTS service
-# ============================================
-# OLD: from services.tts_service import tts_service
 from services.enhanced_tts_service import enhanced_tts_service
-# ============================================
 
 router = APIRouter()
 
@@ -94,6 +88,11 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
     
     This endpoint extends the regular chat with TTS capabilities.
     If enable_tts is True, the response will include audio data.
+    
+    Enhanced features:
+    - Natural Thai pronunciation optimization
+    - Child patient special handling (mother speaks if age < 12)
+    - Automatic voice selection based on patient demographics
     """
     try:
         # Get session and chatbot
@@ -142,13 +141,10 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
             }
         }
         
-        # ============================================
-        # ⚡ CHANGE 2: Enhanced TTS generation with patient context
-        # ============================================
         # Generate TTS if requested
         if message.enable_tts:
             try:
-                print(f"   🔊 Generating TTS audio with patient context...")
+                print(f"   📊 Generating optimized TTS audio with patient context...")
                 
                 # Get patient info from session for context-aware TTS
                 patient_info = {}
@@ -160,12 +156,20 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
                 
                 case_metadata = getattr(session, 'case_metadata', {})
                 
+                # Get speaker role (determines if mother speaks for child)
+                speaker_role = enhanced_tts_service.get_speaker_role(patient_info) if patient_info else 'patient'
+                
                 if patient_info:
+                    age_display = patient_info.get('age', 'N/A')
+                    if isinstance(age_display, dict):
+                        age_display = age_display.get('value', 'N/A')
+                    
                     print(f"   🎭 Patient: {patient_info.get('name', 'Unknown')} | "
                           f"Gender: {patient_info.get('sex', 'N/A')} | "
-                          f"Age: {patient_info.get('age', 'N/A')}")
+                          f"Age: {age_display}")
+                    print(f"   👥 Speaker: {speaker_role.upper()}")
                 
-                # Use enhanced TTS with patient context
+                # Use enhanced TTS with patient context and optimization
                 audio_base64 = enhanced_tts_service.text_to_speech_base64_with_context(
                     text=response,
                     patient_info=patient_info,
@@ -187,21 +191,26 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
                     "format": "mp3",
                     "voice": selected_voice,
                     "voice_auto_selected": message.voice is None,
-                    "speed": message.tts_speed
+                    "speed": message.tts_speed,
+                    "speaker_role": speaker_role,  # 'mother' or 'patient'
+                    "is_child_patient": speaker_role == 'mother',
+                    "optimized_for_thai": True
                 }
-                print(f"   ✅ TTS audio generated successfully with voice: {selected_voice}")
+                
+                speaker_label = "mother" if speaker_role == 'mother' else "patient"
+                print(f"   ✅ TTS audio generated successfully")
+                print(f"      Voice: {selected_voice} | Speaker: {speaker_label} | Optimized: YES")
                 
             except Exception as tts_error:
                 print(f"   ⚠️ TTS generation failed: {tts_error}")
                 import traceback
-                print(f"   📍 Traceback: {traceback.format_exc()}")
+                print(f"   🔍 Traceback: {traceback.format_exc()}")
                 # Continue without TTS if it fails
                 response_data["audio_error"] = str(tts_error)
-        # ============================================
         
         return APIResponse(
             success=True,
-            message="Message sent successfully" + (" with TTS audio" if message.enable_tts and "audio" in response_data else ""),
+            message="Message sent successfully" + (" with optimized TTS audio" if message.enable_tts and "audio" in response_data else ""),
             data=response_data
         )
         
@@ -336,15 +345,14 @@ async def get_chatbot_status(session_id: str):
                 detail="Chatbot instance not found"
             )
         
-        # ============================================
-        # ⚡ CHANGE 3: Add auto-selected voice info to status
-        # ============================================
-        # Get patient info for voice profile
+        # Get patient info for voice profile and speaker role
         patient_info = session.patient_info.dict() if session.patient_info else {}
         selected_voice = None
+        speaker_role = 'patient'
+        
         if patient_info:
             selected_voice = enhanced_tts_service._select_voice_for_patient(patient_info)
-        # ============================================
+            speaker_role = enhanced_tts_service.get_speaker_role(patient_info)
         
         # Get chatbot configuration and status
         status_data = {
@@ -360,13 +368,11 @@ async def get_chatbot_status(session_id: str):
                 "output_tokens": chatbot.output_tokens,
                 "total_tokens": chatbot.total_tokens
             },
-            # ============================================
-            # ⚡ CHANGE 4: Add TTS voice info to status
-            # ============================================
             "tts_voice": selected_voice,
+            "tts_speaker_role": speaker_role,  # 'mother' or 'patient'
             "tts_available": True,
-            "tts_enhanced": True  # Indicate enhanced TTS is active
-            # ============================================
+            "tts_enhanced": True,
+            "tts_optimized_for_thai": True
         }
         
         return APIResponse(

@@ -1,5 +1,6 @@
 """
 Enhanced TTS Router - Exposes patient-aware TTS generation
+OPTIMIZED for natural Thai pronunciation and child patient handling
 """
 
 import os
@@ -45,7 +46,7 @@ async def generate_speech(request: TTSRequest):
     - Base64 encoded audio data
     """
     try:
-        print(f"🔊 [TTS] Generating speech for text: {request.text[:100]}...")
+        print(f"📊 [TTS] Generating speech for text: {request.text[:100]}...")
         print(f"   🎤 Voice: {request.voice} | Model: {request.model} | Speed: {request.speed}x")
         
         # Generate audio as base64
@@ -88,7 +89,9 @@ async def generate_speech_with_context(request: EnhancedTTSRequest):
     
     This endpoint uses patient information to:
     - Auto-select appropriate voice based on gender and age
-    - Adjust speech speed based on age category
+    - Special handling: Children <12 years = Mother's voice (nova)
+    - Adjust speech speed based on age category and speaker role
+    - Optimize text for natural Thai pronunciation
     - Generate personality-aware prompts for realistic delivery
     
     Parameters:
@@ -97,17 +100,21 @@ async def generate_speech_with_context(request: EnhancedTTSRequest):
     - case_metadata: Optional case metadata for additional context
     - voice: Optional voice override (auto-selects if not provided)
     - model: TTS model
-    - speed: Speech speed (auto-adjusts based on age if not overridden)
+    - speed: Speech speed (auto-adjusts based on age/role if not overridden)
     - format: Audio format
     - use_personality_prompt: Enable personality-aware prompt enhancement
     
     Returns:
-    - Base64 encoded audio with metadata about voice selection
+    - Base64 encoded audio with metadata about voice selection and speaker role
     """
     try:
         print(f"🎭 [Enhanced TTS] Generating patient-aware speech")
         print(f"   👤 Patient: {request.patient_info.get('name', 'Unknown')}")
         print(f"   🎤 Personality prompt: {'Enabled' if request.use_personality_prompt else 'Disabled'}")
+        
+        # Determine speaker role
+        speaker_role = enhanced_tts_service.get_speaker_role(request.patient_info)
+        print(f"   👥 Speaker role: {speaker_role.upper()}")
         
         # Generate audio with patient context
         audio_base64 = enhanced_tts_service.text_to_speech_base64_with_context(
@@ -127,7 +134,7 @@ async def generate_speech_with_context(request: EnhancedTTSRequest):
             else enhanced_tts_service._select_voice_for_patient(request.patient_info)
         )
         
-        print(f"   ✅ Audio generated with voice: {selected_voice}")
+        print(f"   ✅ Audio generated with voice: {selected_voice} (speaker: {speaker_role})")
         
         return APIResponse(
             success=True,
@@ -140,7 +147,9 @@ async def generate_speech_with_context(request: EnhancedTTSRequest):
                 "personality_enhanced": request.use_personality_prompt,
                 "text_length": len(request.text),
                 "patient_gender": request.patient_info.get('sex', 'unknown'),
-                "patient_age": request.patient_info.get('age', 'unknown')
+                "patient_age": request.patient_info.get('age', 'unknown'),
+                "speaker_role": speaker_role,  # 'mother' or 'patient'
+                "is_child_patient": speaker_role == 'mother'
             }
         )
         
@@ -162,7 +171,7 @@ async def generate_speech_binary(request: TTSRequest):
     (Without patient context - for general use)
     """
     try:
-        print(f"🔊 [TTS] Generating binary audio for text: {request.text[:100]}...")
+        print(f"📊 [TTS] Generating binary audio for text: {request.text[:100]}...")
         
         # Generate audio as bytes
         audio_bytes = enhanced_tts_service.text_to_speech(
@@ -237,7 +246,11 @@ async def get_voice_profiles():
             message="Voice profiles retrieved successfully",
             data={
                 "profiles": profiles,
-                "description": "Voice selection based on gender and age category"
+                "description": "Voice selection based on gender and age category",
+                "special_rules": {
+                    "child_patients": "Children under 12 years old: Mother speaks (nova voice)",
+                    "adult_patients": "Patients 12+ years: Patient speaks (voice based on gender/age)"
+                }
             }
         )
         
@@ -266,11 +279,16 @@ async def tts_health_check():
                 "features": [
                     "Gender-based voice selection",
                     "Age-based voice and speed adjustment",
+                    "Child patient special handling (mother speaks)",
+                    "Text optimization for natural Thai pronunciation",
                     "Personality-aware prompt generation",
                     "Thai language optimized",
                     "Symptom-based emotional tone"
                 ],
-                "voice_profiles": enhanced_tts_service.get_voice_profiles()
+                "voice_profiles": enhanced_tts_service.get_voice_profiles(),
+                "special_conditions": {
+                    "child_patients_under_12": "Automatically uses mother's voice (nova) with adjusted speech patterns"
+                }
             }
         )
         

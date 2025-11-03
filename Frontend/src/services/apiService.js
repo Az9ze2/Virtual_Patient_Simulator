@@ -413,36 +413,38 @@ class ApiService {
   }
   
   // ============================================
-  // 🔊 Enhanced Text-to-Speech API
+  // 📊 Enhanced Text-to-Speech API (OPTIMIZED)
   // ============================================
   
   /**
    * Send message with TTS - Auto-selects voice based on patient info
+   * OPTIMIZED: Natural Thai pronunciation + Child patient handling
    * @param {string} sessionId - Session ID
    * @param {string} message - User message
    * @param {boolean} enableTTS - Enable TTS audio (default: true)
    * @param {string|null} voice - Voice override (null = auto-select based on patient)
-   * @param {number} speed - Speech speed 0.25-4.0 (default: 0.5)
-   * @returns {Promise<Object>} Response with text and optional audio
+   * @param {number} speed - Speech speed 0.25-4.0 (default: 1)
+   * @returns {Promise<Object>} Response with text and optional audio + speaker role info
    */
   async sendMessageWithTTS(sessionId, message, enableTTS = true, voice = null, speed = 1) {
     const response = await this.api.post(`/api/chatbot/${sessionId}/chat-with-tts`, {
       message: message,
       enable_tts: enableTTS,
-      voice: voice, // null = auto-select based on patient demographics
+      voice: voice, // null = auto-select (mother for children <12)
       tts_speed: speed
     });
     return response.data;
   }
 
   /**
-   * Generate TTS with patient context (Enhanced)
+   * Generate TTS with patient context (Enhanced & Optimized)
    * Automatically selects voice based on patient gender and age
+   * Special handling: Children <12 years = Mother speaks
    * @param {string} text - Text to convert to speech
    * @param {Object} patientInfo - Patient information for voice selection
    * @param {Object} caseMetadata - Optional case metadata for context
    * @param {string|null} voice - Voice override (null = auto-select)
-   * @param {number} speed - Speech speed (default: 0.5)
+   * @param {number} speed - Speech speed (default: 1)
    * @param {boolean} usePersonality - Enable personality enhancement (default: true)
    * @returns {Promise<Object>} Response with audio data and voice info
    */
@@ -465,7 +467,7 @@ class ApiService {
    * @param {string} text - Text to convert
    * @param {string} voice - Voice name (alloy, echo, fable, onyx, nova, shimmer)
    * @param {string} model - TTS model (default: gpt-4o-mini-tts)
-   * @param {number} speed - Speech speed (default: 0.5)
+   * @param {number} speed - Speech speed (default: 1)
    * @param {string} format - Audio format (mp3, opus, aac, flac)
    */
   async generateTTS(text, voice = 'nova', model = 'gpt-4o-mini-tts', speed = 1, format = 'mp3') {
@@ -491,7 +493,8 @@ class ApiService {
   /**
    * Get voice profile mappings for patient demographics
    * Shows which voices are selected for different patient types
-   * @returns {Promise<Object>} Voice profile mappings
+   * Includes special rules for child patients
+   * @returns {Promise<Object>} Voice profile mappings with special conditions
    */
   async getTTSVoiceProfiles() {
     const response = await this.api.get('/api/tts/voice-profiles');

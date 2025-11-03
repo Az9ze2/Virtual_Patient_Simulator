@@ -19,11 +19,12 @@ const ChatInterface = () => {
   const [isListeningForSilence, setIsListeningForSilence] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   
-  // ============ 🔊 ENHANCED TTS STATE ============
+  // ============ 📊 ENHANCED TTS STATE (OPTIMIZED) ============
   const [ttsEnabled, setTtsEnabled] = useState(true);
-  const [autoVoiceSelect, setAutoVoiceSelect] = useState(true); // NEW: Auto voice selection
-  const [manualVoice, setManualVoice] = useState('nova'); // NEW: Manual voice override
+  const [autoVoiceSelect, setAutoVoiceSelect] = useState(true);
+  const [manualVoice, setManualVoice] = useState('nova');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [speakerRole, setSpeakerRole] = useState('patient'); // 'patient' or 'mother'
   const audioRef = useRef(null);
   
   const mediaRecorderRef = useRef(null);
@@ -40,6 +41,16 @@ const ChatInterface = () => {
   const animationFrameRef = useRef(null);
   const lastSoundTimeRef = useRef(0);
   const hasSpeechDetectedRef = useRef(false);
+
+  // ============ 👶 CHECK IF PATIENT IS CHILD ============
+  useEffect(() => {
+    if (sessionData?.patientInfo) {
+      const age = getPatientAge();
+      const isChild = age < 12;
+      setSpeakerRole(isChild ? 'mother' : 'patient');
+      console.log(`👥 Speaker role updated: ${isChild ? 'MOTHER' : 'PATIENT'} (age: ${age})`);
+    }
+  }, [sessionData?.patientInfo]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -106,7 +117,7 @@ const ChatInterface = () => {
       
       audio.onplay = () => {
         setIsPlayingAudio(true);
-        console.log('🔊 TTS audio started playing');
+        console.log('📊 TTS audio started playing');
       };
       
       audio.onended = () => {
@@ -137,7 +148,22 @@ const ChatInterface = () => {
     );
   };
 
-  // ============ 💬 ENHANCED MESSAGE SENDING WITH AUTO VOICE SELECTION ============
+  // ============ 👶 GET PATIENT AGE ============
+  const getPatientAge = () => {
+    if (!sessionData?.patientInfo) return 0;
+    
+    const ageData = sessionData.patientInfo.age;
+    if (typeof ageData === 'object' && ageData.value) {
+      return parseInt(ageData.value);
+    } else if (typeof ageData === 'string') {
+      return parseInt(ageData.match(/\d+/)?.[0] || '0');
+    } else if (typeof ageData === 'number') {
+      return ageData;
+    }
+    return 0;
+  };
+
+  // ============ 💬 ENHANCED MESSAGE SENDING WITH OPTIMIZED TTS ============
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !sessionData?.sessionId) return;
@@ -154,10 +180,11 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      console.log('💬 Sending message with enhanced TTS...');
+      console.log('💬 Sending message with optimized TTS...');
       console.log('   TTS Enabled:', ttsEnabled);
       console.log('   Auto Voice:', autoVoiceSelect);
       console.log('   Manual Voice:', manualVoice);
+      console.log('   👥 Speaker Role:', speakerRole);
       
       // 🎯 Use auto voice selection (null) or manual override
       const selectedVoice = autoVoiceSelect ? null : manualVoice;
@@ -167,8 +194,8 @@ const ChatInterface = () => {
             sessionData.sessionId, 
             userMessage, 
             true, 
-            selectedVoice, // null = auto-select based on patient
-            1// speed
+            selectedVoice, // null = auto-select (mother for children <12)
+            1
           )
         : await apiService.sendMessage(sessionData.sessionId, userMessage);
       
@@ -179,15 +206,24 @@ const ChatInterface = () => {
           timestamp: Date.now()
         });
 
-        // 🔊 Log voice selection info
+        // 📊 Log voice selection and speaker role info
         if (ttsEnabled && response.data.audio) {
-          console.log('🎤 TTS Voice Info:');
+          console.log('🎤 TTS Voice Info (OPTIMIZED):');
           console.log('   - Voice used:', response.data.audio.voice);
           console.log('   - Auto-selected:', response.data.audio.voice_auto_selected);
           console.log('   - Speed:', response.data.audio.speed);
+          console.log('   - Speaker role:', response.data.audio.speaker_role);
+          console.log('   - Is child patient:', response.data.audio.is_child_patient);
+          console.log('   - Thai optimized:', response.data.audio.optimized_for_thai);
+          
+          // Update speaker role from response
+          if (response.data.audio.speaker_role) {
+            setSpeakerRole(response.data.audio.speaker_role);
+          }
           
           if (response.data.audio.audio_base64) {
-            console.log('🎵 Playing patient-aware TTS audio...');
+            const speakerLabel = response.data.audio.speaker_role === 'mother' ? 'Mother' : 'Patient';
+            console.log(`🎵 Playing ${speakerLabel}'s optimized TTS audio...`);
             playAudio(response.data.audio.audio_base64);
           }
         }
@@ -237,7 +273,8 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      console.log('🚀 Auto-sending transcribed message with enhanced TTS...');
+      console.log('🚀 Auto-sending transcribed message with optimized TTS...');
+      console.log('   👥 Speaker Role:', speakerRole);
       
       // 🎯 Use auto voice selection (null) or manual override
       const selectedVoice = autoVoiceSelect ? null : manualVoice;
@@ -247,7 +284,7 @@ const ChatInterface = () => {
             sessionData.sessionId, 
             transcribedText, 
             true, 
-            selectedVoice, // null = auto-select based on patient
+            selectedVoice,
             1
           )
         : await apiService.sendMessage(sessionData.sessionId, transcribedText);
@@ -259,14 +296,22 @@ const ChatInterface = () => {
           timestamp: Date.now()
         });
 
-        // 🔊 Log voice selection info
+        // 📊 Log voice selection and speaker info
         if (ttsEnabled && response.data.audio) {
-          console.log('🎤 TTS Voice Info (Auto-send):');
+          console.log('🎤 TTS Voice Info (Auto-send, OPTIMIZED):');
           console.log('   - Voice used:', response.data.audio.voice);
           console.log('   - Auto-selected:', response.data.audio.voice_auto_selected);
+          console.log('   - Speaker role:', response.data.audio.speaker_role);
+          console.log('   - Thai optimized:', response.data.audio.optimized_for_thai);
+          
+          // Update speaker role from response
+          if (response.data.audio.speaker_role) {
+            setSpeakerRole(response.data.audio.speaker_role);
+          }
           
           if (response.data.audio.audio_base64) {
-            console.log('🎵 Playing patient-aware TTS audio...');
+            const speakerLabel = response.data.audio.speaker_role === 'mother' ? 'Mother' : 'Patient';
+            console.log(`🎵 Playing ${speakerLabel}'s optimized TTS audio...`);
             playAudio(response.data.audio.audio_base64);
           }
         }
@@ -542,8 +587,6 @@ const ChatInterface = () => {
       console.log('🧠 Context length:', conversationContext.length, 'characters');
       
       // 🚀 TRANSCRIBE WITH CONTEXT AND CORRECTION
-      // enableCorrection=null uses backend's default setting
-      // Pass true/false to override: apiService.transcribeAudioWithContext(audioBlob, conversationContext, true)
       const transcription = await apiService.transcribeAudioWithContext(
         audioBlob,
         conversationContext,
@@ -568,7 +611,6 @@ const ChatInterface = () => {
           console.log('   - Confidence:', correction.confidence);
           console.log('   - Processing time:', correction.processing_time_ms, 'ms');
           
-          // Show visual indicator if text was significantly corrected
           if (correction.was_corrected && correction.changes && correction.changes.length > 0) {
             console.log('✏️ Changes made:', correction.changes.length);
             correction.changes.forEach((change, idx) => {
@@ -592,7 +634,7 @@ const ChatInterface = () => {
         }
 
         // 🚀 AUTO-SEND THE CORRECTED MESSAGE
-        console.log('🚀 Auto-sending transcribed message with patient-aware TTS...');
+        console.log('🚀 Auto-sending transcribed message with optimized TTS...');
         await autoSendTranscribedMessage(finalText);
         console.log('✅ Message auto-sent successfully!');
         
