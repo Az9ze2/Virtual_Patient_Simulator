@@ -26,6 +26,7 @@ router = APIRouter()
 class AdminLoginRequest(BaseModel):
     name: str
     admin_id: str
+    email: Optional[str] = None
 
 class AdminLoginResponse(BaseModel):
     success: bool
@@ -71,7 +72,7 @@ async def admin_login(request: AdminLoginRequest):
         user_id = repo.create_or_get_user(
             student_id=request.admin_id,
             name=request.name,
-            email=None,
+            email=request.email,
             preferences={"is_admin": is_admin}
         )
         

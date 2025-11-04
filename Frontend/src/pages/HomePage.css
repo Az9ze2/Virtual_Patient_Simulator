@@ -47,6 +47,17 @@
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
 }
 
+.admin-login-btn.logged-in {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.admin-login-btn.logged-in:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
 /* ============ ADMIN DROPDOWN ============ */
 .admin-dropdown {
   position: absolute;
@@ -89,6 +100,18 @@
 .admin-dropdown-item:hover {
   background: var(--accent-primary);
   color: white;
+}
+
+.admin-dropdown-item.logout-item {
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  color: #dc2626;
+}
+
+.admin-dropdown-item.logout-item:hover {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .home-content {

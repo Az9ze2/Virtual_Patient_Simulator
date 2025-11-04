@@ -548,24 +548,30 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const renderAPIDocs = () => (
-    <div className="admin-page-content admin-center">
-      <div className="admin-docs-panel">
-        <BookOpen size={64} className="admin-docs-icon" />
-        <h2 className="admin-docs-title">API Documentation</h2>
-        <p className="admin-docs-desc">Access complete API reference and developer guides</p>
-        <a
-          href="/api/docs"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="admin-btn-large primary"
-        >
-          Open API Documentation
-          <ExternalLink size={18} />
-        </a>
+  const renderAPIDocs = () => {
+    // Get API base URL from environment or use default
+    const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+    const docsUrl = `${apiBaseUrl}/docs`;
+    
+    return (
+      <div className="admin-page-content admin-center">
+        <div className="admin-docs-panel">
+          <BookOpen size={64} className="admin-docs-icon" />
+          <h2 className="admin-docs-title">API Documentation</h2>
+          <p className="admin-docs-desc">Access complete API reference and developer guides</p>
+          <a
+            href={docsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="admin-btn-large primary"
+          >
+            Open API Documentation
+            <ExternalLink size={18} />
+          </a>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="admin-dashboard">

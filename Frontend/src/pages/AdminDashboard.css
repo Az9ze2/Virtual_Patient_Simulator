@@ -683,7 +683,21 @@
 .admin-docs-desc {
   font-size: 1rem;
   color: #64748b;
+  margin-bottom: 1rem;
+}
+
+.admin-docs-url {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
   margin-bottom: 1.5rem;
+}
+
+.admin-docs-url code {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: #2563eb;
 }
 
 .admin-btn-large {

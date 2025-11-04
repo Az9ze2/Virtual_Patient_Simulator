@@ -6,7 +6,8 @@ import './Modal.css';
 const AdminLoginModal = ({ onClose, onLogin }) => {
   const [formData, setFormData] = useState({
     name: '',
-    adminId: ''
+    adminId: '',
+    email: ''
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -41,11 +42,16 @@ const AdminLoginModal = ({ onClose, onLogin }) => {
         admin_id: formData.adminId
       });
       
+      // Store email in the response data
+      response.email = formData.email;
+      
       if (response.success) {
         onLogin({
           name: formData.name,
           adminId: formData.adminId,
-          isAdmin: response.is_admin
+          email: formData.email,
+          isAdmin: response.is_admin,
+          userId: response.user_id
         });
         onClose();
       }
@@ -110,12 +116,26 @@ const AdminLoginModal = ({ onClose, onLogin }) => {
                 value={formData.adminId}
                 onChange={handleInputChange}
               />
-              {errors.adminId && (
-                <span className="error-text">{errors.adminId}</span>
-              )}
-            </div>
+            {errors.adminId && (
+              <span className="error-text">{errors.adminId}</span>
+            )}
+          </div>
 
-            {errors.api && (
+          <div className="form-group">
+            <label className="form-label">
+              Email (optional)
+            </label>
+            <input
+              type="email"
+              name="email"
+              className="input"
+              placeholder="your@email.com"
+              value={formData.email}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          {errors.api && (
               <div className="error-banner">
                 <span className="error-text">{errors.api}</span>
               </div>

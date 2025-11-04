@@ -46,6 +46,20 @@ const HomePage = () => {
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
   const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+
+  // Restore login state on component mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('adminUser');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setAdminUser(userData);
+      } catch (e) {
+        console.error('Failed to parse stored user data:', e);
+        localStorage.removeItem('adminUser');
+      }
+    }
+  }, []);
   
   // ============ TYPEWRITER EFFECT STATE ============
   // const [displayedTitle, setDisplayedTitle] = useState('');
@@ -109,9 +123,25 @@ const HomePage = () => {
     navigate('/chatbot');
   };
 
+  const handleActionClick = (action) => {
+    // Check if user is logged in
+    if (!adminUser) {
+      setShowAdminLoginModal(true);
+      return;
+    }
+
+    // User is logged in, proceed with action
+    if (action === 'start') {
+      setShowStartModal(true);
+    } else if (action === 'upload') {
+      setShowUploadModal(true);
+    }
+  };
+
   const handleAdminLogin = (userData) => {
     setAdminUser(userData);
-    // Save to sessionStorage for use in admin dashboard
+    // Save to both localStorage (persistent) and sessionStorage (for admin dashboard)
+    localStorage.setItem('adminUser', JSON.stringify(userData));
     sessionStorage.setItem('adminUser', JSON.stringify(userData));
     setShowAdminLoginModal(false);
   };
@@ -129,13 +159,20 @@ const HomePage = () => {
     navigate('/admin');
   };
 
+  const handleLogout = () => {
+    setAdminUser(null);
+    setShowAdminDropdown(false);
+    localStorage.removeItem('adminUser');
+    sessionStorage.removeItem('adminUser');
+  };
+
   return (
     <div className="home-page">
       <div className="container">
         {/* Admin Login Button */}
         <div className="admin-login-container">
           <button 
-            className="admin-login-btn"
+            className={`admin-login-btn ${adminUser ? 'logged-in' : ''}`}
             onClick={handleAdminButtonClick}
           >
             {adminUser ? (
@@ -148,13 +185,21 @@ const HomePage = () => {
             )}
           </button>
           
-          {showAdminDropdown && adminUser && adminUser.isAdmin && (
+          {showAdminDropdown && adminUser && (
             <div className="admin-dropdown">
+              {adminUser.isAdmin && (
+                <button 
+                  className="admin-dropdown-item"
+                  onClick={handleNavigateToAdmin}
+                >
+                  Admin Page
+                </button>
+              )}
               <button 
-                className="admin-dropdown-item"
-                onClick={handleNavigateToAdmin}
+                className="admin-dropdown-item logout-item"
+                onClick={handleLogout}
               >
-                Admin Page
+                Logout
               </button>
             </div>
           )}
@@ -188,7 +233,7 @@ const HomePage = () => {
             <div 
               className="action-card primary-card fade-in"
               style={{ animationDelay: '0.2s' }}
-              onClick={() => setShowStartModal(true)}
+              onClick={() => handleActionClick('start')}
             >
               <div className="card-icon">
                 <Activity size={32} />
@@ -205,7 +250,7 @@ const HomePage = () => {
             <div 
               className="action-card secondary-card fade-in"
               style={{ animationDelay: '0.4s' }}
-              onClick={() => setShowUploadModal(true)}
+              onClick={() => handleActionClick('upload')}
             >
               <div className="card-icon">
                 <Upload size={32} />
@@ -295,17 +340,19 @@ const HomePage = () => {
       </div>
 
       {/* Modals */}
-      {showStartModal && (
+      {showStartModal && adminUser && (
         <StartSessionModal
           onClose={() => setShowStartModal(false)}
           onStart={handleStartSession}
+          userData={adminUser}
         />
       )}
 
-      {showUploadModal && (
+      {showUploadModal && adminUser && (
         <UploadDocumentModal
           onClose={() => setShowUploadModal(false)}
           onComplete={handleUploadComplete}
+          userData={adminUser}
         />
       )}
 
