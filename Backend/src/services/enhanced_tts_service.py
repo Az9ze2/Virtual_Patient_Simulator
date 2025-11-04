@@ -178,15 +178,206 @@ class EnhancedTTSService:
         
         return selected_voice
     
+    def _convert_symbols_to_thai(self, text: str) -> str:
+        """
+        Convert symbols and numbers to Thai words based on context
+        
+        Handles:
+        1. Number ranges (6-7 → หก ถึง เจ็ด or หก ลบ เจ็ด)
+        2. Math operations (+, -, ×, ÷)
+        3. Common symbols (%, /, @, #)
+        4. Time expressions (10:30 → สิบโมงครึ่ง)
+        5. Dates (1/1/2024 → หนึ่ง มกราคม พ.ศ. สองพันยี่สิบสี่)
+        
+        Args:
+            text: Text with symbols
+            
+        Returns:
+            Text with symbols converted to Thai words
+        """
+        import re
+        
+        # Thai number words
+        thai_numbers = {
+            '0': 'ศูนย์', '1': 'หนึ่ง', '2': 'สอง', '3': 'สาม', '4': 'สี่',
+            '5': 'ห้า', '6': 'หก', '7': 'เจ็ด', '8': 'แปด', '9': 'เก้า',
+            '10': 'สิบ'
+        }
+        
+        result = text
+        
+        # 1. Handle number ranges and dashes
+        # Context: "อายุ 6-7 ปี", "6-7 วัน", "อุณหภูมิ 37-38 องศา"
+        # Pattern: number-number with optional spaces
+        def replace_number_range(match):
+            num1 = match.group(1)
+            num2 = match.group(2)
+            context_before = text[max(0, match.start()-20):match.start()].lower()
+            context_after = text[match.end():min(len(text), match.end()+20)].lower()
+            
+            # Check if it's a range context (use "ถึง")
+            range_keywords = ['อายุ', 'ปี', 'วัน', 'เดือน', 'ครั้ง', 'องศา', 'เซนติเมตร', 
+                            'กิโลกรัม', 'ชั่วโมง', 'นาที', 'มิลลิลิตร', 'กรัม', 'เม็ด']
+            
+            is_range = any(keyword in context_before + context_after for keyword in range_keywords)
+            
+            # Convert numbers to Thai
+            thai_num1 = self._number_to_thai_words(num1)
+            thai_num2 = self._number_to_thai_words(num2)
+            
+            if is_range:
+                return f"{thai_num1} ถึง {thai_num2}"
+            else:
+                # Math context - use "ลบ"
+                return f"{thai_num1} ลบ {thai_num2}"
+        
+        # Match patterns like "6-7", "6 - 7", "10-20"
+        result = re.sub(r'(\d+)\s*-\s*(\d+)', replace_number_range, result)
+        
+        # 2. Handle time expressions (10:30, 14:00)
+        def replace_time(match):
+            hour = int(match.group(1))
+            minute = int(match.group(2))
+            
+            hour_thai = self._number_to_thai_words(str(hour))
+            
+            if minute == 0:
+                return f"{hour_thai}โมงตรง"
+            elif minute == 30:
+                return f"{hour_thai}โมงครึ่ง"
+            else:
+                minute_thai = self._number_to_thai_words(str(minute))
+                return f"{hour_thai}โมง{minute_thai}นาที"
+        
+        result = re.sub(r'(\d{1,2}):(\d{2})', replace_time, result)
+        
+        # 3. Handle percentage (50%, 80%)
+        def replace_percentage(match):
+            num = match.group(1)
+            thai_num = self._number_to_thai_words(num)
+            return f"{thai_num} เปอร์เซ็นต์"
+        
+        result = re.sub(r'(\d+)\s*%', replace_percentage, result)
+        
+        # 4. Handle fractions and division (1/2, 3/4)
+        def replace_fraction(match):
+            num = match.group(1)
+            den = match.group(2)
+            context = text[max(0, match.start()-10):match.start()].lower()
+            
+            # Check if it's a date (1/1, 12/25)
+            if any(word in context for word in ['วันที่', 'เมื่อ', 'วัน']):
+                # It's a date, keep as numbers
+                return match.group(0)
+            
+            thai_num = self._number_to_thai_words(num)
+            thai_den = self._number_to_thai_words(den)
+            return f"{thai_num} ส่วน {thai_den}"
+        
+        result = re.sub(r'(\d+)/(\d+)', replace_fraction, result)
+        
+        # 5. Handle mathematical operations
+        result = result.replace(' + ', ' บวก ')
+        result = result.replace(' × ', ' คูณ ')
+        result = result.replace(' ÷ ', ' หาร ')
+        result = result.replace(' = ', ' เท่ากับ ')
+        result = result.replace(' < ', ' น้อยกว่า ')
+        result = result.replace(' > ', ' มากกว่า ')
+        result = result.replace(' ≤ ', ' น้อยกว่าหรือเท่ากับ ')
+        result = result.replace(' ≥ ', ' มากกว่าหรือเท่ากับ ')
+        
+        # 6. Handle common symbols
+        result = result.replace(' @ ', ' แอด ')
+        result = result.replace(' # ', ' หมายเลข ')
+        result = result.replace(' & ', ' และ ')
+        
+        return result
+    
+    def _number_to_thai_words(self, num_str: str) -> str:
+        """
+        Convert number string to Thai words
+        
+        Examples:
+        - "6" → "หก"
+        - "10" → "สิบ"
+        - "25" → "ยี่สิบห้า"
+        - "100" → "หนึ่งร้อย"
+        
+        Args:
+            num_str: Number as string
+            
+        Returns:
+            Thai word representation
+        """
+        try:
+            num = int(num_str)
+        except:
+            return num_str
+        
+        if num == 0:
+            return "ศูนย์"
+        
+        # Basic digits
+        ones = ['', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า']
+        
+        # Handle 1-9
+        if num < 10:
+            return ones[num]
+        
+        # Handle 10-99
+        if num < 100:
+            tens = num // 10
+            ones_digit = num % 10
+            
+            result = ""
+            if tens == 1:
+                result = "สิบ"
+            elif tens == 2:
+                result = "ยี่สิบ"
+            else:
+                result = ones[tens] + "สิบ"
+            
+            if ones_digit == 1 and tens > 0:
+                result += "เอ็ด"
+            elif ones_digit > 0:
+                result += ones[ones_digit]
+            
+            return result
+        
+        # Handle 100-999
+        if num < 1000:
+            hundreds = num // 100
+            remainder = num % 100
+            
+            result = ones[hundreds] + "ร้อย"
+            if remainder > 0:
+                result += self._number_to_thai_words(str(remainder))
+            
+            return result
+        
+        # Handle 1000+
+        if num < 10000:
+            thousands = num // 1000
+            remainder = num % 1000
+            
+            result = ones[thousands] + "พัน"
+            if remainder > 0:
+                result += self._number_to_thai_words(str(remainder))
+            
+            return result
+        
+        # For larger numbers, just return the original
+        return num_str
+    
     def _optimize_text_for_thai_tts(self, text: str, patient_info: Dict[str, Any]) -> str:
         """
         Optimize Thai text for more natural TTS pronunciation
         
         Key optimizations:
-        1. Add spacing for better word boundaries
-        2. Add punctuation for natural pauses
-        3. Convert numbers to Thai words when appropriate
-        4. Handle special medical terms
+        1. Convert symbols to Thai words based on context
+        2. Add spacing for better word boundaries
+        3. Add punctuation for natural pauses
+        4. Handle special cases for child patients
         
         Args:
             text: Original Thai text
@@ -198,14 +389,15 @@ class EnhancedTTSService:
         if not text or not text.strip():
             return text
         
-        optimized = text
+        # 1. Convert symbols to Thai words (FIRST - before other processing)
+        optimized = self._convert_symbols_to_thai(text)
         
-        # 1. Ensure proper spacing after punctuation for natural pauses
+        # 2. Ensure proper spacing after punctuation for natural pauses
         optimized = optimized.replace('คะ ', 'คะ ')  # Already good
         optimized = optimized.replace('ครับ ', 'ครับ ')  # Already good
         optimized = optimized.replace('ค่ะ ', 'ค่ะ ')  # Already good
         
-        # 2. Add slight pause markers for very long sentences (every 15-20 words)
+        # 3. Add slight pause markers for very long sentences (every 15-20 words)
         words = optimized.split()
         if len(words) > 20:
             # Insert natural breaks with commas
@@ -219,7 +411,7 @@ class EnhancedTTSService:
                         result[-1] = result[-1] + ','
             optimized = ' '.join(result)
         
-        # 3. Handle special cases for child patients (mother speaking)
+        # 4. Handle special cases for child patients (mother speaking)
         age = self._get_actual_age(patient_info.get('age'))
         if age < 12:
             # Mother speaking - ensure maternal tone markers
@@ -227,6 +419,10 @@ class EnhancedTTSService:
             optimized = optimized.replace('หนู', 'ลูก')  # When mother talks about child
         
         print(f"📝 [TTS OPTIMIZATION] Original length: {len(text)}, Optimized: {len(optimized)}")
+        if text != optimized:
+            print(f"   🔄 Symbols converted:")
+            print(f"      Before: {text[:150]}...")
+            print(f"      After:  {optimized[:150]}...")
         
         return optimized
     

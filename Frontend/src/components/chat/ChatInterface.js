@@ -710,9 +710,19 @@ const ChatInterface = () => {
   const getPatientDisplayInfo = () => {
     if (sessionData?.patientInfo) {
       const patient = sessionData.patientInfo;
-      return `${patient.name || 'Patient'} (${patient.sex || 'N/A'}, ${patient.age?.value || 'N/A'}y)`;
+      const age = getPatientAge();
+      const ageDisplay = typeof patient.age === 'object' ? patient.age.value : patient.age;
+      return `${patient.name || 'Patient'} (${patient.sex || 'N/A'}, ${ageDisplay || 'N/A'}y)`;
     }
     return 'Virtual Patient';
+  };
+
+  // ============ 👥 GET SPEAKER DISPLAY LABEL ============
+  const getSpeakerLabel = () => {
+    if (speakerRole === 'mother') {
+      return '👩 Mother (speaking for child)';
+    }
+    return '👤 Patient';
   };
 
   return (
@@ -737,13 +747,18 @@ const ChatInterface = () => {
       {/* 📊 CHAT HEADER */}
       <div className="chat-header">
         <div className="chat-header-info">
-          <div className="patient-avatar">👩‍⚕️</div>
+          <div className="patient-avatar">
+            {speakerRole === 'mother' ? '👩' : '👤'}
+          </div>
           <div>
-            <h3 className="chat-title">Virtual Patient</h3>
+            <h3 className="chat-title">
+              {speakerRole === 'mother' ? 'Patient\'s Mother' : 'Virtual Patient'}
+            </h3>
             <p className="chat-subtitle">
-              {isPlayingAudio ? '🔊 Speaking...' : 
+              {isPlayingAudio ? '📊 Speaking...' : 
                isListeningForSilence ? '👂 Listening...' : 
                isRecording ? '🎤 Ready to listen' : 
+               speakerRole === 'mother' ? '👶 Child patient (<12y) - Mother responds' :
                autoVoiceSelect ? '🎭 Auto Voice Mode' : '🎤 Manual Voice'}
             </p>
           </div>
@@ -765,6 +780,11 @@ const ChatInterface = () => {
             <p className="text-sm text-muted" style={{ marginTop: '0.5rem' }}>
               🧠 AI correction enabled for medical terminology
             </p>
+            {speakerRole === 'mother' && (
+              <p className="text-sm text-muted" style={{ marginTop: '0.5rem', color: '#8b5cf6' }}>
+                👶 Child patient detected - Mother will speak
+              </p>
+            )}
           </div>
         ) : (
           sessionData.messages.map((message, index) => (
@@ -775,12 +795,16 @@ const ChatInterface = () => {
               }`}
             >
               <div className="message-avatar">
-                {message.role === 'user' ? '🧑‍⚕️' : message.role === 'system' ? '⚠️' : '👩‍⚕️'}
+                {message.role === 'user' ? '🧑‍⚕️' : 
+                 message.role === 'system' ? '⚠️' : 
+                 speakerRole === 'mother' ? '👩' : '👤'}
               </div>
               <div className="message-content">
                 <div className="message-header">
                   <span className="message-sender">
-                    {message.role === 'user' ? 'Doctor' : message.role === 'system' ? 'System' : 'Patient'}
+                    {message.role === 'user' ? 'Doctor' : 
+                     message.role === 'system' ? 'System' : 
+                     speakerRole === 'mother' ? "Patient's Mother" : 'Patient'}
                   </span>
                   <span className="message-time">{formatTime(message.timestamp)}</span>
                 </div>
@@ -791,7 +815,9 @@ const ChatInterface = () => {
         )}
         {isLoading && (
           <div className="message message-assistant">
-            <div className="message-avatar">👩‍⚕️</div>
+            <div className="message-avatar">
+              {speakerRole === 'mother' ? '👩' : '👤'}
+            </div>
             <div className="message-content">
               <div className="typing-indicator">
                 <span></span>
