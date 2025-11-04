@@ -22,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # Import routers
-from routers import sessions, chatbot, cases, documents, config, stt_routes, tts
+from routers import sessions, chatbot, cases, documents, config, stt_routes, tts, admin
 
 # Import session manager for cleanup
 from utils.session_manager import session_manager
@@ -137,6 +137,7 @@ app.include_router(documents.router, prefix="/api/documents", tags=["documents"]
 app.include_router(config.router, prefix="/api/config", tags=["config"])
 app.include_router(stt_routes.router, prefix="/api/stt", tags=["Speech-to-Text"])
 app.include_router(tts.router, prefix="/api/tts", tags=["Text-to-Speech"])
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 
 # Register error handlers
 app.add_exception_handler(RequestValidationError, validation_exception_handler)

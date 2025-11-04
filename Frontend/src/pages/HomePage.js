@@ -4,7 +4,8 @@ import { useApp } from '../context/AppContext';
 import StartSessionModal from '../components/modals/StartSessionModal';
 import UploadDocumentModal from '../components/modals/UploadDocumentModal';
 import SettingsModal from '../components/modals/SettingsModal';
-import { Activity, Upload, Settings, Clock, Users, TrendingUp } from 'lucide-react';
+import AdminLoginModal from '../components/modals/AdminLoginModal';
+import { Activity, Upload, Settings, Clock, Users, TrendingUp, ChevronDown } from 'lucide-react';
 import './HomePage.css';
 
 // ============ NEW: COUNTUP ANIMATION COMPONENT ============
@@ -42,6 +43,9 @@ const HomePage = () => {
   const [showStartModal, setShowStartModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
   
   // ============ TYPEWRITER EFFECT STATE ============
   // const [displayedTitle, setDisplayedTitle] = useState('');
@@ -105,9 +109,57 @@ const HomePage = () => {
     navigate('/chatbot');
   };
 
+  const handleAdminLogin = (userData) => {
+    setAdminUser(userData);
+    // Save to sessionStorage for use in admin dashboard
+    sessionStorage.setItem('adminUser', JSON.stringify(userData));
+    setShowAdminLoginModal(false);
+  };
+
+  const handleAdminButtonClick = () => {
+    if (adminUser) {
+      setShowAdminDropdown(!showAdminDropdown);
+    } else {
+      setShowAdminLoginModal(true);
+    }
+  };
+
+  const handleNavigateToAdmin = () => {
+    setShowAdminDropdown(false);
+    navigate('/admin');
+  };
+
   return (
     <div className="home-page">
       <div className="container">
+        {/* Admin Login Button */}
+        <div className="admin-login-container">
+          <button 
+            className="admin-login-btn"
+            onClick={handleAdminButtonClick}
+          >
+            {adminUser ? (
+              <>
+                <span>{adminUser.name}</span>
+                <ChevronDown size={16} />
+              </>
+            ) : (
+              'Login'
+            )}
+          </button>
+          
+          {showAdminDropdown && adminUser && adminUser.isAdmin && (
+            <div className="admin-dropdown">
+              <button 
+                className="admin-dropdown-item"
+                onClick={handleNavigateToAdmin}
+              >
+                Admin Page
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="home-content">
           {/* Header */}
           <header className="home-header fade-in">
@@ -260,6 +312,13 @@ const HomePage = () => {
       {showSettingsModal && (
         <SettingsModal
           onClose={() => setShowSettingsModal(false)}
+        />
+      )}
+
+      {showAdminLoginModal && (
+        <AdminLoginModal
+          onClose={() => setShowAdminLoginModal(false)}
+          onLogin={handleAdminLogin}
         />
       )}
     </div>

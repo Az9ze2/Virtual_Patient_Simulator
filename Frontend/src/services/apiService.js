@@ -436,6 +436,53 @@ class ApiService {
   // ============================================
   // ✅ FIXED: Speech-to-Text API
   // ============================================
+  // Admin API
+  async adminLogin(loginData) {
+    const response = await this.api.post('/api/admin/login', loginData);
+    return response.data;
+  }
+
+  async getAdminStats() {
+    const response = await this.api.get('/api/admin/stats');
+    return response.data;
+  }
+
+  async getAuditLogs(limit = 50) {
+    const response = await this.api.get('/api/admin/audit-logs', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getAdminSessions(limit = 50) {
+    const response = await this.api.get('/api/admin/sessions', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getAdminUsers(limit = 50) {
+    const response = await this.api.get('/api/admin/users', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getAdminMessages(limit = 50) {
+    const response = await this.api.get('/api/admin/messages', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async executeQuery(query, adminId) {
+    const response = await this.api.post('/api/admin/execute-query', {
+      query,
+      admin_id: adminId
+    });
+    return response.data;
+  }
+
   async transcribeAudio(audioBlob) {
     try {
       console.log('🎤 Starting audio transcription...');
