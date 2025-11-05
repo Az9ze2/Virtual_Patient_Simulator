@@ -19,10 +19,12 @@ const ChatInterface = () => {
   const [isListeningForSilence, setIsListeningForSilence] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   
-  // ============ TTS STATE ============
+  // ============ 📊 ENHANCED TTS STATE (OPTIMIZED) ============
   const [ttsEnabled, setTtsEnabled] = useState(true);
-  const [ttsVoice, setTtsVoice] = useState('nova');
+  const [autoVoiceSelect, setAutoVoiceSelect] = useState(true);
+  const [manualVoice, setManualVoice] = useState('nova');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [speakerRole, setSpeakerRole] = useState('patient'); // 'patient' or 'mother'
   const audioRef = useRef(null);
   
   const mediaRecorderRef = useRef(null);
@@ -39,6 +41,16 @@ const ChatInterface = () => {
   const animationFrameRef = useRef(null);
   const lastSoundTimeRef = useRef(0);
   const hasSpeechDetectedRef = useRef(false);
+
+  // ============ 👶 CHECK IF PATIENT IS CHILD ============
+  useEffect(() => {
+    if (sessionData?.patientInfo) {
+      const age = getPatientAge();
+      const isChild = age < 12;
+      setSpeakerRole(isChild ? 'mother' : 'patient');
+      console.log(`👥 Speaker role updated: ${isChild ? 'MOTHER' : 'PATIENT'} (age: ${age})`);
+    }
+  }, [sessionData?.patientInfo]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,6 +103,7 @@ const ChatInterface = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // ============ 🎵 ENHANCED AUDIO PLAYBACK ============
   const playAudio = (base64Audio) => {
     try {
       if (audioRef.current) {
@@ -104,7 +117,7 @@ const ChatInterface = () => {
       
       audio.onplay = () => {
         setIsPlayingAudio(true);
-        console.log('🔊 TTS audio started playing');
+        console.log('📊 TTS audio started playing');
       };
       
       audio.onended = () => {
@@ -127,7 +140,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ 🎯 NEW: BUILD CONVERSATION CONTEXT FOR AI CORRECTION ============
+  // ============ 🧠 BUILD CONVERSATION CONTEXT FOR AI CORRECTION ============
   const getConversationContext = () => {
     return apiService.buildConversationContext(
       sessionData?.messages || [], 
@@ -135,6 +148,22 @@ const ChatInterface = () => {
     );
   };
 
+  // ============ 👶 GET PATIENT AGE ============
+  const getPatientAge = () => {
+    if (!sessionData?.patientInfo) return 0;
+    
+    const ageData = sessionData.patientInfo.age;
+    if (typeof ageData === 'object' && ageData.value) {
+      return parseInt(ageData.value);
+    } else if (typeof ageData === 'string') {
+      return parseInt(ageData.match(/\d+/)?.[0] || '0');
+    } else if (typeof ageData === 'number') {
+      return ageData;
+    }
+    return 0;
+  };
+
+  // ============ 💬 ENHANCED MESSAGE SENDING WITH OPTIMIZED TTS ============
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading || !sessionData?.sessionId) return;
@@ -151,8 +180,23 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
+      console.log('💬 Sending message with optimized TTS...');
+      console.log('   TTS Enabled:', ttsEnabled);
+      console.log('   Auto Voice:', autoVoiceSelect);
+      console.log('   Manual Voice:', manualVoice);
+      console.log('   👥 Speaker Role:', speakerRole);
+      
+      // 🎯 Use auto voice selection (null) or manual override
+      const selectedVoice = autoVoiceSelect ? null : manualVoice;
+      
       const response = ttsEnabled 
-        ? await apiService.sendMessageWithTTS(sessionData.sessionId, userMessage, true, ttsVoice, 1.0)
+        ? await apiService.sendMessageWithTTS(
+            sessionData.sessionId, 
+            userMessage, 
+            true, 
+            selectedVoice, // null = auto-select (mother for children <12)
+            1
+          )
         : await apiService.sendMessage(sessionData.sessionId, userMessage);
       
       if (response.success) {
@@ -162,11 +206,29 @@ const ChatInterface = () => {
           timestamp: Date.now()
         });
 
-        if (ttsEnabled && response.data.audio && response.data.audio.audio_base64) {
-          console.log('🎵 Playing TTS audio response...');
-          playAudio(response.data.audio.audio_base64);
+        // 📊 Log voice selection and speaker role info
+        if (ttsEnabled && response.data.audio) {
+          console.log('🎤 TTS Voice Info (OPTIMIZED):');
+          console.log('   - Voice used:', response.data.audio.voice);
+          console.log('   - Auto-selected:', response.data.audio.voice_auto_selected);
+          console.log('   - Speed:', response.data.audio.speed);
+          console.log('   - Speaker role:', response.data.audio.speaker_role);
+          console.log('   - Is child patient:', response.data.audio.is_child_patient);
+          console.log('   - Thai optimized:', response.data.audio.optimized_for_thai);
+          
+          // Update speaker role from response
+          if (response.data.audio.speaker_role) {
+            setSpeakerRole(response.data.audio.speaker_role);
+          }
+          
+          if (response.data.audio.audio_base64) {
+            const speakerLabel = response.data.audio.speaker_role === 'mother' ? 'Mother' : 'Patient';
+            console.log(`🎵 Playing ${speakerLabel}'s optimized TTS audio...`);
+            playAudio(response.data.audio.audio_base64);
+          }
         }
 
+        // Update token usage
         const tokens = response.data.token_usage;
         if (tokens) {
           const currentTokenUsage = sessionData?.tokenUsage || {
@@ -198,7 +260,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ AUTO-SEND MESSAGE AFTER TRANSCRIPTION ============
+  // ============ 🚀 AUTO-SEND MESSAGE AFTER TRANSCRIPTION ============
   const autoSendTranscribedMessage = async (transcribedText) => {
     if (!transcribedText.trim() || !sessionData?.sessionId) return;
 
@@ -211,8 +273,20 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
+      console.log('🚀 Auto-sending transcribed message with optimized TTS...');
+      console.log('   👥 Speaker Role:', speakerRole);
+      
+      // 🎯 Use auto voice selection (null) or manual override
+      const selectedVoice = autoVoiceSelect ? null : manualVoice;
+      
       const response = ttsEnabled 
-        ? await apiService.sendMessageWithTTS(sessionData.sessionId, transcribedText, true, ttsVoice, 1.0)
+        ? await apiService.sendMessageWithTTS(
+            sessionData.sessionId, 
+            transcribedText, 
+            true, 
+            selectedVoice,
+            1
+          )
         : await apiService.sendMessage(sessionData.sessionId, transcribedText);
       
       if (response.success) {
@@ -222,11 +296,27 @@ const ChatInterface = () => {
           timestamp: Date.now()
         });
 
-        if (ttsEnabled && response.data.audio && response.data.audio.audio_base64) {
-          console.log('🎵 Playing TTS audio response...');
-          playAudio(response.data.audio.audio_base64);
+        // 📊 Log voice selection and speaker info
+        if (ttsEnabled && response.data.audio) {
+          console.log('🎤 TTS Voice Info (Auto-send, OPTIMIZED):');
+          console.log('   - Voice used:', response.data.audio.voice);
+          console.log('   - Auto-selected:', response.data.audio.voice_auto_selected);
+          console.log('   - Speaker role:', response.data.audio.speaker_role);
+          console.log('   - Thai optimized:', response.data.audio.optimized_for_thai);
+          
+          // Update speaker role from response
+          if (response.data.audio.speaker_role) {
+            setSpeakerRole(response.data.audio.speaker_role);
+          }
+          
+          if (response.data.audio.audio_base64) {
+            const speakerLabel = response.data.audio.speaker_role === 'mother' ? 'Mother' : 'Patient';
+            console.log(`🎵 Playing ${speakerLabel}'s optimized TTS audio...`);
+            playAudio(response.data.audio.audio_base64);
+          }
         }
 
+        // Update token usage
         const tokens = response.data.token_usage;
         if (tokens) {
           const currentTokenUsage = sessionData?.tokenUsage || {
@@ -258,7 +348,7 @@ const ChatInterface = () => {
     }
   };
 
-  // ============ AUDIO LEVEL DETECTION WITH NOISE CANCELLATION ============
+  // ============ 🎤 AUDIO LEVEL DETECTION WITH NOISE CANCELLATION ============
   const detectAudioLevel = () => {
     if (!analyserRef.current) {
       console.log('⚠️ Analyser not available - cannot detect audio levels');
@@ -333,7 +423,7 @@ const ChatInterface = () => {
     animationFrameRef.current = requestAnimationFrame(detectAudioLevel);
   };
 
-  // ============ START RECORDING WITH AUDIO ANALYSIS ============
+  // ============ 🎙️ START RECORDING WITH AUDIO ANALYSIS ============
   const startRecording = async () => {
     try {
       setSttError(null);
@@ -349,10 +439,7 @@ const ChatInterface = () => {
           sampleRate: 16000,
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true,
-          noiseSuppression: { ideal: true },
-          echoCancellation: { ideal: true },
-          autoGainControl: { ideal: true }
+          autoGainControl: true
         } 
       });
 
@@ -367,8 +454,6 @@ const ChatInterface = () => {
         source.connect(analyserRef.current);
         
         console.log('✅ Audio analyser initialized successfully');
-        console.log('   - FFT Size:', analyserRef.current.fftSize);
-        console.log('   - Frequency Bin Count:', analyserRef.current.frequencyBinCount);
       } catch (error) {
         console.error('❌ Failed to initialize audio analyser:', error);
       }
@@ -398,7 +483,6 @@ const ChatInterface = () => {
       });
 
       mediaRecorderRef.current.startTime = Date.now();
-
       audioChunksRef.current = [];
       hasSpeechDetectedRef.current = false;
       lastSoundTimeRef.current = Date.now();
@@ -429,7 +513,6 @@ const ChatInterface = () => {
       setIsRecording(true);
       
       console.log('🎤 Recording started with noise cancellation enabled');
-      console.log('🔍 Analyser available:', !!analyserRef.current);
 
       setTimeout(() => {
         console.log('🎯 Starting audio level detection...');
@@ -451,7 +534,7 @@ const ChatInterface = () => {
       } else if (error.name === 'NotFoundError') {
         setSttError('ไม่พบไมโครโฟน กรุณาเชื่อมต่อไมโครโฟนกับอุปกรณ์ของคุณ');
       } else if (error.name === 'NotReadableError') {
-        setSttError('ไม่สามารถเข้าถึงไมโครโฟนได้ อาจมีแอปพลิเคชันอื่นกำลังใช้งานอยู่');
+        setSttError('ไม่สามารถเข้าถึงไมโครโฟนได้ อาจมีแอปพลิเคชั่นอื่นกำลังใช้งานอยู่');
       } else {
         setSttError('เกิดข้อผิดพลาดในการเข้าถึงไมโครโฟน: ' + error.message);
       }
@@ -471,8 +554,7 @@ const ChatInterface = () => {
     }
   };
 
-  // Replace your processRecording function in ChatInterface.js with this enhanced version
-
+  // ============ 🧠 ENHANCED AUDIO PROCESSING WITH CONTEXT-AWARE CORRECTION ============
   const processRecording = async () => {
     if (audioChunksRef.current.length === 0) {
       console.log('❌ No audio chunks recorded');
@@ -498,19 +580,17 @@ const ChatInterface = () => {
         return;
       }
 
-      console.log('📤 Sending audio to backend with context...');
+      console.log('📤 Sending audio to backend with context-aware correction...');
       
-      // 🎯 BUILD CONVERSATION CONTEXT
+      // 🧠 BUILD CONVERSATION CONTEXT FOR BETTER AI CORRECTION
       const conversationContext = getConversationContext();
       console.log('🧠 Context length:', conversationContext.length, 'characters');
       
       // 🚀 TRANSCRIBE WITH CONTEXT AND CORRECTION
-      // Note: enableCorrection=null uses backend's default setting
-      // You can pass true/false to override: apiService.transcribeAudioWithContext(audioBlob, conversationContext, true)
       const transcription = await apiService.transcribeAudioWithContext(
         audioBlob,
         conversationContext,
-        null  // Use backend default (change to true/false to override)
+        null  // Use backend default correction setting
       );
 
       console.log('📥 Transcription response:', transcription);
@@ -520,27 +600,30 @@ const ChatInterface = () => {
         
         console.log('✅ Transcription successful:', finalText);
         
-        // Log correction details if available
+        // 📊 LOG CORRECTION DETAILS
         if (transcription.data.correction) {
           const correction = transcription.data.correction;
-          console.log('🧠 Correction Details:');
+          console.log('🧠 AI Correction Details:');
           console.log('   - Was corrected:', correction.was_corrected);
-          console.log('   - Original:', correction.original_text);
-          console.log('   - Final:', correction.corrected_text);
-          console.log('   - Model:', correction.model_used);
-          console.log('   - Time:', correction.processing_time_ms, 'ms');
+          console.log('   - Original text:', correction.original_text);
+          console.log('   - Corrected text:', correction.corrected_text);
+          console.log('   - Model used:', correction.model_used);
+          console.log('   - Confidence:', correction.confidence);
+          console.log('   - Processing time:', correction.processing_time_ms, 'ms');
           
-          // Show user if significant changes were made
-          if (correction.was_corrected && correction.original_text !== correction.corrected_text) {
-            console.log('✏️ Text was automatically corrected for better accuracy');
+          if (correction.was_corrected && correction.changes && correction.changes.length > 0) {
+            console.log('✏️ Changes made:', correction.changes.length);
+            correction.changes.forEach((change, idx) => {
+              console.log(`   ${idx + 1}. "${change.original}" → "${change.corrected}" (${change.type})`);
+            });
           }
         }
         
-        // Log processing times
+        // 📊 LOG PERFORMANCE METRICS
         if (transcription.data.processing_time) {
-          console.log('⏱️ Performance:');
-          console.log('   - Whisper:', transcription.data.processing_time.whisper_ms, 'ms');
-          console.log('   - Total:', transcription.data.processing_time.total_ms, 'ms');
+          console.log('⏱️ Performance Metrics:');
+          console.log('   - Whisper transcription:', transcription.data.processing_time.whisper_ms, 'ms');
+          console.log('   - Total processing:', transcription.data.processing_time.total_ms, 'ms');
         }
         
         if (!finalText || finalText.length < 2) {
@@ -550,8 +633,8 @@ const ChatInterface = () => {
           return;
         }
 
-        // Auto-send the corrected message
-        console.log('🚀 Auto-sending transcribed message...');
+        // 🚀 AUTO-SEND THE CORRECTED MESSAGE
+        console.log('🚀 Auto-sending transcribed message with optimized TTS...');
         await autoSendTranscribedMessage(finalText);
         console.log('✅ Message auto-sent successfully!');
         
@@ -570,20 +653,12 @@ const ChatInterface = () => {
         
         if (errorData.detail) {
           if (typeof errorData.detail === 'object') {
-            // Handle structured errors with specific types
             if (errorData.detail.error === 'unclear_audio') {
               userFriendlyMessage = errorData.detail.message || 'ไม่สามารถแปลงเสียงให้เป็นข้อความที่มีความหมายได้';
               
-              // Log helpful hints for debugging
               if (errorData.detail.hints) {
                 console.log('💡 คำแนะนำ:');
                 errorData.detail.hints.forEach(hint => console.log('   -', hint));
-              }
-              if (errorData.detail.detected_text) {
-                console.log('🔍 ข้อความที่ตรวจพบ:', errorData.detail.detected_text);
-              }
-              if (errorData.detail.detection_reason) {
-                console.log('❓ เหตุผล:', errorData.detail.detection_reason);
               }
             } else if (errorData.detail.error === 'silent_audio') {
               userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาตรวจสอบไมโครโฟนและพูดให้ชัดเจน';
@@ -598,21 +673,11 @@ const ChatInterface = () => {
         }
       }
       
-      if (error.message) {
+      if (error.message && !userFriendlyMessage.includes('เกิดข้อผิดพลาด')) {
         if (error.message.includes('timeout') || error.message.includes('หมดเวลา')) {
           userFriendlyMessage = 'หมดเวลาในการประมวลผลเสียง กรุณาลองอีกครั้ง';
         } else if (error.message.includes('network') || error.message.includes('Network error')) {
           userFriendlyMessage = 'เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาตรวจสอบอินเทอร์เน็ต';
-        } else if (error.message.includes('OpenAI API') || error.message.includes('API key')) {
-          userFriendlyMessage = 'เกิดข้อผิดพลาดกับระบบ กรุณาติดต่อผู้ดูแล';
-        } else if (error.message.includes('unclear') || error.message.includes('ไม่สามารถแปลง')) {
-          // Already handled above, keep the message
-        } else if (error.message.includes('silent') || error.message.includes('ไม่พบเสียง')) {
-          userFriendlyMessage = 'ไม่พบเสียงพูดในการบันทึก กรุณาพูดให้ชัดเจนและลองอีกครั้ง';
-        } else if (error.message.includes('too short') || error.message.includes('สั้นเกินไป')) {
-          userFriendlyMessage = 'เสียงที่บันทึกสั้นเกินไป กรุณาพูดนานขึ้นและลองอีกครั้ง';
-        } else if (error.message.includes('ไม่สามารถ') || error.message.includes('เกิดข้อผิดพลาด')) {
-          userFriendlyMessage = error.message;
         }
       }
       
@@ -623,7 +688,8 @@ const ChatInterface = () => {
       console.log('🧹 Cleanup complete');
     }
   };
-  // ============ TOGGLE RECORDING (SINGLE BUTTON) ============
+
+  // ============ 🎛️ TOGGLE RECORDING (SINGLE BUTTON) ============
   const toggleRecording = () => {
     if (isRecording) {
       stopRecording();
@@ -640,8 +706,28 @@ const ChatInterface = () => {
     });
   };
 
+  // ============ 🎭 GET PATIENT INFO FOR DISPLAY ============
+  const getPatientDisplayInfo = () => {
+    if (sessionData?.patientInfo) {
+      const patient = sessionData.patientInfo;
+      const age = getPatientAge();
+      const ageDisplay = typeof patient.age === 'object' ? patient.age.value : patient.age;
+      return `${patient.name || 'Patient'} (${patient.sex || 'N/A'}, ${ageDisplay || 'N/A'}y)`;
+    }
+    return 'Virtual Patient';
+  };
+
+  // ============ 👥 GET SPEAKER DISPLAY LABEL ============
+  const getSpeakerLabel = () => {
+    if (speakerRole === 'mother') {
+      return '👩 Mother (speaking for child)';
+    }
+    return '👤 Patient';
+  };
+
   return (
     <div className="chat-interface">
+      {/* ⚠️ STT ERROR BANNER */}
       {sttError && (
         <div className="stt-error-banner">
           <div className="stt-error-content">
@@ -658,16 +744,22 @@ const ChatInterface = () => {
         </div>
       )}
 
+      {/* 📊 CHAT HEADER */}
       <div className="chat-header">
         <div className="chat-header-info">
-          <div className="patient-avatar">👩‍⚕️</div>
+          <div className="patient-avatar">
+            {speakerRole === 'mother' ? '👩' : '👤'}
+          </div>
           <div>
-            <h3 className="chat-title">Virtual Patient</h3>
+            <h3 className="chat-title">
+              {speakerRole === 'mother' ? 'Patient\'s Mother' : 'Virtual Patient'}
+            </h3>
             <p className="chat-subtitle">
-              {isPlayingAudio ? '🔊 Speaking...' : 
+              {isPlayingAudio ? '📊 Speaking...' : 
                isListeningForSilence ? '👂 Listening...' : 
                isRecording ? '🎤 Ready to listen' : 
-               'Mother Simulator'}
+               speakerRole === 'mother' ? '👶 Child patient (<12y) - Mother responds' :
+               autoVoiceSelect ? '🎭 Auto Voice Mode' : '🎤 Manual Voice'}
             </p>
           </div>
         </div>
@@ -678,6 +770,7 @@ const ChatInterface = () => {
         </div>
       </div>
 
+      {/* 💬 CHAT MESSAGES */}
       <div className="chat-messages" ref={chatContainerRef}>
         {!sessionData?.messages?.length ? (
           <div className="empty-chat">
@@ -687,6 +780,11 @@ const ChatInterface = () => {
             <p className="text-sm text-muted" style={{ marginTop: '0.5rem' }}>
               🧠 AI correction enabled for medical terminology
             </p>
+            {speakerRole === 'mother' && (
+              <p className="text-sm text-muted" style={{ marginTop: '0.5rem', color: '#8b5cf6' }}>
+                👶 Child patient detected - Mother will speak
+              </p>
+            )}
           </div>
         ) : (
           sessionData.messages.map((message, index) => (
@@ -697,12 +795,16 @@ const ChatInterface = () => {
               }`}
             >
               <div className="message-avatar">
-                {message.role === 'user' ? '🧑‍⚕️' : message.role === 'system' ? '⚠️' : '👩‍⚕️'}
+                {message.role === 'user' ? '🧑‍⚕️' : 
+                 message.role === 'system' ? '⚠️' : 
+                 speakerRole === 'mother' ? '👩' : '👤'}
               </div>
               <div className="message-content">
                 <div className="message-header">
                   <span className="message-sender">
-                    {message.role === 'user' ? 'Doctor' : message.role === 'system' ? 'System' : 'Patient'}
+                    {message.role === 'user' ? 'Doctor' : 
+                     message.role === 'system' ? 'System' : 
+                     speakerRole === 'mother' ? "Patient's Mother" : 'Patient'}
                   </span>
                   <span className="message-time">{formatTime(message.timestamp)}</span>
                 </div>
@@ -713,7 +815,9 @@ const ChatInterface = () => {
         )}
         {isLoading && (
           <div className="message message-assistant">
-            <div className="message-avatar">👩‍⚕️</div>
+            <div className="message-avatar">
+              {speakerRole === 'mother' ? '👩' : '👤'}
+            </div>
             <div className="message-content">
               <div className="typing-indicator">
                 <span></span>
