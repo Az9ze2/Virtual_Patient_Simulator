@@ -6,6 +6,7 @@ import UploadDocumentModal from '../components/modals/UploadDocumentModal';
 import SettingsModal from '../components/modals/SettingsModal';
 import AdminLoginModal from '../components/modals/AdminLoginModal';
 import { Activity, Upload, Settings, Clock, Users, TrendingUp, ChevronDown } from 'lucide-react';
+import apiService from '../services/apiService';
 import './HomePage.css';
 
 // ============ NEW: COUNTUP ANIMATION COMPONENT ============
@@ -46,6 +47,12 @@ const HomePage = () => {
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
   const [adminUser, setAdminUser] = useState(null);
   const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+  const [stats, setStats] = useState({
+    activeSessions: 0,
+    avgTime: 0,
+    totalCases: 0
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
 
   // Restore login state on component mount
   useEffect(() => {
@@ -60,22 +67,30 @@ const HomePage = () => {
       }
     }
   }, []);
-  
-  // ============ TYPEWRITER EFFECT STATE ============
-  // const [displayedTitle, setDisplayedTitle] = useState('');
-  // const [titleComplete, setTitleComplete] = useState(false);
-  // const fullTitle = 'Thai Language-Based Virtual Patient Simulator';
 
-  // const [displayedTitle1, setDisplayedTitle1] = useState('');
-  // const [titleComplete1, setTitleComplete1] = useState(false);
-  // const fullthTitle = 'ระบบจำลองผู้ป่วยด้วยโมเดลภาษาไทย';
+  // Fetch home statistics
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoadingStats(true);
+        const response = await apiService.getHomeStats();
+        if (response.success) {
+          setStats({
+            activeSessions: response.data.active_sessions,
+            avgTime: response.data.avg_duration_minutes,
+            totalCases: response.data.total_cases
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load statistics:', error);
+        // Keep default values on error
+      } finally {
+        setLoadingStats(false);
+      }
+    };
 
-  // Mock statistics
-  const stats = {
-    recentSessions: 5,
-    avgTime: 12,
-    totalCases: 14
-  };
+    fetchStats();
+  }, []);
 
   // ============ TYPEWRITER ANIMATION EFFECT ============
   // useEffect(() => {
@@ -159,6 +174,11 @@ const HomePage = () => {
     navigate('/admin');
   };
 
+  const handleNavigateToMySessions = () => {
+    setShowAdminDropdown(false);
+    navigate('/my-sessions');
+  };
+
   const handleLogout = () => {
     setAdminUser(null);
     setShowAdminDropdown(false);
@@ -195,6 +215,12 @@ const HomePage = () => {
                   Admin Page
                 </button>
               )}
+              <button 
+                className="admin-dropdown-item"
+                onClick={handleNavigateToMySessions}
+              >
+                My Sessions
+              </button>
               <button 
                 className="admin-dropdown-item logout-item"
                 onClick={handleLogout}
@@ -290,9 +316,9 @@ const HomePage = () => {
               </div>
               <div className="stat-content">
                 <div className="stat-value">
-                  <CountUp end={stats.recentSessions} duration={2000} />
+                  <CountUp end={stats.activeSessions} duration={2000} />
                 </div>
-                <div className="stat-label">Recent Sessions</div>
+                <div className="stat-label">Active Sessions</div>
               </div>
             </div>
 

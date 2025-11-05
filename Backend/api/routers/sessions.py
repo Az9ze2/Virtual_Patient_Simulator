@@ -18,6 +18,7 @@ from api.models.schemas import (
     StartSessionRequest, StartSessionWithUploadedCaseRequest, APIResponse, SessionSummary,
     UpdateDiagnosisRequest, CaseInfo, CaseType, UserInfo
 )
+from pydantic import BaseModel
 from api.utils.session_manager import session_manager
 
 # Database integration
@@ -987,6 +988,58 @@ async def delete_session(session_id: str):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to delete session: {str(e)}"
+        )
+
+class MySessionsRequest(BaseModel):
+    student_id: str
+
+@router.post("/my-sessions")
+async def get_my_sessions(request: MySessionsRequest):
+    """
+    Get all sessions for a specific user
+    """
+    try:
+        if not (repo and now_th):
+            return APIResponse(success=False, message="DB not configured")
+        
+        # Get user_id from student_id
+        user_id = repo.get_user_id_by_student_id(request.student_id)
+        if not user_id:
+            return APIResponse(success=False, message="User not found")
+        
+        # Fetch sessions from database
+        from api.db.pool import get_conn
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("""
+                SELECT 
+                    s.session_id,
+                    s.status,
+                    s.started_at,
+                    s.ended_at,
+                    s.duration_seconds,
+                    c.case_id,
+                    (c.case_data->'case_metadata'->>'case_title') as case_title,
+                    (c.case_data->'case_metadata'->>'medical_specialty') as specialty,
+                    (SELECT COUNT(*) FROM chat_messages WHERE session_id = s.session_id) as message_count,
+                    EXISTS(SELECT 1 FROM session_reports WHERE session_id = s.session_id) as has_report
+                FROM sessions s
+                LEFT JOIN cases c ON s.case_id = c.case_id
+                WHERE s.user_id = %s
+                ORDER BY s.started_at DESC
+            """, (user_id,))
+            
+            sessions = cur.fetchall()
+            
+            return APIResponse(
+                success=True,
+                message="Sessions retrieved successfully",
+                data={"sessions": sessions}
+            )
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch sessions: {str(e)}"
         )
 
 @router.get("/active")

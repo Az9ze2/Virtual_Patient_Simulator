@@ -16,6 +16,7 @@ const AdminDashboard = () => {
   const [sessions, setSessions] = useState([]);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [cases, setCases] = useState([]);
 
   useEffect(() => {
     if (activePage === 'dashboard') {
@@ -70,6 +71,9 @@ const AdminDashboard = () => {
       } else if (monitoringTab === 'messages') {
         const response = await apiService.getAdminMessages(50);
         setMessages(response.data || []);
+      } else if (monitoringTab === 'cases') {
+        const response = await apiService.getAdminCases(100);
+        setCases(response.data || []);
       }
     } catch (error) {
       console.error('Failed to load monitoring data:', error);
@@ -202,34 +206,83 @@ const AdminDashboard = () => {
         </div>
       ) : stats ? (
         <>
-          <div className="admin-stats-grid">
-            {[
-              { label: 'Total Users', value: stats.total_users, icon: Users, color: 'blue' },
-              { label: 'Active Sessions', value: stats.active_sessions, icon: Activity, color: 'green' },
-              { label: 'Completed', value: stats.completed_sessions, icon: FileText, color: 'purple' },
-              { label: 'Downloads', value: stats.downloads, icon: Download, color: 'orange' },
-              { label: 'Exam Mode', value: stats.exam_mode_sessions, icon: Edit, color: 'red' },
-              { label: 'Practice Mode', value: stats.practice_mode_sessions, icon: Play, color: 'teal' },
-              { label: 'Avg Duration', value: `${stats.avg_duration_minutes}m`, icon: Activity, color: 'indigo' },
-              { label: 'Max Duration', value: `${stats.max_duration_minutes}m`, icon: Activity, color: 'pink' },
-              { label: 'Min Duration', value: `${stats.min_duration_minutes}m`, icon: Activity, color: 'cyan' },
-              { label: 'Total Messages', value: stats.total_messages, icon: FileText, color: 'violet' },
-              { label: 'Input Tokens', value: stats.total_input_tokens, icon: FileText, color: 'amber' },
-              { label: 'Output Tokens', value: stats.total_output_tokens, icon: FileText, color: 'lime' }
-            ].map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <div key={idx} className="admin-stat-card">
-                  <div className="admin-stat-header">
-                    <div className={`admin-stat-icon ${stat.color}`}>
-                      <Icon size={14} />
-                    </div>
-                    <span className="admin-stat-value">{stat.value}</span>
-                  </div>
-                  <p className="admin-stat-label">{stat.label}</p>
+          {/* Category Cards Grid */}
+          <div className="dashboard-categories-grid">
+            {/* User & Sessions Card */}
+            <div className="category-card">
+              <h3 className="category-card-title">User & Sessions</h3>
+              <div className="category-stats-list">
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Total Users</span>
+                  <span className="category-stat-value">{stats.total_users}</span>
                 </div>
-              );
-            })}
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Active Sessions</span>
+                  <span className="category-stat-value">{stats.active_sessions}</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Completed</span>
+                  <span className="category-stat-value">{stats.completed_sessions}</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Downloads</span>
+                  <span className="category-stat-value">{stats.downloads}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Session Types Card */}
+            <div className="category-card">
+              <h3 className="category-card-title">Session Types</h3>
+              <div className="category-stats-list">
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Exam Mode</span>
+                  <span className="category-stat-value">{stats.exam_mode_sessions}</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Practice Mode</span>
+                  <span className="category-stat-value">{stats.practice_mode_sessions}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Duration Metrics Card */}
+            <div className="category-card">
+              <h3 className="category-card-title">Duration Metrics</h3>
+              <div className="category-stats-list">
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Average</span>
+                  <span className="category-stat-value">{stats.avg_duration_minutes}m</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Maximum</span>
+                  <span className="category-stat-value">{stats.max_duration_minutes}m</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Minimum</span>
+                  <span className="category-stat-value">{stats.min_duration_minutes}m</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Token Usage Card */}
+            <div className="category-card">
+              <h3 className="category-card-title">Token Usage</h3>
+              <div className="category-stats-list">
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Messages</span>
+                  <span className="category-stat-value">{stats.total_messages}</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Input Tokens</span>
+                  <span className="category-stat-value">{stats.total_input_tokens?.toLocaleString() || 0}</span>
+                </div>
+                <div className="category-stat-item">
+                  <span className="category-stat-label">Output Tokens</span>
+                  <span className="category-stat-value">{stats.total_output_tokens?.toLocaleString() || 0}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="admin-dashboard-grid">
@@ -283,6 +336,45 @@ const AdminDashboard = () => {
     </div>
   );
 
+  const presetQueries = [
+    {
+      name: 'Active Sessions',
+      query: "SELECT session_id, user_id, case_id, status, started_at, duration_seconds FROM sessions WHERE status = 'active' ORDER BY started_at DESC LIMIT 20;"
+    },
+    {
+      name: 'Recent Users',
+      query: "SELECT user_id, name, email, student_id, created_at FROM users ORDER BY created_at DESC LIMIT 20;"
+    },
+    {
+      name: 'Session Summary',
+      query: "SELECT s.session_id, u.name as user_name, s.status, COUNT(m.message_id) as message_count, s.started_at, s.duration_seconds FROM sessions s LEFT JOIN users u ON s.user_id = u.user_id LEFT JOIN chat_messages m ON s.session_id = m.session_id GROUP BY s.session_id, u.name, s.status, s.started_at, s.duration_seconds ORDER BY s.started_at DESC LIMIT 20;"
+    },
+    {
+      name: 'Token Usage',
+      query: "SELECT u.name, COUNT(m.message_id) as total_messages, SUM(CASE WHEN m.role = 'user' THEN m.tokens_used ELSE 0 END) as input_tokens, SUM(CASE WHEN m.role IN ('chatbot', 'assistant') THEN m.tokens_used ELSE 0 END) as output_tokens FROM users u LEFT JOIN sessions s ON u.user_id = s.user_id LEFT JOIN chat_messages m ON s.session_id = m.session_id GROUP BY u.user_id, u.name ORDER BY total_messages DESC LIMIT 20;"
+    },
+    {
+      name: 'Completed Sessions',
+      query: "SELECT s.session_id, u.name as user_name, s.duration_seconds, s.started_at, s.ended_at FROM sessions s LEFT JOIN users u ON s.user_id = u.user_id WHERE s.status = 'complete' ORDER BY s.ended_at DESC LIMIT 20;"
+    },
+    {
+      name: 'Recent Audit Logs',
+      query: "SELECT a.log_id, u.name as user_name, a.action_type, a.performed_at FROM audit_log a LEFT JOIN users u ON a.user_id = u.user_id ORDER BY a.performed_at DESC LIMIT 30;"
+    },
+    {
+      name: 'Cases Overview',
+      query: "SELECT case_id, case_name, case_type, import_at FROM cases ORDER BY import_at DESC;"
+    },
+    {
+      name: 'Top Active Users',
+      query: "SELECT u.name, u.student_id, COUNT(DISTINCT s.session_id) as session_count, ROUND(AVG(s.duration_seconds), 0) as avg_duration_seconds FROM users u LEFT JOIN sessions s ON u.user_id = s.user_id WHERE s.session_id IS NOT NULL GROUP BY u.user_id, u.name, u.student_id ORDER BY session_count DESC LIMIT 15;"
+    }
+  ];
+
+  const handlePresetQuery = (query) => {
+    setSqlQuery(query);
+  };
+
   const renderQueryEditor = () => (
     <div className="admin-page-content">
       <h2 className="admin-page-title">Query Editor</h2>
@@ -301,11 +393,28 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
+
+          {/* Preset Queries */}
+          <div className="preset-queries">
+            <label className="preset-queries-label">Quick Queries:</label>
+            <div className="preset-queries-grid">
+              {presetQueries.map((preset, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handlePresetQuery(preset.query)}
+                  className="preset-query-btn"
+                  title={preset.query}
+                >
+                  {preset.name}
+                </button>
+              ))}
+            </div>
+          </div>
           
           <textarea
             value={sqlQuery}
             onChange={(e) => setSqlQuery(e.target.value)}
-            placeholder="Enter your SQL query here..."
+            placeholder="Enter your SQL query here or select a preset query above..."
             className="admin-query-textarea"
           />
         </div>
@@ -376,6 +485,12 @@ const AdminDashboard = () => {
         >
           Messages
         </button>
+        <button 
+          onClick={() => setMonitoringTab('cases')}
+          className={`admin-tab ${monitoringTab === 'cases' ? 'active' : ''}`}
+        >
+          Cases
+        </button>
       </div>
 
       <div className="admin-monitoring-card">
@@ -383,7 +498,8 @@ const AdminDashboard = () => {
           <h3 className="admin-monitoring-title">
             {monitoringTab === 'audit' ? 'Audit Logs' : 
              monitoringTab === 'sessions' ? 'Sessions' :
-             monitoringTab === 'users' ? 'Users' : 'Messages'}
+             monitoringTab === 'users' ? 'Users' :
+             monitoringTab === 'messages' ? 'Messages' : 'Cases'}
           </h3>
           <div className="admin-monitoring-tools">
             <div className="admin-search">
@@ -537,6 +653,39 @@ const AdminDashboard = () => {
                       </td>
                       <td className="admin-truncate">{msg.content}</td>
                       <td>{new Date(msg.created_at).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {monitoringTab === 'cases' && (
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Case ID</th>
+                    <th>Case Title</th>
+                    <th>Case Type</th>
+                    <th>Medical Specialty</th>
+                    <th>Duration (min)</th>
+                    <th>Imported At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cases.map(caseItem => (
+                    <tr key={caseItem.case_id}>
+                      <td className="admin-mono">{caseItem.case_id}</td>
+                      <td>{caseItem.case_title || caseItem.case_name}</td>
+                      <td>
+                        <span className={`admin-badge ${
+                          caseItem.case_type === '01' ? 'blue' : 'purple'
+                        }`}>
+                          {caseItem.case_type === '01' ? 'Child/Parent' : 'Adult'}
+                        </span>
+                      </td>
+                      <td>{caseItem.medical_specialty || 'N/A'}</td>
+                      <td>{caseItem.duration_minutes || 'N/A'}</td>
+                      <td>{caseItem.import_at ? new Date(caseItem.import_at).toLocaleString() : 'N/A'}</td>
                     </tr>
                   ))}
                 </tbody>

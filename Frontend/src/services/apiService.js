@@ -270,6 +270,13 @@ class ApiService {
     return response.data;
   }
 
+  async getUserSessions(studentId) {
+    const response = await this.api.post('/api/sessions/my-sessions', {
+      student_id: studentId
+    });
+    return response.data;
+  }
+
   // Chatbot API
   async sendMessage(sessionId, message) {
     const response = await this.api.post(`/api/chatbot/${sessionId}/chat`, {
@@ -479,6 +486,18 @@ class ApiService {
       query,
       admin_id: adminId
     });
+    return response.data;
+  }
+
+  async getAdminCases(limit = 100) {
+    const response = await this.api.get('/api/admin/cases', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getHomeStats() {
+    const response = await this.api.get('/api/admin/home-stats');
     return response.data;
   }
 

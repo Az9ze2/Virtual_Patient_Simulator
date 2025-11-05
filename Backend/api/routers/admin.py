@@ -342,6 +342,84 @@ async def get_admin_messages(limit: int = 50):
         raise HTTPException(status_code=500, detail=f"Failed to fetch messages: {str(e)}")
 
 
+@router.get("/cases")
+async def get_admin_cases(limit: int = 100):
+    """
+    Get all cases for admin panel
+    """
+    try:
+        if not get_conn:
+            raise HTTPException(status_code=503, detail="Database not configured")
+        
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("""
+                SELECT 
+                    case_id,
+                    case_name,
+                    case_type,
+                    (case_data->'case_metadata'->>'case_title') as case_title,
+                    (case_data->'case_metadata'->>'medical_specialty') as medical_specialty,
+                    NULLIF((case_data->'case_metadata'->>'exam_duration_minutes'), '')::INT as duration_minutes,
+                    import_at
+                FROM cases
+                ORDER BY case_id
+                LIMIT %s
+            """, (limit,))
+            
+            cases = cur.fetchall()
+            
+            return {
+                "success": True,
+                "data": cases
+            }
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch cases: {str(e)}")
+
+
+@router.get("/home-stats")
+async def get_home_stats():
+    """
+    Get statistics for homepage display
+    """
+    try:
+        if not get_conn:
+            raise HTTPException(status_code=503, detail="Database not configured")
+        
+        with get_conn() as conn, conn.cursor() as cur:
+            # Active sessions count
+            cur.execute("""
+                SELECT COUNT(*) as count 
+                FROM sessions 
+                WHERE status = 'active'
+            """)
+            active_sessions = cur.fetchone()["count"]
+            
+            # Average duration in minutes
+            cur.execute("""
+                SELECT COALESCE(AVG(duration_seconds) / 60, 0) as avg_minutes
+                FROM sessions
+                WHERE duration_seconds IS NOT NULL AND duration_seconds > 0
+            """)
+            avg_duration = round(cur.fetchone()["avg_minutes"], 0)
+            
+            # Total cases
+            cur.execute("SELECT COUNT(*) as count FROM cases")
+            total_cases = cur.fetchone()["count"]
+            
+            return {
+                "success": True,
+                "data": {
+                    "active_sessions": active_sessions,
+                    "avg_duration_minutes": int(avg_duration),
+                    "total_cases": total_cases
+                }
+            }
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch home stats: {str(e)}")
+
+
 @router.post("/execute-query")
 async def execute_query(request: ExecuteQueryRequest):
     """

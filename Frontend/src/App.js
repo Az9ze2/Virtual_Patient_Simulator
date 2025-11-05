@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import ChatbotPage from './pages/ChatbotPage';
 import SummaryPage from './pages/SummaryPage';
 import AdminDashboard from './pages/AdminDashboard';
+import MySessionsPage from './pages/MySessionsPage';
 import './App.css';
 
 // Hello World
@@ -19,6 +20,7 @@ function App() {
             <Route path="/chatbot" element={<ChatbotPage />} />
             <Route path="/summary" element={<SummaryPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/my-sessions" element={<MySessionsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
