@@ -19,7 +19,7 @@ class ApiService {
       }
     };
 
-    this.baseURL = getApiUrl(); // ✅ ADDED: Store baseURL for use in transcribeAudio
+    this.baseURL = getApiUrl();
 
     // Set up axios defaults
     this.api = axios.create({
@@ -77,13 +77,19 @@ class ApiService {
     );
   }
 
-  // Health check
+  // ============================================
+  // Health Check
+  // ============================================
+  
   async healthCheck() {
     const response = await this.api.get('/health');
     return response.data;
   }
 
-  // Test filename header transmission
+  // ============================================
+  // Test Endpoints
+  // ============================================
+  
   async testFilename() {
     try {
       console.log('🧪 Testing filename header transmission...');
@@ -123,7 +129,10 @@ class ApiService {
     }
   }
 
+  // ============================================
   // Cases API
+  // ============================================
+  
   async getCases() {
     const response = await this.api.get('/api/cases/list');
     return response.data;
@@ -139,7 +148,10 @@ class ApiService {
     return response.data;
   }
 
+  // ============================================
   // Sessions API
+  // ============================================
+  
   async startSession(userInfo, caseFilename, config = {}) {
     const response = await this.api.post('/api/sessions/start', {
       user_info: userInfo,
@@ -262,7 +274,10 @@ class ApiService {
     return response.data;
   }
 
+  // ============================================
   // Chatbot API
+  // ============================================
+  
   async sendMessage(sessionId, message) {
     const response = await this.api.post(`/api/chatbot/${sessionId}/chat`, {
       message: message
@@ -290,7 +305,10 @@ class ApiService {
     return response.data;
   }
 
+  // ============================================
   // Documents API
+  // ============================================
+  
   async uploadDocument(file, onUploadProgress = null) {
     const formData = new FormData();
     formData.append('file', file);
@@ -355,7 +373,10 @@ class ApiService {
     return { success: true };
   }
 
+  // ============================================
   // Configuration API
+  // ============================================
+  
   async getDefaultConfig() {
     const response = await this.api.get('/api/config/default');
     return response.data;
@@ -392,19 +413,64 @@ class ApiService {
   }
   
   // ============================================
-  // Text-to-Speech API
+  // 📊 Enhanced Text-to-Speech API (OPTIMIZED)
   // ============================================
-  async sendMessageWithTTS(sessionId, message, enableTTS = true, voice = 'nova', speed = 1.0) {
+  
+  /**
+   * Send message with TTS - Auto-selects voice based on patient info
+   * OPTIMIZED: Natural Thai pronunciation + Child patient handling
+   * @param {string} sessionId - Session ID
+   * @param {string} message - User message
+   * @param {boolean} enableTTS - Enable TTS audio (default: true)
+   * @param {string|null} voice - Voice override (null = auto-select based on patient)
+   * @param {number} speed - Speech speed 0.25-4.0 (default: 1)
+   * @returns {Promise<Object>} Response with text and optional audio + speaker role info
+   */
+  async sendMessageWithTTS(sessionId, message, enableTTS = true, voice = null, speed = 1) {
     const response = await this.api.post(`/api/chatbot/${sessionId}/chat-with-tts`, {
       message: message,
       enable_tts: enableTTS,
-      voice: voice,
+      voice: voice, // null = auto-select (mother for children <12)
       tts_speed: speed
     });
     return response.data;
   }
 
-  async generateTTS(text, voice = 'nova', model = 'tts-1', speed = 1.0, format = 'mp3') {
+  /**
+   * Generate TTS with patient context (Enhanced & Optimized)
+   * Automatically selects voice based on patient gender and age
+   * Special handling: Children <12 years = Mother speaks
+   * @param {string} text - Text to convert to speech
+   * @param {Object} patientInfo - Patient information for voice selection
+   * @param {Object} caseMetadata - Optional case metadata for context
+   * @param {string|null} voice - Voice override (null = auto-select)
+   * @param {number} speed - Speech speed (default: 1)
+   * @param {boolean} usePersonality - Enable personality enhancement (default: true)
+   * @returns {Promise<Object>} Response with audio data and voice info
+   */
+  async generateTTSWithContext(text, patientInfo, caseMetadata = null, voice = null, speed = 1, usePersonality = true) {
+    const response = await this.api.post('/api/tts/generate-with-context', {
+      text: text,
+      patient_info: patientInfo,
+      case_metadata: caseMetadata,
+      voice: voice,
+      model: 'gpt-4o-mini-tts',
+      speed: speed,
+      format: 'mp3',
+      use_personality_prompt: usePersonality
+    });
+    return response.data;
+  }
+
+  /**
+   * Generate basic TTS without patient context (Backward compatible)
+   * @param {string} text - Text to convert
+   * @param {string} voice - Voice name (alloy, echo, fable, onyx, nova, shimmer)
+   * @param {string} model - TTS model (default: gpt-4o-mini-tts)
+   * @param {number} speed - Speech speed (default: 1)
+   * @param {string} format - Audio format (mp3, opus, aac, flac)
+   */
+  async generateTTS(text, voice = 'nova', model = 'gpt-4o-mini-tts', speed = 1, format = 'mp3') {
     const response = await this.api.post('/api/tts/generate', {
       text: text,
       voice: voice,
@@ -415,16 +481,39 @@ class ApiService {
     return response.data;
   }
 
+  /**
+   * Get available TTS voices with descriptions
+   * @returns {Promise<Object>} List of voices with descriptions
+   */
   async getTTSVoices() {
     const response = await this.api.get('/api/tts/voices');
     return response.data;
   }
 
+  /**
+   * Get voice profile mappings for patient demographics
+   * Shows which voices are selected for different patient types
+   * Includes special rules for child patients
+   * @returns {Promise<Object>} Voice profile mappings with special conditions
+   */
+  async getTTSVoiceProfiles() {
+    const response = await this.api.get('/api/tts/voice-profiles');
+    return response.data;
+  }
+
+  /**
+   * Get TTS health status with enhanced features
+   * @returns {Promise<Object>} Service health and available features
+   */
   async getTTSHealth() {
     const response = await this.api.get('/api/tts/health');
     return response.data;
   }
 
+  // ============================================
+  // 🎤 Enhanced Speech-to-Text API
+  // ============================================
+  
   /**
    * Transcribe audio with optional correction and conversation context
    * @param {Blob} audioBlob - Audio blob from MediaRecorder
@@ -538,6 +627,7 @@ class ApiService {
 
   /**
    * Get STT configuration and status
+   * @returns {Promise<Object>} Current STT configuration
    */
   async getSTTConfig() {
     try {
