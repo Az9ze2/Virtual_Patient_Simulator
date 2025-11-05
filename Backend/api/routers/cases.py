@@ -13,6 +13,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 from api.models.schemas import CaseInfo, CaseType, APIResponse
 
+# DB import (required for DB-driven listing)
+from api.db import repository as repo
+
 router = APIRouter()
 
 # Base path to cases
@@ -23,42 +26,35 @@ CASES_BASE_PATH = os.path.join(
 @router.get("/list", response_model=APIResponse)
 async def list_cases():
     """
-    List all available cases from both cases_01 and cases_02 folders
+    List available cases from the database only (table: cases).
     """
     try:
+        rows = repo.list_cases_detailed()
         cases = []
-        
-        # Process cases_01 (child/parent cases)
-        cases_01_path = os.path.join(CASES_BASE_PATH, "cases_01")
-        if os.path.exists(cases_01_path):
-            for filename in os.listdir(cases_01_path):
-                if filename.endswith('.json'):
-                    case_info = _load_case_info(cases_01_path, filename, CaseType.CHILD)
-                    if case_info:
-                        cases.append(case_info)
-        
-        # Process cases_02 (adult patient cases)
-        cases_02_path = os.path.join(CASES_BASE_PATH, "cases_02")
-        if os.path.exists(cases_02_path):
-            for filename in os.listdir(cases_02_path):
-                if filename.endswith('.json'):
-                    case_info = _load_case_info(cases_02_path, filename, CaseType.ADULT)
-                    if case_info:
-                        cases.append(case_info)
-        
-        # Sort cases by case_id for consistent ordering
+        for r in rows:
+            try:
+                cases.append(CaseInfo(
+                    filename=r['case_id'],  # pass DB id; backend will load by DB
+                    case_id=r['case_id'],
+                    case_title=r.get('case_title') or r.get('case_name') or r['case_id'],
+                    case_type=CaseType(r['case_type']),
+                    medical_specialty=r.get('medical_specialty') or '',
+                    exam_duration_minutes=int(r.get('exam_duration_minutes') or 0),
+                ))
+            except Exception:
+                continue
         cases.sort(key=lambda x: x.case_id)
-        
+        # Log to backend terminal as requested
+        print("Query list of case complete\n There is {} cases available for using".format(len(cases)))
         return APIResponse(
             success=True,
-            message=f"Found {len(cases)} cases",
+            message=f"Found {len(cases)} cases (DB)",
             data={"cases": cases}
         )
-        
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to list cases: {str(e)}"
+            detail=f"Failed to list cases from DB: {str(e)}"
         )
 
 @router.get("/get/{filename}")

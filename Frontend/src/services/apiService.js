@@ -150,8 +150,14 @@ class ApiService {
 
   // ============================================
   // Sessions API
-  // ============================================
-  
+  async preLogin(userInfo) {
+    const response = await this.api.post('/api/sessions/prelogin', {
+      user_info: userInfo,
+      case_filename: ''
+    });
+    return response.data;
+  }
+
   async startSession(userInfo, caseFilename, config = {}) {
     const response = await this.api.post('/api/sessions/start', {
       user_info: userInfo,
@@ -274,7 +280,13 @@ class ApiService {
     return response.data;
   }
 
-  // ============================================
+  async getUserSessions(studentId) {
+    const response = await this.api.post('/api/sessions/my-sessions', {
+      student_id: studentId
+    });
+    return response.data;
+  }
+
   // Chatbot API
   // ============================================
   
@@ -511,9 +523,69 @@ class ApiService {
   }
 
   // ============================================
-  // 🎤 Enhanced Speech-to-Text API
+  // Admin API
   // ============================================
-  
+  async adminLogin(loginData) {
+    const response = await this.api.post('/api/admin/login', loginData);
+    return response.data;
+  }
+
+  async getAdminStats() {
+    const response = await this.api.get('/api/admin/stats');
+    return response.data;
+  }
+
+  async getAuditLogs(limit = 50) {
+    const response = await this.api.get('/api/admin/audit-logs', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getAdminSessions(limit = 50) {
+    const response = await this.api.get('/api/admin/sessions', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getAdminUsers(limit = 50) {
+    const response = await this.api.get('/api/admin/users', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getAdminMessages(limit = 50) {
+    const response = await this.api.get('/api/admin/messages', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async executeQuery(query, adminId) {
+    const response = await this.api.post('/api/admin/execute-query', {
+      query,
+      admin_id: adminId
+    });
+    return response.data;
+  }
+
+  async getAdminCases(limit = 100) {
+    const response = await this.api.get('/api/admin/cases', {
+      params: { limit }
+    });
+    return response.data;
+  }
+
+  async getHomeStats() {
+    const response = await this.api.get('/api/admin/home-stats');
+    return response.data;
+  }
+
+  // ============================================
+  // Speech-to-Text API
+  // ============================================
   /**
    * Transcribe audio with optional correction and conversation context
    * @param {Blob} audioBlob - Audio blob from MediaRecorder

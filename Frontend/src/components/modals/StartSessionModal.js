@@ -5,12 +5,14 @@ import apiService from '../../services/apiService';
 import './Modal.css';
 
 
-const StartSessionModal = ({ onClose, onStart }) => {
+const StartSessionModal = ({ onClose, onStart, userData }) => {
   const { startSession, settings, startRecording } = useApp();
-  const [step, setStep] = useState(1);
+  // If userData is provided, skip to step 2 (case selection)
+  const [step, setStep] = useState(userData ? 2 : 1);
   const [formData, setFormData] = useState({
-    name: '',
-    studentId: '',
+    name: userData?.name || '',
+    studentId: userData?.adminId || '',
+    email: userData?.email || '',
     selectedCase: null
   });
   const [errors, setErrors] = useState({});
@@ -35,7 +37,9 @@ const StartSessionModal = ({ onClose, onStart }) => {
   const loadCases = async () => {
     try {
       setLoadingCases(true);
+      console.log('📋 Loading cases...');
       const response = await apiService.getCases();
+      console.log('📋 Cases response:', response);
       if (response.success) {
         // Transform backend cases to frontend format
         const transformedCases = response.data.cases.map(caseItem => ({
@@ -48,10 +52,11 @@ const StartSessionModal = ({ onClose, onStart }) => {
           description: `${caseItem.case_type === '01' ? 'Child/Parent case' : 'Adult patient case'} - ${caseItem.medical_specialty}`,
           caseType: caseItem.case_type
         }));
+        console.log('📋 Transformed cases:', transformedCases.length, 'cases');
         setCases(transformedCases);
       }
     } catch (error) {
-      console.error('Failed to load cases:', error);
+      console.error('❌ Failed to load cases:', error);
       setErrors({ api: 'Failed to load cases. Please try again.' });
     } finally {
       setLoadingCases(false);
@@ -135,9 +140,23 @@ const StartSessionModal = ({ onClose, onStart }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep1()) {
+  const handleNext = async () => {
+    if (!validateStep1()) return;
+    try {
+      setLoading(true);
+      const userInfo = {
+        name: formData.name,
+        student_id: formData.studentId,
+        email: formData.email,
+        preferences: settings
+      };
+      await apiService.preLogin(userInfo);
       setStep(2);
+    } catch (e) {
+      console.error('Prelogin failed:', e);
+      setErrors({ api: e.message || 'Login failed. Please check your info.' });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -166,7 +185,9 @@ const StartSessionModal = ({ onClose, onStart }) => {
       setLoading(true);
       const userInfo = {
         name: formData.name,
-        student_id: formData.studentId
+        student_id: formData.studentId,
+        email: formData.email,
+        preferences: settings
       };
       
       const session = await startSession(userInfo, formData.selectedCase.filename, {});
@@ -188,7 +209,9 @@ const StartSessionModal = ({ onClose, onStart }) => {
       // Start the session first
       const userInfo = {
         name: formData.name,
-        student_id: formData.studentId
+        student_id: formData.studentId,
+        email: formData.email,
+        preferences: settings
       };
       
       const session = await startSession(userInfo, formData.selectedCase.filename, {});
@@ -233,28 +256,30 @@ const StartSessionModal = ({ onClose, onStart }) => {
         <div className="modal-header">
           <div className="modal-title-section">
             <h2 className="modal-title">Start New Session</h2>
-            <p className="modal-subtitle">Step {step} of 2</p>
+            <p className="modal-subtitle">{userData ? 'Select Case' : `Step ${step} of 2`}</p>
           </div>
           <button className="modal-close" onClick={onClose}>
             <X size={24} />
           </button>
         </div>
 
-        <div className="modal-progress">
-          <div 
-            className={`progress-step ${step >= 1 ? 'active' : ''}`}
-          >
-            <div className="progress-dot"></div>
-            <span className="progress-label">Student Info</span>
+        {!userData && (
+          <div className="modal-progress">
+            <div 
+              className={`progress-step ${step >= 1 ? 'active' : ''}`}
+            >
+              <div className="progress-dot"></div>
+              <span className="progress-label">Student Info</span>
+            </div>
+            <div className="progress-line"></div>
+            <div 
+              className={`progress-step ${step >= 2 ? 'active' : ''}`}
+            >
+              <div className="progress-dot"></div>
+              <span className="progress-label">Select Case</span>
+            </div>
           </div>
-          <div className="progress-line"></div>
-          <div 
-            className={`progress-step ${step >= 2 ? 'active' : ''}`}
-          >
-            <div className="progress-dot"></div>
-            <span className="progress-label">Select Case</span>
-          </div>
-        </div>
+        )}
 
         <div className="modal-body">
           {step === 1 ? (
@@ -295,6 +320,20 @@ const StartSessionModal = ({ onClose, onStart }) => {
                   <span className="error-text">{errors.studentId}</span>
                 )}
               </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  Email (optional)
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  className="input"
+                  placeholder="your@email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
           ) : (
             <div className="step-content fade-in">
@@ -309,6 +348,11 @@ const StartSessionModal = ({ onClose, onStart }) => {
                     <Loader className="spinning" size={24} />
                     <p>Loading cases...</p>
                   </div>
+                ) : cases.length === 0 ? (
+                  <div className="loading-state">
+                    <p>No cases found. ({cases.length} cases loaded)</p>
+                    {errors.api && <p className="error-text">{errors.api}</p>}
+                  </div>
                 ) : (
                   <div 
                     className={`case-list-wrapper ${showTopGradient ? 'show-top-gradient' : ''} ${showBottomGradient ? 'show-bottom-gradient' : ''}`}
@@ -319,9 +363,7 @@ const StartSessionModal = ({ onClose, onStart }) => {
                           key={caseItem.id}
                           ref={(el) => (cardRefs.current[index] = el)}
                           data-card-id={caseItem.id}
-                          className={`case-card ${formData.selectedCase?.id === caseItem.id ? 'selected' : ''} ${
-                            visibleCards.has(caseItem.id) ? 'visible' : ''
-                          }`}
+                          className={`case-card visible ${formData.selectedCase?.id === caseItem.id ? 'selected' : ''}`}
                           onClick={() => handleCaseSelect(caseItem)}
                         >
                           <div className="case-header">
@@ -358,15 +400,15 @@ const StartSessionModal = ({ onClose, onStart }) => {
               <button className="btn btn-outline" onClick={onClose}>
                 Cancel
               </button>
-              <button className="btn btn-primary" onClick={handleNext}>
+              <button className="btn btn-primary" onClick={handleNext} disabled={loading}>
                 Next: Select Case
                 <ChevronRight size={18} />
               </button>
             </>
           ) : (
             <>
-              <button className="btn btn-outline" onClick={() => setStep(1)}>
-                Back
+              <button className="btn btn-outline" onClick={userData ? onClose : () => setStep(1)}>
+                {userData ? 'Cancel' : 'Back'}
               </button>
               <button 
                 className="btn btn-primary" 

@@ -24,6 +24,14 @@ from api.models.schemas import (
 
 router = APIRouter()
 
+# Optional DB audit logging
+try:
+    from api.db import repository as repo
+    from api.db.time_utils import now_th
+except Exception:
+    repo = None
+    now_th = None
+
 # Paths for extraction process
 SCHEMA_PATH = os.path.join(
     os.path.dirname(__file__), '..', '..', 'src', 'core', 'config', 'example_schema.json'
@@ -97,6 +105,19 @@ async def upload_document(file: UploadFile = File(...)):
             # Clean up temporary files
             os.unlink(temp_file_path)
             
+            # Audit log: upload_document (no session)
+            try:
+                if repo and now_th:
+                    repo.add_audit_log(
+                        user_id=None,
+                        session_id=None,
+                        action_type="upload_document",
+                        performed_at=now_th().replace(tzinfo=None),
+                    )
+                    print("[DB] Audit log upload_document recorded")
+            except Exception as audit_err:
+                print(f"[DB][ERROR] Failed to write upload_document audit: {audit_err}")
+
             return APIResponse(
                 success=True,
                 message="Document processed successfully",

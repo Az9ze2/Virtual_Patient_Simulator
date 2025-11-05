@@ -17,6 +17,14 @@ from api.models.schemas import (
 from api.utils.session_manager import session_manager
 from services.enhanced_tts_service import enhanced_tts_service
 
+# Database integration
+try:
+    from api.db import repository as repo
+    from api.db.time_utils import now_th
+except Exception:
+    repo = None
+    now_th = None
+
 router = APIRouter()
 
 @router.post("/{session_id}/chat")
@@ -44,12 +52,21 @@ async def send_message(session_id: str, message: ChatMessage):
         print(f"💬 [CHATBOT] Processing message from user: {message.message[:100]}...")
         print(f"   📋 Session: {session_id[:8]}... | Case: {chatbot.case_type} | Model: {chatbot.model_choice}")
         
+        # Compute token deltas per turn
+        prev_in = getattr(chatbot, 'input_tokens', 0)
+        prev_out = getattr(chatbot, 'output_tokens', 0)
+        prev_total = getattr(chatbot, 'total_tokens', 0)
         # Send message to chatbot
         start_time = time.time()
         response, response_time = chatbot.chat_turn(message.message)
         
+        # Deltas for this turn
+        d_in = max(getattr(chatbot, 'input_tokens', 0) - prev_in, 0)
+        d_out = max(getattr(chatbot, 'output_tokens', 0) - prev_out, 0)
+        d_total = max(getattr(chatbot, 'total_tokens', 0) - prev_total, 0)
+        
         print(f"   🤖 Bot response: {response[:100]}...")
-        print(f"   ⏱️ Response time: {response_time:.3f}s | Tokens: {chatbot.total_tokens}")
+        print(f"   ⏱️ Response time: {response_time:.3f}s | Tokens this turn: in={d_in} out={d_out} total={d_total} | cumulative={chatbot.total_tokens}")
         
         # Update session chat history
         session_manager.update_chat_history(
@@ -57,6 +74,31 @@ async def send_message(session_id: str, message: ChatMessage):
             user_message=message.message,
             bot_response=response
         )
+
+        # Persist chat messages (best-effort)
+        try:
+            if repo and now_th:
+                ts_user = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="user",
+                    content=message.message,
+                    timestamp=ts_user,
+                    tokens_used=int(d_in),
+                    response_time_ms=None,
+                )
+                ts_bot = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="chatbot",
+                    content=response,
+                    timestamp=ts_bot,
+                    tokens_used=int(d_out),
+                    response_time_ms=int(response_time * 1000) if isinstance(response_time, (int, float)) else None,
+                )
+                print(f"[DB] Stored chat messages for session {session_id} (turn tokens in={d_in}, out={d_out})")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist chat messages: {e}")
         
         return APIResponse(
             success=True,
@@ -115,12 +157,21 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
         print(f"💬 [CHATBOT] Processing message from user ({tts_status}): {message.message[:100]}...")
         print(f"   📋 Session: {session_id[:8]}... | Case: {chatbot.case_type} | Model: {chatbot.model_choice}")
         
+        # Compute token deltas per turn
+        prev_in = getattr(chatbot, 'input_tokens', 0)
+        prev_out = getattr(chatbot, 'output_tokens', 0)
+        prev_total = getattr(chatbot, 'total_tokens', 0)
         # Send message to chatbot
         start_time = time.time()
         response, response_time = chatbot.chat_turn(message.message)
         
+        # Deltas for this turn
+        d_in = max(getattr(chatbot, 'input_tokens', 0) - prev_in, 0)
+        d_out = max(getattr(chatbot, 'output_tokens', 0) - prev_out, 0)
+        d_total = max(getattr(chatbot, 'total_tokens', 0) - prev_total, 0)
+        
         print(f"   🤖 Bot response: {response[:100]}...")
-        print(f"   ⏱️ Response time: {response_time:.3f}s | Tokens: {chatbot.total_tokens}")
+        print(f"   ⏱️ Response time: {response_time:.3f}s | Tokens this turn: in={d_in} out={d_out} total={d_total} | cumulative={chatbot.total_tokens}")
         
         # Update session chat history
         session_manager.update_chat_history(
@@ -128,6 +179,31 @@ async def send_message_with_tts(session_id: str, message: ChatMessageWithTTS):
             user_message=message.message,
             bot_response=response
         )
+
+        # Persist chat messages (best-effort)
+        try:
+            if repo and now_th:
+                ts_user = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="user",
+                    content=message.message,
+                    timestamp=ts_user,
+                    tokens_used=int(d_in),
+                    response_time_ms=None,
+                )
+                ts_bot = now_th().replace(tzinfo=None)
+                repo.add_chat_message(
+                    session_id=session_id,
+                    role="chatbot",
+                    content=response,
+                    timestamp=ts_bot,
+                    tokens_used=int(d_out),
+                    response_time_ms=int(response_time * 1000) if isinstance(response_time, (int, float)) else None,
+                )
+                print(f"[DB] Stored chat messages for session {session_id} (turn tokens in={d_in}, out={d_out})")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist chat messages: {e}")
         
         # Prepare response data
         response_data = {

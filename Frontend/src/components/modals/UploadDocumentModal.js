@@ -4,7 +4,7 @@ import { X, Upload, FileText, CheckCircle, AlertCircle, Eye, Edit } from 'lucide
 import apiService from '../../services/apiService';
 import './Modal.css';
 
-const UploadDocumentModal = ({ onClose, onComplete }) => {
+const UploadDocumentModal = ({ onClose, onComplete, userData }) => {
   const { startSessionWithUploadedCase } = useApp();
   const [step, setStep] = useState(1); // 1: upload, 2: processing, 3: preview
   const [file, setFile] = useState(null);
@@ -119,9 +119,9 @@ const UploadDocumentModal = ({ onClose, onComplete }) => {
   const handleStartSession = async () => {
     try {
       const userInfo = {
-        name: 'Current User',
-        student_id: 'TEMP-ID',
-        email: 'user@example.com'
+        name: userData?.name || 'Current User',
+        student_id: userData?.adminId || 'TEMP-ID',
+        email: userData?.email || 'user@example.com'
       };
       
       const session = await startSessionWithUploadedCase(

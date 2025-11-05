@@ -4,7 +4,9 @@ import { useApp } from '../context/AppContext';
 import StartSessionModal from '../components/modals/StartSessionModal';
 import UploadDocumentModal from '../components/modals/UploadDocumentModal';
 import SettingsModal from '../components/modals/SettingsModal';
-import { Activity, Upload, Settings, Clock, Users, TrendingUp } from 'lucide-react';
+import AdminLoginModal from '../components/modals/AdminLoginModal';
+import { Activity, Upload, Settings, Clock, Users, TrendingUp, ChevronDown } from 'lucide-react';
+import apiService from '../services/apiService';
 import './HomePage.css';
 
 // ============ NEW: COUNTUP ANIMATION COMPONENT ============
@@ -42,22 +44,53 @@ const HomePage = () => {
   const [showStartModal, setShowStartModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  
-  // ============ TYPEWRITER EFFECT STATE ============
-  // const [displayedTitle, setDisplayedTitle] = useState('');
-  // const [titleComplete, setTitleComplete] = useState(false);
-  // const fullTitle = 'Thai Language-Based Virtual Patient Simulator';
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const [adminUser, setAdminUser] = useState(null);
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+  const [stats, setStats] = useState({
+    activeSessions: 0,
+    avgTime: 0,
+    totalCases: 0
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
 
-  // const [displayedTitle1, setDisplayedTitle1] = useState('');
-  // const [titleComplete1, setTitleComplete1] = useState(false);
-  // const fullthTitle = 'ระบบจำลองผู้ป่วยด้วยโมเดลภาษาไทย';
+  // Restore login state on component mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('adminUser');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setAdminUser(userData);
+      } catch (e) {
+        console.error('Failed to parse stored user data:', e);
+        localStorage.removeItem('adminUser');
+      }
+    }
+  }, []);
 
-  // Mock statistics
-  const stats = {
-    recentSessions: 5,
-    avgTime: 12,
-    totalCases: 14
-  };
+  // Fetch home statistics
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoadingStats(true);
+        const response = await apiService.getHomeStats();
+        if (response.success) {
+          setStats({
+            activeSessions: response.data.active_sessions,
+            avgTime: response.data.avg_duration_minutes,
+            totalCases: response.data.total_cases
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load statistics:', error);
+        // Keep default values on error
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   // ============ TYPEWRITER ANIMATION EFFECT ============
   // useEffect(() => {
@@ -105,9 +138,99 @@ const HomePage = () => {
     navigate('/chatbot');
   };
 
+  const handleActionClick = (action) => {
+    // Check if user is logged in
+    if (!adminUser) {
+      setShowAdminLoginModal(true);
+      return;
+    }
+
+    // User is logged in, proceed with action
+    if (action === 'start') {
+      setShowStartModal(true);
+    } else if (action === 'upload') {
+      setShowUploadModal(true);
+    }
+  };
+
+  const handleAdminLogin = (userData) => {
+    setAdminUser(userData);
+    // Save to both localStorage (persistent) and sessionStorage (for admin dashboard)
+    localStorage.setItem('adminUser', JSON.stringify(userData));
+    sessionStorage.setItem('adminUser', JSON.stringify(userData));
+    setShowAdminLoginModal(false);
+  };
+
+  const handleAdminButtonClick = () => {
+    if (adminUser) {
+      setShowAdminDropdown(!showAdminDropdown);
+    } else {
+      setShowAdminLoginModal(true);
+    }
+  };
+
+  const handleNavigateToAdmin = () => {
+    setShowAdminDropdown(false);
+    navigate('/admin');
+  };
+
+  const handleNavigateToMySessions = () => {
+    setShowAdminDropdown(false);
+    navigate('/my-sessions');
+  };
+
+  const handleLogout = () => {
+    setAdminUser(null);
+    setShowAdminDropdown(false);
+    localStorage.removeItem('adminUser');
+    sessionStorage.removeItem('adminUser');
+  };
+
   return (
     <div className="home-page">
       <div className="container">
+        {/* Admin Login Button */}
+        <div className="admin-login-container">
+          <button 
+            className={`admin-login-btn ${adminUser ? 'logged-in' : ''}`}
+            onClick={handleAdminButtonClick}
+          >
+            {adminUser ? (
+              <>
+                <span>{adminUser.name}</span>
+                <ChevronDown size={16} />
+              </>
+            ) : (
+              'Login'
+            )}
+          </button>
+          
+          {showAdminDropdown && adminUser && (
+            <div className="admin-dropdown">
+              {adminUser.isAdmin && (
+                <button 
+                  className="admin-dropdown-item"
+                  onClick={handleNavigateToAdmin}
+                >
+                  Admin Page
+                </button>
+              )}
+              <button 
+                className="admin-dropdown-item"
+                onClick={handleNavigateToMySessions}
+              >
+                My Sessions
+              </button>
+              <button 
+                className="admin-dropdown-item logout-item"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="home-content">
           {/* Header */}
           <header className="home-header fade-in">
@@ -136,7 +259,7 @@ const HomePage = () => {
             <div 
               className="action-card primary-card fade-in"
               style={{ animationDelay: '0.2s' }}
-              onClick={() => setShowStartModal(true)}
+              onClick={() => handleActionClick('start')}
             >
               <div className="card-icon">
                 <Activity size={32} />
@@ -153,7 +276,7 @@ const HomePage = () => {
             <div 
               className="action-card secondary-card fade-in"
               style={{ animationDelay: '0.4s' }}
-              onClick={() => setShowUploadModal(true)}
+              onClick={() => handleActionClick('upload')}
             >
               <div className="card-icon">
                 <Upload size={32} />
@@ -193,9 +316,9 @@ const HomePage = () => {
               </div>
               <div className="stat-content">
                 <div className="stat-value">
-                  <CountUp end={stats.recentSessions} duration={2000} />
+                  <CountUp end={stats.activeSessions} duration={2000} />
                 </div>
-                <div className="stat-label">Recent Sessions</div>
+                <div className="stat-label">Active Sessions</div>
               </div>
             </div>
 
@@ -243,23 +366,32 @@ const HomePage = () => {
       </div>
 
       {/* Modals */}
-      {showStartModal && (
+      {showStartModal && adminUser && (
         <StartSessionModal
           onClose={() => setShowStartModal(false)}
           onStart={handleStartSession}
+          userData={adminUser}
         />
       )}
 
-      {showUploadModal && (
+      {showUploadModal && adminUser && (
         <UploadDocumentModal
           onClose={() => setShowUploadModal(false)}
           onComplete={handleUploadComplete}
+          userData={adminUser}
         />
       )}
 
       {showSettingsModal && (
         <SettingsModal
           onClose={() => setShowSettingsModal(false)}
+        />
+      )}
+
+      {showAdminLoginModal && (
+        <AdminLoginModal
+          onClose={() => setShowAdminLoginModal(false)}
+          onLogin={handleAdminLogin}
         />
       )}
     </div>

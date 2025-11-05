@@ -18,7 +18,16 @@ from api.models.schemas import (
     StartSessionRequest, StartSessionWithUploadedCaseRequest, APIResponse, SessionSummary,
     UpdateDiagnosisRequest, CaseInfo, CaseType, UserInfo
 )
+from pydantic import BaseModel
 from api.utils.session_manager import session_manager
+
+# Database integration
+try:
+    from api.db import repository as repo
+    from api.db.time_utils import now_th
+except Exception as _db_import_err:
+    repo = None
+    now_th = None
 
 router = APIRouter()
 
@@ -26,6 +35,55 @@ router = APIRouter()
 CASES_BASE_PATH = os.path.join(
     os.path.dirname(__file__), '..', '..', 'src', 'data'
 )
+
+@router.post("/prelogin")
+async def prelogin(request: StartSessionRequest):
+    """
+    Validate/create user on "Select Case" (login/new user login), update last_login, and write audit log.
+    No session is created here.
+    """
+    try:
+        if not (repo and now_th):
+            return APIResponse(success=True, message="DB not configured; skipping login persistence")
+        provided_email = getattr(request.user_info, 'email', None)
+        provided_name = request.user_info.name
+        student_id = request.user_info.student_id
+        # Check existing profile
+        existing = repo.get_user_profile_by_student_id(student_id)
+        created = False
+        if existing:
+            # Name must match ignoring case
+            existing_name = existing.get('name') or ''
+            if (provided_name or '').strip().lower() != (existing_name or '').strip().lower():
+                raise HTTPException(status_code=400, detail="Provided name does not match registered account for this student ID")
+            # Email must match if present, else set for first time
+            existing_email = existing.get('email')
+            if provided_email:
+                if existing_email and provided_email != existing_email:
+                    raise HTTPException(status_code=400, detail="Provided email does not match registered account for this student ID")
+                if not existing_email:
+                    repo.create_or_get_user(student_id=student_id, name=provided_name, email=provided_email, preferences=getattr(request.user_info, 'preferences', None))
+            user_id = existing.get('user_id')
+            login_type = 'login'
+        else:
+            # New user
+            user_id = repo.create_or_get_user(
+                student_id=student_id,
+                name=provided_name,
+                email=provided_email,
+                preferences=getattr(request.user_info, 'preferences', None),
+            )
+            login_type = 'nu-login'
+            created = True
+        # Update last_login
+        repo.update_user_last_login(user_id)
+        # Audit log
+        repo.add_audit_log(user_id=user_id, session_id=None, action_type=login_type, performed_at=now_th().replace(tzinfo=None))
+        return APIResponse(success=True, message=f"{login_type} recorded", data={"user_id": user_id, "login_type": login_type})
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to prelogin: {str(e)}")
 
 @router.post("/start")
 async def start_session(request: StartSessionRequest):
@@ -35,14 +93,67 @@ async def start_session(request: StartSessionRequest):
     try:
         # Load case data
         case_data, case_info = _load_case_data(request.case_filename)
-        
-        # Create session in session manager
+
+        # Create session in memory (returns session_id)
         session_id = session_manager.create_session(
             user_info=request.user_info,
             case_info=case_info,
             config=request.config,
             case_data=case_data
         )
+        
+        # Persist to DB (best-effort; do not fail request if DB unavailable)
+        try:
+            if repo and now_th:
+                # Validate or create user profile
+                provided_email = getattr(request.user_info, 'email', None)
+                provided_name = request.user_info.name
+                student_id = request.user_info.student_id
+
+                existing = repo.get_user_profile_by_student_id(student_id)
+                if existing:
+                    # Name must match ignoring capitalization
+                    existing_name = existing.get('name') or ''
+                    if (provided_name or '').strip().lower() != (existing_name or '').strip().lower():
+                        raise HTTPException(status_code=400, detail="Provided name does not match registered account for this student ID")
+                    # Email must match exactly if stored
+                    existing_email = existing.get('email')
+                    if provided_email:
+                        if existing_email and provided_email != existing_email:
+                            raise HTTPException(status_code=400, detail="Provided email does not match registered account for this student ID")
+                        if not existing_email:
+                            # Set email for the first time
+                            repo.create_or_get_user(student_id=student_id, name=provided_name, email=provided_email, preferences=getattr(request.user_info, 'preferences', None))
+                    user_id = existing.get('user_id')
+                else:
+                    # New user: create with provided email/preferences
+                    user_id = repo.create_or_get_user(
+                        student_id=student_id,
+                        name=provided_name,
+                        email=provided_email,
+                        preferences=getattr(request.user_info, 'preferences', None),
+                    )
+                # Last login is now handled at prelogin step
+                # Derive case_id from request (should match DB-ingested id)
+                cid = os.path.splitext(request.case_filename)[0]
+                # Create session row (will fail if case FK missing)
+                repo.create_session(
+                    session_id=session_id,
+                    user_id=user_id,
+                    case_id=cid,
+                    started_at=now_th().replace(tzinfo=None),
+                )
+                print(f"[DB] Created session: {session_id} for user {user_id} -> case {cid}")
+                # Audit log
+                repo.add_audit_log(
+                    user_id=user_id,
+                    session_id=session_id,
+                    action_type="session_start",
+                    performed_at=now_th().replace(tzinfo=None),
+                )
+                print(f"[DB] Audit log: session_start for {session_id}")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist session start to DB: {e}")
         
         return APIResponse(
             success=True,
@@ -198,6 +309,48 @@ async def end_session(session_id: str):
                 status_code=404,
                 detail="Session not found or already ended"
             )
+
+        # Persist completion to DB (best-effort)
+        try:
+            if repo and now_th:
+                total_tokens = int((summary.token_usage or {}).get("total_tokens", 0))
+                duration_seconds = int(summary.duration_minutes * 60)
+                # Update session row
+                repo.complete_session(
+                    session_id=session_id,
+                    total_tokens=total_tokens,
+                    ended_at=now_th().replace(tzinfo=None),
+                    duration_seconds=duration_seconds,
+                )
+                print(f"[DB] Marked session {session_id} as complete (tokens={total_tokens}, duration={duration_seconds}s)")
+                # Save report (robust to schema) if not already present
+                try:
+                    if not repo.has_session_report(session_id):
+                        rid = repo.insert_session_report(
+                            session_id=session_id,
+                            summary=summary.dict(),
+                            generated_at=now_th().replace(tzinfo=None),
+                        )
+                        print(f"[DB] Inserted session_report id={rid} for session {session_id}")
+                    else:
+                        print(f"[DB] Session report already exists for {session_id}, skipping insert")
+                except Exception as rep_err:
+                    print(f"[DB][ERROR] Failed to insert session_report: {rep_err}")
+                # Audit log with user_id resolved via student_id (always attempt)
+                uid = None
+                try:
+                    uid = repo.get_user_id_by_student_id(summary.user_info.student_id)
+                except Exception:
+                    uid = None
+                repo.add_audit_log(
+                    user_id=uid,
+                    session_id=session_id,
+                    action_type="session_end",
+                    performed_at=now_th().replace(tzinfo=None),
+                )
+                print(f"[DB] Audit log session_end for {session_id} (user_id={uid})")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to persist session end to DB: {e}")
         
         return APIResponse(
             success=True,
@@ -220,43 +373,61 @@ async def download_session_report(session_id: str):
     """
     try:
         session = session_manager.get_session(session_id)
-        if not session:
-            # Try to generate summary for ended session
-            summary = session_manager.end_session(session_id)
-            if not summary:
-                raise HTTPException(
-                    status_code=404,
-                    detail="Session not found"
-                )
-            report_data = summary.dict()
-        else:
-            # Active session - create report from current state
-            chatbot = session_manager.get_chatbot(session_id)
-            duration = (datetime.now() - session.created_at).total_seconds() / 60.0
+        report_data = None
+        used_source = None
 
-            token_usage = {}
-            if chatbot:
-                token_usage = {
-                    "input_tokens": chatbot.input_tokens,
-                    "output_tokens": chatbot.output_tokens,
-                    "total_tokens": chatbot.total_tokens
+        # Prefer DB-saved summary first
+        try:
+            if repo:
+                db_summary = repo.get_latest_session_report_summary(session_id)
+                if db_summary:
+                    report_data = db_summary
+                    used_source = "db"
+                    print(f"[DB] Loaded session report JSON from DB for session {session_id}")
+        except Exception as e:
+            print(f"[DB][ERROR] Failed to load report JSON from DB: {e}")
+
+        if report_data is None:
+            if not session:
+                # Try to generate summary for ended session
+                summary = session_manager.end_session(session_id)
+                if not summary:
+                    raise HTTPException(
+                        status_code=404,
+                        detail="Session not found"
+                    )
+                report_data = summary.dict()
+                used_source = "generated"
+            else:
+                # Active session - create report from current state
+                chatbot = session_manager.get_chatbot(session_id)
+                duration = (datetime.now() - session.created_at).total_seconds() / 60.0
+
+                token_usage = {}
+                if chatbot:
+                    token_usage = {
+                        "input_tokens": chatbot.input_tokens,
+                        "output_tokens": chatbot.output_tokens,
+                        "total_tokens": chatbot.total_tokens
+                    }
+
+                report_data = {
+                    "session_id": session_id,
+                    "user_info": session.user_info.dict(),
+                    "case_info": session.case_info.dict(),
+                    "patient_info": session.patient_info.dict() if session.patient_info else None,
+                    "duration_minutes": duration,
+                    "total_messages": len(session.chat_history),
+                    "token_usage": token_usage,
+                    "diagnosis_treatment": session.diagnosis_treatment.dict(),
+                    "chat_history": session.chat_history,
+                    "created_at": session.created_at.isoformat(),
+                    "downloaded_at": datetime.now().isoformat(),
+                    "status": "active"
                 }
+                used_source = "memory"
 
-            report_data = {
-                "session_id": session_id,
-                "user_info": session.user_info.dict(),
-                "case_info": session.case_info.dict(),
-                "patient_info": session.patient_info.dict() if session.patient_info else None,
-                "duration_minutes": duration,
-                "total_messages": len(session.chat_history),
-                "token_usage": token_usage,
-                "diagnosis_treatment": session.diagnosis_treatment.dict(),
-                "chat_history": session.chat_history,
-                "created_at": session.created_at.isoformat(),
-                "downloaded_at": datetime.now().isoformat(),
-                "status": "active"
-            }
-
+        print(f"[PDF] Using report data source: {used_source}")
         # Generate PDF report using FPDF2
         try:
             import logging
@@ -607,6 +778,27 @@ async def download_session_report(session_id: str):
                 content_disposition = f'attachment; filename="{ascii_filename}"'
                 print(f"📝 Content-Disposition: {content_disposition}")
                 
+                # Audit log: download_report (best-effort)
+                try:
+                    if repo and now_th:
+                        uid = None
+                        try:
+                            # Try resolve user id from session manager data
+                            session_obj = session_manager.get_session(session_id)
+                            if session_obj:
+                                uid = repo.get_user_id_by_student_id(session_obj.user_info.student_id)
+                        except Exception:
+                            uid = None
+                        repo.add_audit_log(
+                            user_id=uid,
+                            session_id=session_id,
+                            action_type="download_report",
+                            performed_at=now_th().replace(tzinfo=None),
+                        )
+                        print(f"[DB] Audit log download_report for {session_id} (user_id={uid})")
+                except Exception as audit_err:
+                    print(f"[DB][ERROR] Failed to write download_report audit: {audit_err}")
+
                 return StreamingResponse(
                     buffer,
                     media_type="application/pdf",
@@ -798,6 +990,58 @@ async def delete_session(session_id: str):
             detail=f"Failed to delete session: {str(e)}"
         )
 
+class MySessionsRequest(BaseModel):
+    student_id: str
+
+@router.post("/my-sessions")
+async def get_my_sessions(request: MySessionsRequest):
+    """
+    Get all sessions for a specific user
+    """
+    try:
+        if not (repo and now_th):
+            return APIResponse(success=False, message="DB not configured")
+        
+        # Get user_id from student_id
+        user_id = repo.get_user_id_by_student_id(request.student_id)
+        if not user_id:
+            return APIResponse(success=False, message="User not found")
+        
+        # Fetch sessions from database
+        from api.db.pool import get_conn
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("""
+                SELECT 
+                    s.session_id,
+                    s.status,
+                    s.started_at,
+                    s.ended_at,
+                    s.duration_seconds,
+                    c.case_id,
+                    (c.case_data->'case_metadata'->>'case_title') as case_title,
+                    (c.case_data->'case_metadata'->>'medical_specialty') as specialty,
+                    (SELECT COUNT(*) FROM chat_messages WHERE session_id = s.session_id) as message_count,
+                    EXISTS(SELECT 1 FROM session_reports WHERE session_id = s.session_id) as has_report
+                FROM sessions s
+                LEFT JOIN cases c ON s.case_id = c.case_id
+                WHERE s.user_id = %s
+                ORDER BY s.started_at DESC
+            """, (user_id,))
+            
+            sessions = cur.fetchall()
+            
+            return APIResponse(
+                success=True,
+                message="Sessions retrieved successfully",
+                data={"sessions": sessions}
+            )
+            
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch sessions: {str(e)}"
+        )
+
 @router.get("/active")
 async def get_active_sessions():
     """
@@ -854,45 +1098,59 @@ def _determine_case_type_from_data(case_data: dict) -> CaseType:
 
 def _load_case_data(filename: str):
     """
-    Load case data and info from JSON file
+    Load case data and info by filename from disk; if not found, try DB by case_id.
     """
     try:
-        # Determine which folder to look in based on filename prefix
-        if filename.startswith("01_"):
+        # Normalize: strip any extension to get the base identifier
+        filename_base = os.path.splitext(filename)[0]
+        # First, try disk
+        cases_path = None
+        case_type = None
+        if filename_base.startswith("01_"):
             cases_path = os.path.join(CASES_BASE_PATH, "cases_01")
             case_type = CaseType.CHILD
-        elif filename.startswith("02_"):
+        elif filename_base.startswith("02_"):
             cases_path = os.path.join(CASES_BASE_PATH, "cases_02")
             case_type = CaseType.ADULT
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid case filename format: {filename}"
-            )
         
-        case_file_path = os.path.join(cases_path, filename)
+        if cases_path:
+            case_file_path = os.path.join(cases_path, filename_base + ".json")
+            if os.path.exists(case_file_path):
+                with open(case_file_path, 'r', encoding='utf-8') as f:
+                    case_data = json.load(f)
+                case_metadata = case_data.get('case_metadata', {})
+                case_info = CaseInfo(
+                    filename=filename,
+                    case_id=case_data.get('case_id', ''),
+                    case_title=case_metadata.get('case_title', ''),
+                    case_type=case_type or CaseType.CHILD,
+                    medical_specialty=case_metadata.get('medical_specialty', ''),
+                    exam_duration_minutes=case_metadata.get('exam_duration_minutes', 0)
+                )
+                return case_data, case_info
         
-        if not os.path.exists(case_file_path):
-            raise HTTPException(
-                status_code=404,
-                detail=f"Case file not found: {filename}"
-            )
+        # If not on disk, try to load from DB using the provided string as case_id
+        if repo:
+            data = repo.get_case_data(filename_base)
+            if data:
+                cid = data.get('case_id', filename)
+                meta = data.get('case_metadata', {})
+                prefix = cid.split('_')[0] if '_' in cid else '01'
+                ctype = CaseType(prefix) if prefix in (CaseType.CHILD.value, CaseType.ADULT.value) else CaseType.CHILD
+                case_info = CaseInfo(
+                    filename=cid,
+                    case_id=cid,
+                    case_title=meta.get('case_title', cid),
+                    case_type=ctype,
+                    medical_specialty=meta.get('medical_specialty', ''),
+                    exam_duration_minutes=meta.get('exam_duration_minutes', 0),
+                )
+                return data, case_info
         
-        with open(case_file_path, 'r', encoding='utf-8') as f:
-            case_data = json.load(f)
-        
-        # Create case info
-        case_metadata = case_data.get('case_metadata', {})
-        case_info = CaseInfo(
-            filename=filename,
-            case_id=case_data.get('case_id', ''),
-            case_title=case_metadata.get('case_title', ''),
-            case_type=case_type,
-            medical_specialty=case_metadata.get('medical_specialty', ''),
-            exam_duration_minutes=case_metadata.get('exam_duration_minutes', 0)
+        raise HTTPException(
+            status_code=404,
+            detail=f"Case not found on disk or database: {filename}"
         )
-        
-        return case_data, case_info
         
     except HTTPException:
         raise
