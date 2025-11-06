@@ -236,15 +236,15 @@ def insert_session_report(session_id: str, summary: Dict[str, Any], generated_at
 
 # Audit log
 
-def add_audit_log(user_id: Optional[str], session_id: Optional[str], action_type: str, performed_at) -> int:
+def add_audit_log(user_id: Optional[str], session_id: Optional[str], action_type: str, performed_at, ip_address: Optional[str] = None, details: Optional[str] = None) -> int:
     with get_conn() as conn, conn.cursor() as cur:
         cur.execute(
             """
-            INSERT INTO audit_log (user_id, session_id, action_type, performed_at)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO audit_log (user_id, session_id, action_type, details, ip_address, performed_at)
+            VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING log_id
             """,
-            (user_id, session_id, action_type, performed_at),
+            (user_id, session_id, action_type, details, ip_address, performed_at),
         )
         row = cur.fetchone()
         return int(row["log_id"]) if row else 0

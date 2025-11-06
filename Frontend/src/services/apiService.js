@@ -530,6 +530,14 @@ class ApiService {
     return response.data;
   }
 
+  async adminLogout(userId, isAdmin) {
+    const response = await this.api.post('/api/admin/logout', {
+      user_id: userId,
+      is_admin: isAdmin
+    });
+    return response.data;
+  }
+
   async getAdminStats() {
     const response = await this.api.get('/api/admin/stats');
     return response.data;
@@ -563,11 +571,15 @@ class ApiService {
     return response.data;
   }
 
-  async executeQuery(query, adminId) {
-    const response = await this.api.post('/api/admin/execute-query', {
+  async executeQuery(query, adminId, adminPassword = null) {
+    const payload = {
       query,
       admin_id: adminId
-    });
+    };
+    if (adminPassword) {
+      payload.admin_password = adminPassword;
+    }
+    const response = await this.api.post('/api/admin/execute-query', payload);
     return response.data;
   }
 

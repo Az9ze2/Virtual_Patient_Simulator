@@ -17,14 +17,50 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [cases, setCases] = useState([]);
+  const [adminUser, setAdminUser] = useState(null);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [pendingQuery, setPendingQuery] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showInsertModal, setShowInsertModal] = useState(false);
+  const [deleteTableName, setDeleteTableName] = useState('');
+  const [deleteCondition, setDeleteCondition] = useState('');
+  const [insertTableName, setInsertTableName] = useState('');
+  const [insertColumns, setInsertColumns] = useState('');
+  const [insertValues, setInsertValues] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+
+  // Authentication check - must be logged in AND must be admin
+  useEffect(() => {
+    const storedUser = localStorage.getItem('adminUser');
+    if (!storedUser) {
+      // Not logged in at all - redirect to home
+      navigate('/');
+      return;
+    }
+
+    try {
+      const user = JSON.parse(storedUser);
+      if (!user.isAdmin) {
+        // Logged in but not admin - redirect to home
+        alert('Access Denied: Admin privileges required');
+        navigate('/');
+        return;
+      }
+      setAdminUser(user);
+    } catch (e) {
+      console.error('Failed to parse user data:', e);
+      navigate('/');
+    }
+  }, [navigate]);
 
   useEffect(() => {
-    if (activePage === 'dashboard') {
+    if (adminUser && activePage === 'dashboard') {
       loadDashboardData();
-    } else if (activePage === 'monitoring') {
+    } else if (adminUser && activePage === 'monitoring') {
       loadMonitoringData();
     }
-  }, [activePage, monitoringTab]);
+  }, [adminUser, activePage, monitoringTab]);
 
   const loadDashboardData = async () => {
     try {
@@ -82,7 +118,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleRunQuery = async () => {
+  const handleRunQuery = async (password = null) => {
     if (!sqlQuery.trim()) {
       setQueryResult({
         success: false,
@@ -112,7 +148,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      const result = await apiService.executeQuery(sqlQuery, adminId);
+      const result = await apiService.executeQuery(sqlQuery, adminId, password);
       setQueryResult(result);
     } catch (error) {
       console.error('Query execution failed:', error);
@@ -190,7 +226,7 @@ const AdminDashboard = () => {
       
       <div className="admin-nav-footer">
         <p className="admin-nav-footer-label">Logged in as</p>
-        <p className="admin-nav-footer-user">Admin</p>
+        <p className="admin-nav-footer-user">{adminUser?.name || 'Admin'}</p>
       </div>
     </div>
   );
@@ -342,8 +378,8 @@ const AdminDashboard = () => {
       query: "SELECT session_id, user_id, case_id, status, started_at, duration_seconds FROM sessions WHERE status = 'active' ORDER BY started_at DESC LIMIT 20;"
     },
     {
-      name: 'Recent Users',
-      query: "SELECT user_id, name, email, student_id, created_at FROM users ORDER BY created_at DESC LIMIT 20;"
+      name: 'User Data',
+      query: "SELECT 'User Info' as category, u.name, u.student_id, u.email, u.created_at, u.last_login, NULL as action_type, NULL as ip_address, NULL as action_time, NULL as session_count FROM users u WHERE u.name ILIKE '%USERNAME%' UNION ALL SELECT 'Login History' as category, u.name, u.student_id, NULL as email, NULL as created_at, NULL as last_login, a.action_type, a.ip_address, a.performed_at as action_time, NULL as session_count FROM users u LEFT JOIN audit_log a ON u.user_id = a.user_id WHERE u.name ILIKE '%USERNAME%' AND a.action_type IN ('user_login', 'admin_login', 'user_logout', 'admin_logout') UNION ALL SELECT 'Session Stats' as category, u.name, u.student_id, NULL as email, NULL as created_at, NULL as last_login, NULL as action_type, NULL as ip_address, NULL as action_time, COUNT(s.session_id)::TEXT as session_count FROM users u LEFT JOIN sessions s ON u.user_id = s.user_id WHERE u.name ILIKE '%USERNAME%' GROUP BY u.user_id, u.name, u.student_id ORDER BY category, action_time DESC NULLS LAST;"
     },
     {
       name: 'Session Summary',
@@ -371,8 +407,152 @@ const AdminDashboard = () => {
     }
   ];
 
-  const handlePresetQuery = (query) => {
+  const handlePresetQuery = (query, presetName) => {
+    // If it's User Data query, show modal for username input
+    if (presetName === 'User Data') {
+      setPendingQuery(query);
+      setShowUsernameModal(true);
+    } else {
+      setSqlQuery(query);
+    }
+  };
+
+  const handleUsernameSubmit = () => {
+    if (usernameInput.trim() && pendingQuery) {
+      const updatedQuery = pendingQuery.replaceAll('USERNAME', usernameInput.trim());
+      setSqlQuery(updatedQuery);
+      setShowUsernameModal(false);
+      setUsernameInput('');
+      setPendingQuery(null);
+    }
+  };
+
+  const handleDeleteData = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteSubmit = async () => {
+    if (!deleteTableName.trim()) {
+      alert('Please enter a table name');
+      return;
+    }
+    if (!deleteCondition.trim()) {
+      alert('WHERE condition is required. This ensures only specific rows are deleted, not the entire table.');
+      return;
+    }
+    if (!adminPassword.trim()) {
+      alert('Please enter admin password');
+      return;
+    }
+
+    // Build query with required WHERE clause (only deletes rows, never entire table)
+    const query = `DELETE FROM ${deleteTableName.trim()} WHERE ${deleteCondition.trim()};`;
+
     setSqlQuery(query);
+    setShowDeleteModal(false);
+    
+    // Execute query with password
+    try {
+      setLoading(true);
+      const adminData = JSON.parse(sessionStorage.getItem('adminUser') || localStorage.getItem('adminUser') || '{}');
+      const adminId = adminData.adminId;
+      
+      if (!adminId) {
+        setQueryResult({
+          success: false,
+          message: 'Admin authentication required. Please log in again.',
+          rows: 0,
+          columns: [],
+          data: []
+        });
+        return;
+      }
+
+      const result = await apiService.executeQuery(query, adminId, adminPassword.trim());
+      setQueryResult(result);
+      
+      // Clear form fields on success
+      setDeleteTableName('');
+      setDeleteCondition('');
+      setAdminPassword('');
+    } catch (error) {
+      console.error('Query execution failed:', error);
+      setQueryResult({
+        success: false,
+        message: error.message || 'Query execution failed',
+        rows: 0,
+        columns: [],
+        data: []
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInsertData = () => {
+    setShowInsertModal(true);
+  };
+
+  const handleInsertSubmit = async () => {
+    if (!insertTableName.trim()) {
+      alert('Please enter a table name');
+      return;
+    }
+    if (!insertColumns.trim()) {
+      alert('Please enter column names');
+      return;
+    }
+    if (!insertValues.trim()) {
+      alert('Please enter values');
+      return;
+    }
+    if (!adminPassword.trim()) {
+      alert('Please enter admin password');
+      return;
+    }
+
+    const query = `INSERT INTO ${insertTableName.trim()} (${insertColumns.trim()}) VALUES (${insertValues.trim()});`;
+
+    setSqlQuery(query);
+    setShowInsertModal(false);
+    
+    // Execute query with password
+    try {
+      setLoading(true);
+      const adminData = JSON.parse(sessionStorage.getItem('adminUser') || localStorage.getItem('adminUser') || '{}');
+      const adminId = adminData.adminId;
+      
+      if (!adminId) {
+        setQueryResult({
+          success: false,
+          message: 'Admin authentication required. Please log in again.',
+          rows: 0,
+          columns: [],
+          data: []
+        });
+        return;
+      }
+
+      const result = await apiService.executeQuery(query, adminId, adminPassword.trim());
+      setQueryResult(result);
+      
+      // Clear form fields on success
+      setInsertTableName('');
+      setInsertColumns('');
+      setInsertValues('');
+      setAdminPassword('');
+    } catch (error) {
+      console.error('Query execution failed:', error);
+      setQueryResult({
+        success: false,
+        message: error.message || 'Query execution failed',
+        rows: 0,
+        columns: [],
+        data: []
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderQueryEditor = () => (
@@ -384,7 +564,7 @@ const AdminDashboard = () => {
           <div className="admin-query-header">
             <h3 className="admin-query-title">SQL Query</h3>
             <div className="admin-query-actions">
-              <button onClick={handleRunQuery} className="admin-btn primary">
+              <button onClick={() => handleRunQuery()} className="admin-btn primary">
                 <Play size={12} />
                 Run
               </button>
@@ -401,13 +581,34 @@ const AdminDashboard = () => {
               {presetQueries.map((preset, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handlePresetQuery(preset.query)}
+                  onClick={() => handlePresetQuery(preset.query, preset.name)}
                   className="preset-query-btn"
                   title={preset.query}
                 >
                   {preset.name}
                 </button>
               ))}
+            </div>
+          </div>
+          
+          {/* Dangerous Operations */}
+          <div className="preset-queries" style={{ marginTop: '10px', borderTop: '1px solid #e0e0e0', paddingTop: '10px' }}>
+            <label className="preset-queries-label" style={{ color: '#64748b' }}>Dangerous Operations (Password Required):</label>
+            <div className="preset-queries-grid">
+              <button
+                onClick={handleDeleteData}
+                className="preset-query-btn"
+                style={{ backgroundColor: '#64748b', color: 'white', border: '1px solid #475569' }}
+              >
+                Delete Data
+              </button>
+              <button
+                onClick={handleInsertData}
+                className="preset-query-btn"
+                style={{ backgroundColor: '#64748b', color: 'white', border: '1px solid #475569' }}
+              >
+                Insert Data
+              </button>
             </div>
           </div>
           
@@ -453,6 +654,179 @@ const AdminDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Username Input Modal */}
+      {showUsernameModal && (
+        <div className="modal-overlay" onClick={() => setShowUsernameModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Enter Username</h3>
+            <p className="modal-subtitle">Search for user data by name</p>
+            <input
+              type="text"
+              placeholder="Enter username (e.g., John or Admin)..."
+              value={usernameInput}
+              onChange={(e) => setUsernameInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleUsernameSubmit()}
+              className="modal-input"
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button onClick={() => setShowUsernameModal(false)} className="admin-btn secondary">
+                Cancel
+              </button>
+              <button onClick={handleUsernameSubmit} className="admin-btn primary" disabled={!usernameInput.trim()}>
+                Load Query
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Data Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title" style={{ color: '#1e293b' }}>Delete Data</h3>
+            <p className="modal-subtitle">Warning: This will permanently delete rows from the table</p>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">Table Name *</label>
+              <input
+                type="text"
+                placeholder=""
+                value={deleteTableName}
+                onChange={(e) => setDeleteTableName(e.target.value)}
+                className="modal-input"
+                autoFocus
+              />
+            </div>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">WHERE Condition (required)</label>
+              <input
+                type="text"
+                placeholder=""
+                value={deleteCondition}
+                onChange={(e) => setDeleteCondition(e.target.value)}
+                className="modal-input"
+              />
+              <p style={{ fontSize: '0.75rem', color: '#d32f2f', marginTop: '4px', fontWeight: '500' }}>
+                WHERE condition is required. Only rows matching the condition will be deleted.
+              </p>
+            </div>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">Admin Password *</label>
+              <input
+                type="password"
+                placeholder="Enter admin password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                className="modal-input"
+              />
+            </div>
+            
+            <div className="modal-actions">
+              <button onClick={() => {
+                setShowDeleteModal(false);
+                setDeleteTableName('');
+                setDeleteCondition('');
+                setAdminPassword('');
+              }} className="admin-btn secondary">
+                Cancel
+              </button>
+              <button 
+                onClick={handleDeleteSubmit} 
+                className="admin-btn" 
+                style={{ backgroundColor: '#64748b', color: 'white' }}
+                disabled={!deleteTableName.trim() || !deleteCondition.trim() || !adminPassword.trim()}
+              >
+                Execute Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Insert Data Modal */}
+      {showInsertModal && (
+        <div className="modal-overlay" onClick={() => setShowInsertModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title" style={{ color: '#1e293b' }}>Insert Data</h3>
+            <p className="modal-subtitle">Add new row(s) to a table</p>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">Table Name *</label>
+              <input
+                type="text"
+                placeholder=""
+                value={insertTableName}
+                onChange={(e) => setInsertTableName(e.target.value)}
+                className="modal-input"
+                autoFocus
+              />
+            </div>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">Column Names *</label>
+              <input
+                type="text"
+                placeholder=""
+                value={insertColumns}
+                onChange={(e) => setInsertColumns(e.target.value)}
+                className="modal-input"
+              />
+              <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
+                Comma-separated column names without quotes
+              </p>
+            </div>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">Values *</label>
+              <input
+                type="text"
+                placeholder=""
+                value={insertValues}
+                onChange={(e) => setInsertValues(e.target.value)}
+                className="modal-input"
+              />
+              <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>
+                Values in same order as columns. Use quotes for text values.
+              </p>
+            </div>
+            
+            <div style={{ marginBottom: '12px' }}>
+              <label className="modal-label">Admin Password *</label>
+              <input
+                type="password"
+                placeholder="Enter admin password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                className="modal-input"
+              />
+            </div>
+            
+            <div className="modal-actions">
+              <button onClick={() => {
+                setShowInsertModal(false);
+                setInsertTableName('');
+                setInsertColumns('');
+                setInsertValues('');
+                setAdminPassword('');
+              }} className="admin-btn secondary">
+                Cancel
+              </button>
+              <button 
+                onClick={handleInsertSubmit} 
+                className="admin-btn primary"
+                disabled={!insertTableName.trim() || !insertColumns.trim() || !insertValues.trim() || !adminPassword.trim()}
+              >
+                Execute Insert
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -527,6 +901,7 @@ const AdminDashboard = () => {
                     <th>Timestamp</th>
                     <th>User</th>
                     <th>Action</th>
+                    <th>IP Address</th>
                     <th>Details</th>
                   </tr>
                 </thead>
@@ -540,6 +915,7 @@ const AdminDashboard = () => {
                           {log.action_type}
                         </span>
                       </td>
+                      <td className="admin-mono">{log.ip_address || 'N/A'}</td>
                       <td>{log.details || 'N/A'}</td>
                     </tr>
                   ))}
@@ -721,6 +1097,18 @@ const AdminDashboard = () => {
       </div>
     );
   };
+
+  // Show loading screen while checking authentication
+  if (!adminUser) {
+    return (
+      <div className="admin-dashboard">
+        <div className="admin-loading" style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Loader className="spinning" size={48} />
+          <p>Verifying admin access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-dashboard">

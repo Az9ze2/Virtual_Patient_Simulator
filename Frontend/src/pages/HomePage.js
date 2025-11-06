@@ -179,7 +179,17 @@ const HomePage = () => {
     navigate('/my-sessions');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (adminUser && adminUser.userId) {
+      try {
+        // Log logout to audit table
+        await apiService.adminLogout(adminUser.userId, adminUser.isAdmin);
+      } catch (error) {
+        console.error('Failed to log logout:', error);
+        // Continue with logout even if API call fails
+      }
+    }
+    
     setAdminUser(null);
     setShowAdminDropdown(false);
     localStorage.removeItem('adminUser');

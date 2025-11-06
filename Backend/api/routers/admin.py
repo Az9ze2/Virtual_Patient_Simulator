@@ -4,7 +4,7 @@ Admin Router - Handle admin authentication and dashboard data
 
 import os
 from typing import Optional
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 # Database integration
@@ -34,9 +34,14 @@ class AdminLoginResponse(BaseModel):
     user_id: Optional[str] = None
     message: Optional[str] = None
 
+class AdminLogoutRequest(BaseModel):
+    user_id: str
+    is_admin: bool
+
 class ExecuteQueryRequest(BaseModel):
     query: str
     admin_id: str  # Required to verify admin access
+    admin_password: Optional[str] = None  # Required for DELETE/INSERT operations
 
 # ============================================
 # Helper Functions
@@ -57,13 +62,16 @@ def check_admin_credentials(name: str, admin_id: str) -> bool:
 # ============================================
 
 @router.post("/login", response_model=AdminLoginResponse)
-async def admin_login(request: AdminLoginRequest):
+async def admin_login(request: AdminLoginRequest, fastapi_request: Request):
     """
-    Admin login endpoint - validates credentials and logs to audit table
+    Admin login endpoint - validates credentials and logs to audit table with IP address
     """
     try:
         if not (repo and now_th and get_conn):
             raise HTTPException(status_code=503, detail="Database not configured")
+        
+        # Get client IP address
+        ip_address = fastapi_request.client.host if fastapi_request.client else None
         
         # Check if user is admin
         is_admin = check_admin_credentials(request.name, request.admin_id)
@@ -79,13 +87,14 @@ async def admin_login(request: AdminLoginRequest):
         # Update last login
         repo.update_user_last_login(user_id)
         
-        # Add audit log
+        # Add audit log with IP address
         action_type = "admin_login" if is_admin else "user_login"
         repo.add_audit_log(
             user_id=user_id,
             session_id=None,
             action_type=action_type,
-            performed_at=now_th().replace(tzinfo=None)
+            performed_at=now_th().replace(tzinfo=None),
+            ip_address=ip_address
         )
         
         return AdminLoginResponse(
@@ -97,6 +106,37 @@ async def admin_login(request: AdminLoginRequest):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
+
+
+@router.post("/logout")
+async def admin_logout(request: AdminLogoutRequest, fastapi_request: Request):
+    """
+    Logout endpoint - logs user/admin logout to audit table with IP address
+    """
+    try:
+        if not (repo and now_th):
+            raise HTTPException(status_code=503, detail="Database not configured")
+        
+        # Get client IP address
+        ip_address = fastapi_request.client.host if fastapi_request.client else None
+        
+        # Add audit log
+        action_type = "admin_logout" if request.is_admin else "user_logout"
+        repo.add_audit_log(
+            user_id=request.user_id,
+            session_id=None,
+            action_type=action_type,
+            performed_at=now_th().replace(tzinfo=None),
+            ip_address=ip_address
+        )
+        
+        return {
+            "success": True,
+            "message": "Logout recorded"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Logout failed: {str(e)}")
 
 
 @router.get("/stats")
@@ -220,7 +260,8 @@ async def get_audit_logs(limit: int = 50):
                     a.log_id as audit_id,
                     u.name as user_name,
                     a.action_type,
-                    '' as details,
+                    a.details,
+                    a.ip_address,
                     a.performed_at as created_at
                 FROM audit_log a
                 LEFT JOIN users u ON a.user_id = u.user_id
@@ -421,47 +462,146 @@ async def get_home_stats():
 
 
 @router.post("/execute-query")
-async def execute_query(request: ExecuteQueryRequest):
+async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
     """
-    Execute a SQL query (admin only, read-only)
+    Execute a SQL query (admin only)
+    Supports: SELECT (no password), DELETE/INSERT (requires password)
+    All queries are logged to backend and audit_log table
     """
+    admin_user_id = None
+    admin_name = None
+    ip_address = None
+    
     try:
         if not get_conn:
             raise HTTPException(status_code=503, detail="Database not configured")
         
+        # Get client IP address
+        ip_address = fastapi_request.client.host if fastapi_request.client else "Unknown"
+        
         # Verify this is an admin request by checking admin_id
         admin_id_env = os.getenv("ADMIN_ID", "")
+        admin_name_env = os.getenv("ADMIN_NAME", "")
+        
         if not admin_id_env or request.admin_id.strip() != admin_id_env.strip():
+            print(f"[QUERY EDITOR] ❌ Unauthorized access attempt from IP: {ip_address}")
             raise HTTPException(status_code=403, detail="Unauthorized: Admin access required")
+        
+        # Get admin user_id from database
+        admin_name = admin_name_env
+        with get_conn() as conn, conn.cursor() as cur:
+            cur.execute("SELECT user_id FROM users WHERE student_id = %s LIMIT 1", (request.admin_id,))
+            result = cur.fetchone()
+            if result:
+                admin_user_id = result["user_id"]
         
         query = request.query.strip()
         
         # Security checks
         if not query:
+            print(f"[QUERY EDITOR] ⚠️ Empty query from admin {admin_name} (ID: {request.admin_id}, IP: {ip_address})")
             raise HTTPException(status_code=400, detail="Query cannot be empty")
         
-        # Block dangerous operations (case-insensitive)
-        query_upper = query.upper()
-        dangerous_keywords = [
-            'DROP', 'DELETE', 'TRUNCATE', 'ALTER', 'CREATE', 'INSERT', 
-            'UPDATE', 'GRANT', 'REVOKE', 'EXECUTE', 'EXEC'
-        ]
+        print(f"[QUERY EDITOR] 📝 Query received from admin {admin_name} (ID: {request.admin_id}, IP: {ip_address})")
+        print(f"[QUERY EDITOR] 📄 Query: {query}")
         
-        for keyword in dangerous_keywords:
-            if keyword in query_upper:
+        import re
+        query_upper = query.upper()
+        
+        # Block these operations ALWAYS (even with password)
+        forbidden_keywords = ['DROP', 'TRUNCATE', 'ALTER', 'CREATE', 'GRANT', 'REVOKE', 'EXECUTE', 'EXEC']
+        for keyword in forbidden_keywords:
+            pattern = r'\b' + re.escape(keyword) + r'\b'
+            if re.search(pattern, query_upper):
+                print(f"[QUERY EDITOR] 🚫 BLOCKED: {keyword} operation attempted by {admin_name} (IP: {ip_address})")
+                print(f"[QUERY EDITOR] 🚫 Blocked query: {query}")
+                
+                # Log to audit_log
+                if admin_user_id and repo and now_th:
+                    repo.add_audit_log(
+                        user_id=admin_user_id,
+                        session_id=None,
+                        action_type="query_editor_blocked",
+                        details=f"BLOCKED {keyword} operation: {query[:200]}",
+                        performed_at=now_th().replace(tzinfo=None),
+                        ip_address=ip_address
+                    )
+                
                 raise HTTPException(
                     status_code=403, 
-                    detail=f"Query rejected: {keyword} operations are not allowed. Only SELECT queries are permitted."
+                    detail=f"Query rejected: {keyword} operations are not allowed."
                 )
         
-        # Ensure it's a SELECT query
-        if not query_upper.startswith('SELECT'):
-            raise HTTPException(
-                status_code=403,
-                detail="Only SELECT queries are allowed"
-            )
+        # Check for DELETE or INSERT or UPDATE (requires password)
+        requires_password = False
+        operation_type = "SELECT"
+        dangerous_operations = ['DELETE', 'INSERT', 'UPDATE']
+        for operation in dangerous_operations:
+            pattern = r'\b' + re.escape(operation) + r'\b'
+            if re.search(pattern, query_upper):
+                requires_password = True
+                operation_type = operation
+                break
+        
+        # If dangerous operation, verify password
+        if requires_password:
+            print(f"[QUERY EDITOR] ⚠️  {operation_type} operation detected - password verification required")
+            
+            # Additional security: DELETE operations MUST have WHERE clause
+            if operation_type == 'DELETE':
+                # Check if query has WHERE clause
+                if not re.search(r'\bWHERE\b', query_upper):
+                    print(f"[QUERY EDITOR] 🚫 BLOCKED: DELETE without WHERE clause by {admin_name} (IP: {ip_address})")
+                    print(f"[QUERY EDITOR] 🚫 Blocked query: {query}")
+                    
+                    # Log to audit_log
+                    if admin_user_id and repo and now_th:
+                        repo.add_audit_log(
+                            user_id=admin_user_id,
+                            session_id=None,
+                            action_type="query_editor_blocked",
+                            details=f"BLOCKED DELETE without WHERE: {query[:200]}",
+                            performed_at=now_th().replace(tzinfo=None),
+                            ip_address=ip_address
+                        )
+                    
+                    raise HTTPException(
+                        status_code=403,
+                        detail="DELETE operations must include a WHERE clause to prevent accidental deletion of all rows."
+                    )
+            
+            admin_password_env = os.getenv("ADMIN_PASSWORD", "")
+            if not admin_password_env:
+                print(f"[QUERY EDITOR] ❌ Admin password not configured on server")
+                raise HTTPException(
+                    status_code=500,
+                    detail="Admin password not configured on server"
+                )
+            
+            if not request.admin_password or request.admin_password.strip() != admin_password_env.strip():
+                print(f"[QUERY EDITOR] ❌ Incorrect password for {operation_type} operation by {admin_name} (IP: {ip_address})")
+                
+                # Log failed password attempt
+                if admin_user_id and repo and now_th:
+                    repo.add_audit_log(
+                        user_id=admin_user_id,
+                        session_id=None,
+                        action_type="query_editor_password_failed",
+                        details=f"Failed password for {operation_type}: {query[:200]}",
+                        performed_at=now_th().replace(tzinfo=None),
+                        ip_address=ip_address
+                    )
+                
+                raise HTTPException(
+                    status_code=403,
+                    detail="Incorrect password. DELETE/INSERT/UPDATE operations require password verification."
+                )
+            
+            print(f"[QUERY EDITOR] ✅ Password verified for {operation_type} operation")
         
         # Execute query with timeout
+        print(f"[QUERY EDITOR] ⏳ Executing query...")
+        
         with get_conn() as conn, conn.cursor() as cur:
             # Set statement timeout to 30 seconds
             cur.execute("SET statement_timeout = 30000")
@@ -469,7 +609,34 @@ async def execute_query(request: ExecuteQueryRequest):
             # Execute the query
             cur.execute(query)
             
-            # Fetch results
+            # For INSERT/UPDATE/DELETE, commit and return affected rows
+            if requires_password:
+                conn.commit()
+                affected_rows = cur.rowcount
+                
+                print(f"[QUERY EDITOR] ✅ {operation_type} operation completed successfully")
+                print(f"[QUERY EDITOR] 📊 Rows affected: {affected_rows}")
+                
+                # Log to audit_log
+                if admin_user_id and repo and now_th:
+                    repo.add_audit_log(
+                        user_id=admin_user_id,
+                        session_id=None,
+                        action_type=f"query_editor_{operation_type.lower()}",
+                        details=f"{operation_type} operation: {query[:200]} | Affected rows: {affected_rows}",
+                        performed_at=now_th().replace(tzinfo=None),
+                        ip_address=ip_address
+                    )
+                
+                return {
+                    "success": True,
+                    "message": f"Query executed successfully. {affected_rows} row(s) affected.",
+                    "rows": affected_rows,
+                    "columns": [],
+                    "data": []
+                }
+            
+            # For SELECT queries, fetch and return results
             rows = cur.fetchall()
             
             # Get column names
@@ -480,6 +647,21 @@ async def execute_query(request: ExecuteQueryRequest):
             for row in rows:
                 data.append([row[col] for col in columns])
             
+            print(f"[QUERY EDITOR] ✅ SELECT query completed successfully")
+            print(f"[QUERY EDITOR] 📊 Rows returned: {len(data)}")
+            print(f"[QUERY EDITOR] 📋 Columns: {', '.join(columns)}")
+            
+            # Log to audit_log
+            if admin_user_id and repo and now_th:
+                repo.add_audit_log(
+                    user_id=admin_user_id,
+                    session_id=None,
+                    action_type="query_editor_select",
+                    details=f"SELECT query: {query[:200]} | Returned {len(data)} rows",
+                    performed_at=now_th().replace(tzinfo=None),
+                    ip_address=ip_address
+                )
+            
             return {
                 "success": True,
                 "message": "Query executed successfully",
@@ -488,10 +670,27 @@ async def execute_query(request: ExecuteQueryRequest):
                 "data": data
             }
             
-    except HTTPException:
+    except HTTPException as http_err:
+        # Log HTTP exceptions (security blocks, auth failures, etc.)
+        print(f"[QUERY EDITOR] ⚠️ HTTP Exception: {http_err.detail}")
         raise
     except Exception as e:
         error_message = str(e)
+        
+        print(f"[QUERY EDITOR] ❌ Query execution error: {error_message}")
+        print(f"[QUERY EDITOR] ❌ Failed query: {query if 'query' in locals() else 'N/A'}")
+        
+        # Log error to audit_log
+        if admin_user_id and repo and now_th and 'query' in locals():
+            repo.add_audit_log(
+                user_id=admin_user_id,
+                session_id=None,
+                action_type="query_editor_error",
+                details=f"Error: {error_message[:100]} | Query: {query[:150]}",
+                performed_at=now_th().replace(tzinfo=None),
+                ip_address=ip_address if ip_address else "Unknown"
+            )
+        
         # Provide more helpful error messages
         if "syntax error" in error_message.lower():
             raise HTTPException(status_code=400, detail=f"SQL syntax error: {error_message}")
