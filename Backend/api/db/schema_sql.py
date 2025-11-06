@@ -69,6 +69,8 @@ CREATE TABLE audit_log (
   user_id VARCHAR REFERENCES users(user_id) ON DELETE SET NULL,
   session_id VARCHAR REFERENCES sessions(session_id) ON DELETE SET NULL,
   action_type VARCHAR NOT NULL,
+  details TEXT,
+  ip_address VARCHAR,
   performed_at TIMESTAMP NOT NULL
 );
 
