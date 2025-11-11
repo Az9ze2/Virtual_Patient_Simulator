@@ -571,13 +571,16 @@ class ApiService {
     return response.data;
   }
 
-  async executeQuery(query, adminId, adminPassword = null) {
+  async executeQuery(query, adminId, adminPassword = null, queryName = null) {
     const payload = {
       query,
       admin_id: adminId
     };
     if (adminPassword) {
       payload.admin_password = adminPassword;
+    }
+    if (queryName) {
+      payload.query_name = queryName;
     }
     const response = await this.api.post('/api/admin/execute-query', payload);
     return response.data;

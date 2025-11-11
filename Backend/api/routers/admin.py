@@ -42,6 +42,7 @@ class ExecuteQueryRequest(BaseModel):
     query: str
     admin_id: str  # Required to verify admin access
     admin_password: Optional[str] = None  # Required for DELETE/INSERT operations
+    query_name: Optional[str] = None  # Optional preset query name for better audit logging
 
 # ============================================
 # Helper Functions
@@ -122,6 +123,7 @@ async def admin_login(request: AdminLoginRequest, fastapi_request: Request):
             user_id=user_id,
             session_id=None,
             action_type=action_type,
+            details=f"user_id={user_id} | name={request.name} | email={request.email or '-'}",
             performed_at=now_th().replace(tzinfo=None),
             ip_address=ip_address
         )
@@ -151,10 +153,27 @@ async def admin_logout(request: AdminLogoutRequest, fastapi_request: Request):
         
         # Add audit log
         action_type = "admin_logout" if request.is_admin else "user_logout"
+        # Fetch user info for details
+        user_name = None
+        email = None
+        student_id = None
+        try:
+            if get_conn:
+                with get_conn() as conn, conn.cursor() as cur:
+                    cur.execute("SELECT name, email, student_id FROM users WHERE user_id = %s LIMIT 1", (request.user_id,))
+                    row = cur.fetchone()
+                    if row:
+                        user_name = row.get("name")
+                        email = row.get("email")
+                        student_id = row.get("student_id")
+        except Exception:
+            pass
+        details = f"user_id={request.user_id} | name={user_name or '-'} | email={email or '-'} | student_id={student_id or '-'}"
         repo.add_audit_log(
             user_id=request.user_id,
             session_id=None,
             action_type=action_type,
+            details=details,
             performed_at=now_th().replace(tzinfo=None),
             ip_address=ip_address
         )
@@ -547,11 +566,12 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
                 
                 # Log to audit_log
                 if admin_user_id and repo and now_th:
+                    query_function = request.query_name if request.query_name else "Custom Query"
                     repo.add_audit_log(
                         user_id=admin_user_id,
                         session_id=None,
                         action_type="query_editor_blocked",
-                        details=f"BLOCKED {keyword} operation: {query[:200]}",
+                        details=f"query={query_function} | op={keyword} | status=blocked | input={query[:100]}",
                         performed_at=now_th().replace(tzinfo=None),
                         ip_address=ip_address
                     )
@@ -612,11 +632,12 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
                 
                 # Log failed password attempt
                 if admin_user_id and repo and now_th:
+                    query_function = request.query_name if request.query_name else "Custom Query"
                     repo.add_audit_log(
                         user_id=admin_user_id,
                         session_id=None,
                         action_type="query_editor_password_failed",
-                        details=f"Failed password for {operation_type}: {query[:200]}",
+                        details=f"query={query_function} | op={operation_type} | status=password_failed | input={query[:100]}",
                         performed_at=now_th().replace(tzinfo=None),
                         ip_address=ip_address
                     )
@@ -648,11 +669,12 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
                 
                 # Log to audit_log
                 if admin_user_id and repo and now_th:
+                    query_function = request.query_name if request.query_name else "Custom Query"
                     repo.add_audit_log(
                         user_id=admin_user_id,
                         session_id=None,
                         action_type=f"query_editor_{operation_type.lower()}",
-                        details=f"{operation_type} operation: {query[:200]} | Affected rows: {affected_rows}",
+                        details=f"query={query_function} | op={operation_type} | affected_rows={affected_rows}",
                         performed_at=now_th().replace(tzinfo=None),
                         ip_address=ip_address
                     )
@@ -682,11 +704,12 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
             
             # Log to audit_log
             if admin_user_id and repo and now_th:
+                query_function = request.query_name if request.query_name else "Custom Query"
                 repo.add_audit_log(
                     user_id=admin_user_id,
                     session_id=None,
                     action_type="query_editor_select",
-                    details=f"SELECT query: {query[:200]} | Returned {len(data)} rows",
+                    details=f"query={query_function} | op=SELECT | rows={len(data)}",
                     performed_at=now_th().replace(tzinfo=None),
                     ip_address=ip_address
                 )
@@ -711,11 +734,12 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
         
         # Log error to audit_log
         if admin_user_id and repo and now_th and 'query' in locals():
+            query_function = request.query_name if hasattr(request, 'query_name') and request.query_name else "Custom Query"
             repo.add_audit_log(
                 user_id=admin_user_id,
                 session_id=None,
                 action_type="query_editor_error",
-                details=f"Error: {error_message[:100]} | Query: {query[:150]}",
+                details=f"query={query_function} | status=error | message={error_message[:100]}",
                 performed_at=now_th().replace(tzinfo=None),
                 ip_address=ip_address if ip_address else "Unknown"
             )

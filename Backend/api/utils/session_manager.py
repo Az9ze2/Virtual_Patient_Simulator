@@ -155,7 +155,9 @@ class SessionManager:
                 token_usage=token_usage,
                 diagnosis_treatment=session.diagnosis_treatment,
                 chat_history=session.chat_history,
-                ended_at=datetime.now()
+                created_at=session.created_at,
+                ended_at=datetime.now(),
+                exam_mode=session.config.exam_mode
             )
             
             return summary

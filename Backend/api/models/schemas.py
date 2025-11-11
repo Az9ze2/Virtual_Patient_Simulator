@@ -95,7 +95,9 @@ class SessionSummary(BaseModel):
     token_usage: Dict[str, int]
     diagnosis_treatment: DiagnosisAndTreatment
     chat_history: List[Dict[str, str]]
+    created_at: Optional[datetime] = None
     ended_at: datetime
+    exam_mode: bool = False
 
 # Document Upload Models
 class DocumentUploadResponse(BaseModel):
