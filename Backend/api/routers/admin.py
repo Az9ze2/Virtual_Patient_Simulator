@@ -47,6 +47,35 @@ class ExecuteQueryRequest(BaseModel):
 # Helper Functions
 # ============================================
 
+def get_client_ip(request: Request) -> str:
+    """
+    Extract client IP address from request, checking proxy headers first.
+    Works with proxies, load balancers (Railway, Nginx, Cloudflare, etc.)
+    """
+    # Check X-Forwarded-For header (most common for proxies)
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        # X-Forwarded-For can contain multiple IPs: "client, proxy1, proxy2"
+        # The first one is the original client
+        return forwarded_for.split(",")[0].strip()
+    
+    # Check X-Real-IP header (used by some proxies)
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        return real_ip.strip()
+    
+    # Check CF-Connecting-IP (Cloudflare)
+    cf_ip = request.headers.get("CF-Connecting-IP")
+    if cf_ip:
+        return cf_ip.strip()
+    
+    # Fallback to direct client connection
+    if request.client and request.client.host:
+        return request.client.host
+    
+    # Last resort
+    return "Unknown"
+
 def check_admin_credentials(name: str, admin_id: str) -> bool:
     """Check if provided credentials match admin credentials in environment"""
     admin_name = os.getenv("ADMIN_NAME", "")
@@ -70,8 +99,8 @@ async def admin_login(request: AdminLoginRequest, fastapi_request: Request):
         if not (repo and now_th and get_conn):
             raise HTTPException(status_code=503, detail="Database not configured")
         
-        # Get client IP address
-        ip_address = fastapi_request.client.host if fastapi_request.client else None
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request)
         
         # Check if user is admin
         is_admin = check_admin_credentials(request.name, request.admin_id)
@@ -117,8 +146,8 @@ async def admin_logout(request: AdminLogoutRequest, fastapi_request: Request):
         if not (repo and now_th):
             raise HTTPException(status_code=503, detail="Database not configured")
         
-        # Get client IP address
-        ip_address = fastapi_request.client.host if fastapi_request.client else None
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request)
         
         # Add audit log
         action_type = "admin_logout" if request.is_admin else "user_logout"
@@ -476,8 +505,8 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
         if not get_conn:
             raise HTTPException(status_code=503, detail="Database not configured")
         
-        # Get client IP address
-        ip_address = fastapi_request.client.host if fastapi_request.client else "Unknown"
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request)
         
         # Verify this is an admin request by checking admin_id
         admin_id_env = os.getenv("ADMIN_ID", "")
