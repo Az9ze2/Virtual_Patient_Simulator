@@ -29,6 +29,41 @@ const AdminDashboard = () => {
   const [insertColumns, setInsertColumns] = useState('');
   const [insertValues, setInsertValues] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [queryName, setQueryName] = useState('');
+
+  // Helpers: consistent TH timezone + clean cell rendering
+  const DATE_TIME_REGEX = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/;
+  const toIsoCandidate = (v) => (typeof v === 'string' ? v.replace(' ', 'T') : v);
+  const formatDateTH = (value) => {
+    if (!value) return 'N/A';
+    try {
+      const str = String(value);
+      if (!DATE_TIME_REGEX.test(str) && isNaN(Date.parse(str))) return str;
+      const d = new Date(toIsoCandidate(str));
+      if (isNaN(d)) return str;
+      return new Intl.DateTimeFormat('th-TH', {
+        timeZone: 'Asia/Bangkok',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      }).format(d);
+    } catch {
+      return String(value);
+    }
+  };
+
+  const formatQueryCell = (cell) => {
+    if (cell === null || cell === undefined) return '';
+    if (typeof cell === 'number') {
+      return cell.toLocaleString(undefined, { maximumFractionDigits: 3 });
+    }
+    const str = String(cell);
+    if (DATE_TIME_REGEX.test(str) || str.includes('T')) {
+      const formatted = formatDateTH(str);
+      return formatted;
+    }
+    return str;
+  };
 
   // Authentication check - must be logged in AND must be admin
   useEffect(() => {
@@ -82,7 +117,7 @@ const AdminDashboard = () => {
     const action = actionType.toLowerCase();
     if (action.includes('login')) return 'blue';
     if (action.includes('logout')) return 'gray';
-    if (action.includes('session_start') || action.includes('start')) return 'green';
+    if (action.includes('session_start') || action.includes('start')) return 'orange';
     if (action.includes('session_end') || action.includes('end')) return 'orange';
     if (action.includes('delete') || action.includes('remove')) return 'red';
     if (action.includes('update') || action.includes('edit')) return 'purple';
@@ -90,6 +125,20 @@ const AdminDashboard = () => {
     if (action.includes('upload')) return 'indigo';
     if (action.includes('admin')) return 'pink';
     return 'blue'; // default
+  };
+
+  // Extract mode from details string (format: "mode=exam | ..." or "mode=practice | ...")
+  const extractModeFromDetails = (details) => {
+    if (!details) return null;
+    const match = details.match(/mode=(exam|practice)/i);
+    return match ? match[1].toLowerCase() : null;
+  };
+
+  // Get stripe color based on mode
+  const getModeStripeColor = (mode) => {
+    if (mode === 'exam') return '#f87171'; // light red
+    if (mode === 'practice') return '#86efac'; // light green
+    return 'transparent';
   };
 
   const loadMonitoringData = async () => {
@@ -148,8 +197,10 @@ const AdminDashboard = () => {
         return;
       }
 
-      const result = await apiService.executeQuery(sqlQuery, adminId, password);
+      const result = await apiService.executeQuery(sqlQuery, adminId, password, queryName || null);
       setQueryResult(result);
+      // Clear query name after execution
+      setQueryName('');
     } catch (error) {
       console.error('Query execution failed:', error);
       setQueryResult({
@@ -332,7 +383,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="admin-activity-content">
                       <p className="admin-activity-desc">{log.action_type}</p>
-                      <p className="admin-activity-meta">{log.user_name || 'System'} • {new Date(log.created_at).toLocaleString()}</p>
+<p className="admin-activity-meta">{log.user_name || 'System'} • {formatDateTH(log.created_at)}</p>
                     </div>
                   </div>
                 ))}
@@ -408,6 +459,8 @@ const AdminDashboard = () => {
   ];
 
   const handlePresetQuery = (query, presetName) => {
+    // Track query name for audit logging
+    setQueryName(presetName);
     // If it's User Data query, show modal for username input
     if (presetName === 'User Data') {
       setPendingQuery(query);
@@ -428,6 +481,7 @@ const AdminDashboard = () => {
   };
 
   const handleDeleteData = () => {
+    setQueryName('Delete Data');
     setShowDeleteModal(true);
   };
 
@@ -490,6 +544,7 @@ const AdminDashboard = () => {
   };
 
   const handleInsertData = () => {
+    setQueryName('Insert Data');
     setShowInsertModal(true);
   };
 
@@ -642,8 +697,8 @@ const AdminDashboard = () => {
                   <tbody>
                     {queryResult.data.map((row, idx) => (
                       <tr key={idx}>
-                        {row.map((cell, cellIdx) => (
-                          <td key={cellIdx}>{cell}</td>
+{row.map((cell, cellIdx) => (
+                          <td key={cellIdx}>{formatQueryCell(cell)}</td>
                         ))}
                       </tr>
                     ))}
@@ -906,19 +961,37 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {auditLogs.map(log => (
-                    <tr key={log.audit_id}>
-                      <td>{new Date(log.created_at).toLocaleString()}</td>
-                      <td>{log.user_name || 'N/A'}</td>
-                      <td>
-                        <span className={`admin-badge ${getActionBadgeColor(log.action_type)}`}>
-                          {log.action_type}
-                        </span>
-                      </td>
-                      <td className="admin-mono">{log.ip_address || 'N/A'}</td>
-                      <td>{log.details || 'N/A'}</td>
-                    </tr>
-                  ))}
+                  {auditLogs.map(log => {
+                    const isSessionAction = log.action_type === 'session_start' || log.action_type === 'session_end';
+                    const mode = isSessionAction ? extractModeFromDetails(log.details) : null;
+                    const stripeColor = mode ? getModeStripeColor(mode) : 'transparent';
+                    
+                    return (
+                      <tr key={log.audit_id}>
+                        <td>{formatDateTH(log.created_at)}</td>
+                        <td>{log.user_name || 'N/A'}</td>
+                        <td>
+                          <span 
+                            className={`admin-badge ${getActionBadgeColor(log.action_type)}`}
+                            style={isSessionAction ? {
+                              borderLeft: `4px solid ${stripeColor}`,
+                              paddingLeft: '0.5rem'
+                            } : {}}
+                          >
+                            {log.action_type}
+                          </span>
+                        </td>
+                        <td className="admin-mono">{log.ip_address || 'N/A'}</td>
+                        <td>
+                          {isSessionAction && mode ? (
+                            log.details ? log.details.replace(/mode=(exam|practice)\s*\|\s*/i, '') : 'N/A'
+                          ) : (
+                            log.details || 'N/A'
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -957,7 +1030,7 @@ const AdminDashboard = () => {
                         </span>
                       </td>
                       <td>{session.message_count || 0}</td>
-                      <td>{new Date(session.created_at).toLocaleString()}</td>
+<td>{formatDateTH(session.created_at)}</td>
                       <td>
                         {session.has_summary ? (
                           <button
@@ -997,7 +1070,7 @@ const AdminDashboard = () => {
                       <td>{user.student_id}</td>
                       <td>{user.email || 'N/A'}</td>
                       <td>{user.session_count || 0}</td>
-                      <td>{user.last_login ? new Date(user.last_login).toLocaleString() : 'N/A'}</td>
+<td>{user.last_login ? formatDateTH(user.last_login) : 'N/A'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1028,7 +1101,7 @@ const AdminDashboard = () => {
                         </span>
                       </td>
                       <td className="admin-truncate">{msg.content}</td>
-                      <td>{new Date(msg.created_at).toLocaleString()}</td>
+<td>{formatDateTH(msg.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1061,7 +1134,7 @@ const AdminDashboard = () => {
                       </td>
                       <td>{caseItem.medical_specialty || 'N/A'}</td>
                       <td>{caseItem.duration_minutes || 'N/A'}</td>
-                      <td>{caseItem.import_at ? new Date(caseItem.import_at).toLocaleString() : 'N/A'}</td>
+<td>{caseItem.import_at ? formatDateTH(caseItem.import_at) : 'N/A'}</td>
                     </tr>
                   ))}
                 </tbody>

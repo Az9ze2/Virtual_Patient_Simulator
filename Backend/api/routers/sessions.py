@@ -8,7 +8,7 @@ import sys
 import io
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Response, Request
 from fastapi.responses import StreamingResponse
 
 # Add src directory to path  
@@ -77,8 +77,14 @@ async def prelogin(request: StartSessionRequest):
             created = True
         # Update last_login
         repo.update_user_last_login(user_id)
-        # Audit log
-        repo.add_audit_log(user_id=user_id, session_id=None, action_type=login_type, performed_at=now_th().replace(tzinfo=None))
+        # Audit log with user details
+        repo.add_audit_log(
+            user_id=user_id,
+            session_id=None,
+            action_type=login_type,
+            details=f"name={provided_name} | student_id={student_id} | email={provided_email or '-'}",
+            performed_at=now_th().replace(tzinfo=None)
+        )
         return APIResponse(success=True, message=f"{login_type} recorded", data={"user_id": user_id, "login_type": login_type})
     except HTTPException:
         raise
@@ -86,11 +92,13 @@ async def prelogin(request: StartSessionRequest):
         raise HTTPException(status_code=500, detail=f"Failed to prelogin: {str(e)}")
 
 @router.post("/start")
-async def start_session(request: StartSessionRequest):
+async def start_session(request: StartSessionRequest, fastapi_request: Request):
     """
     Start a new interview session
     """
     try:
+        # Get client IP address
+        ip_address = fastapi_request.client.host if fastapi_request.client else "Unknown"
         # Load case data
         case_data, case_info = _load_case_data(request.case_filename)
 
@@ -144,14 +152,18 @@ async def start_session(request: StartSessionRequest):
                     started_at=now_th().replace(tzinfo=None),
                 )
                 print(f"[DB] Created session: {session_id} for user {user_id} -> case {cid}")
-                # Audit log
+                # Audit log with mode, user, and case info
+                mode = "exam" if request.config.exam_mode else "practice"
+                details = f"mode={mode} | user={provided_name} | student_id={student_id} | case_id={cid} | case_title={case_info.case_title}"
                 repo.add_audit_log(
                     user_id=user_id,
                     session_id=session_id,
                     action_type="session_start",
+                    details=details,
                     performed_at=now_th().replace(tzinfo=None),
+                    ip_address=ip_address
                 )
-                print(f"[DB] Audit log: session_start for {session_id}")
+                print(f"[DB] Audit log: session_start for {session_id} (mode={mode})")
         except Exception as e:
             print(f"[DB][ERROR] Failed to persist session start to DB: {e}")
         
@@ -298,11 +310,13 @@ async def update_diagnosis_treatment(session_id: str, request: UpdateDiagnosisRe
         )
 
 @router.post("/{session_id}/end")
-async def end_session(session_id: str):
+async def end_session(session_id: str, fastapi_request: Request):
     """
     End session and generate summary with token usage
     """
     try:
+        # Get client IP address
+        ip_address = fastapi_request.client.host if fastapi_request.client else "Unknown"
         summary = session_manager.end_session(session_id)
         if not summary:
             raise HTTPException(
@@ -338,17 +352,29 @@ async def end_session(session_id: str):
                     print(f"[DB][ERROR] Failed to insert session_report: {rep_err}")
                 # Audit log with user_id resolved via student_id (always attempt)
                 uid = None
+                user_name = summary.user_info.name
+                student_id_val = summary.user_info.student_id
                 try:
                     uid = repo.get_user_id_by_student_id(summary.user_info.student_id)
                 except Exception:
                     uid = None
+                
+                # Get token usage details and mode
+                token_usage = summary.token_usage or {}
+                mode = "exam" if summary.exam_mode else "practice"
+                case_id = summary.case_info.case_id
+                case_title = summary.case_info.case_title
+                details = f"mode={mode} | user={user_name} | student_id={student_id_val} | case_id={case_id} | case_title={case_title} | messages={summary.total_messages} | duration={duration_seconds}s | tokens={total_tokens} (in={token_usage.get('input_tokens', 0)}, out={token_usage.get('output_tokens', 0)})"
+                
                 repo.add_audit_log(
                     user_id=uid,
                     session_id=session_id,
                     action_type="session_end",
+                    details=details,
                     performed_at=now_th().replace(tzinfo=None),
+                    ip_address=ip_address
                 )
-                print(f"[DB] Audit log session_end for {session_id} (user_id={uid})")
+                print(f"[DB] Audit log session_end for {session_id} (user_id={uid}, mode={mode})")
         except Exception as e:
             print(f"[DB][ERROR] Failed to persist session end to DB: {e}")
         
@@ -782,20 +808,32 @@ async def download_session_report(session_id: str):
                 try:
                     if repo and now_th:
                         uid = None
+                        user_name = None
                         try:
                             # Try resolve user id from session manager data
                             session_obj = session_manager.get_session(session_id)
                             if session_obj:
                                 uid = repo.get_user_id_by_student_id(session_obj.user_info.student_id)
+                                user_name = session_obj.user_info.name
                         except Exception:
                             uid = None
+                        
+                        # Get PDF size in KB
+                        buffer.seek(0, 2)  # Seek to end
+                        file_size = buffer.tell()  # Get position (file size in bytes)
+                        buffer.seek(0)  # Reset to beginning
+                        file_size_kb = round(file_size / 1024, 2)
+                        
+                        details = f"user={user_name or 'N/A'} | filename={ascii_filename} | size={file_size_kb}KB"
+                        
                         repo.add_audit_log(
                             user_id=uid,
                             session_id=session_id,
                             action_type="download_report",
+                            details=details,
                             performed_at=now_th().replace(tzinfo=None),
                         )
-                        print(f"[DB] Audit log download_report for {session_id} (user_id={uid})")
+                        print(f"[DB] Audit log download_report for {session_id} (user_id={uid}, size={file_size_kb}KB)")
                 except Exception as audit_err:
                     print(f"[DB][ERROR] Failed to write download_report audit: {audit_err}")
 
