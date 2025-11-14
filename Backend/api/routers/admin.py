@@ -2,7 +2,7 @@
 Admin Router - Handle admin authentication and dashboard data
 """
 
-import os
+import os, json
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
@@ -80,15 +80,39 @@ def get_client_ip(request: Request) -> str:
     # Last resort
     return "Unknown"
 
+import os
+import json
+
 def check_admin_credentials(name: str, admin_id: str) -> bool:
-    """Check if provided credentials match admin credentials in environment"""
-    admin_name = os.getenv("ADMIN_NAME", "")
-    admin_id_env = os.getenv("ADMIN_ID", "")
-    
-    return (
-        name.strip().lower() == admin_name.strip().lower() and
-        admin_id.strip() == admin_id_env.strip()
-    )
+    """Return True when provided credentials match an admin entry in ADMINS env var.
+
+    ADMINS expected as JSON mapping: {"alice": "123", "bob": "456"}
+    This function normalizes both user input and env data (strip + lowercase keys).
+    """
+
+    admins_json = os.getenv("ADMINS", "{}")
+    try:
+        raw_admins = json.loads(admins_json)
+    except json.JSONDecodeError:
+        print("Failed to decode ADMINS JSON:", admins_json)
+        return False
+
+    # Build a normalized admins dict: lowercase stripped name -> stripped id
+    normalized_admins = {
+        str(k).strip().lower(): str(v).strip()
+        for k, v in raw_admins.items()
+        if str(k).strip()  # skip empty keys
+    }
+
+    name_normalized = name.strip().lower()
+    admin_id_normalized = admin_id.strip()
+
+    # Debug
+    print("Normalized admins:", normalized_admins)
+    print("User trying:", name_normalized, admin_id_normalized)
+
+    return normalized_admins.get(name_normalized) == admin_id_normalized
+
 
 # ============================================
 # Admin Endpoints
