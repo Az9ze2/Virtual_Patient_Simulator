@@ -7,8 +7,8 @@ import uuid
 import json
 import os
 import sys
-from datetime import datetime
-from typing import Dict, Optional, List, Any
+from datetime import datetime, timedelta
+from typing import Dict, Optional, List, Any, Tuple
 from threading import Lock
 from dotenv import load_dotenv
 
@@ -34,6 +34,9 @@ from api.models.schemas import (
 class SessionManager:
     """Manages active sessions in memory"""
     
+    # Session timeout in minutes (default 60 minutes = 1 hour)
+    SESSION_TIMEOUT_MINUTES = 60
+    
     def __init__(self):
         self._sessions: Dict[str, SessionData] = {}
         self._chatbots: Dict[str, UnifiedChatbotTester] = {}
@@ -51,12 +54,14 @@ class SessionManager:
             session_id = str(uuid.uuid4())
             
             # Create session data
+            now = datetime.now()
             session = SessionData(
                 session_id=session_id,
                 user_info=user_info,
                 case_info=case_info,
                 config=config,
-                created_at=datetime.now(),
+                created_at=now,
+                last_activity=now,
                 patient_info=self._extract_patient_info(case_data)
             )
             
@@ -87,26 +92,34 @@ class SessionManager:
             return session_id
     
     def get_session(self, session_id: str) -> Optional[SessionData]:
-        """Get session data by ID"""
-        with self._lock:
-            return self._sessions.get(session_id)
-    
-    def get_chatbot(self, session_id: str) -> Optional[UnifiedChatbotTester]:
-        """Get chatbot instance by session ID"""
-        with self._lock:
-            return self._chatbots.get(session_id)
-    
-    def update_chat_history(self, session_id: str, user_message: str, bot_response: str):
-        """Add new chat message to session history"""
+        """Get session data by ID and update last activity"""
         with self._lock:
             session = self._sessions.get(session_id)
             if session:
+                session.last_activity = datetime.now()
+            return session
+    
+    def get_chatbot(self, session_id: str) -> Optional[UnifiedChatbotTester]:
+        """Get chatbot instance by session ID and update last activity"""
+        with self._lock:
+            session = self._sessions.get(session_id)
+            if session:
+                session.last_activity = datetime.now()
+            return self._chatbots.get(session_id)
+    
+    def update_chat_history(self, session_id: str, user_message: str, bot_response: str):
+        """Add new chat message to session history and update last activity"""
+        with self._lock:
+            session = self._sessions.get(session_id)
+            if session:
+                now = datetime.now()
                 session.chat_history.append({
-                    "timestamp": datetime.now().isoformat(),
+                    "timestamp": now.isoformat(),
                     "user": user_message,
                     "bot": bot_response,
                     "type": "chat"
                 })
+                session.last_activity = now
     
     def update_diagnosis_treatment(
         self, 
@@ -115,7 +128,7 @@ class SessionManager:
         treatment_plan: Optional[str] = None,
         notes: Optional[str] = None
     ):
-        """Update diagnosis and treatment data"""
+        """Update diagnosis and treatment data and update last activity"""
         with self._lock:
             session = self._sessions.get(session_id)
             if session:
@@ -125,6 +138,7 @@ class SessionManager:
                     session.diagnosis_treatment.treatment_plan = treatment_plan
                 if notes is not None:
                     session.diagnosis_treatment.notes = notes
+                session.last_activity = datetime.now()
     
     def end_session(self, session_id: str) -> Optional[SessionSummary]:
         """End session and generate summary with token usage"""
@@ -178,6 +192,121 @@ class SessionManager:
         """Get list of active session IDs"""
         with self._lock:
             return list(self._sessions.keys())
+    
+    def get_active_sessions_details(self) -> List[Dict[str, Any]]:
+        """Get detailed information about all active sessions"""
+        with self._lock:
+            sessions_info = []
+            now = datetime.now()
+            for session_id, session in self._sessions.items():
+                inactive_minutes = (now - session.last_activity).total_seconds() / 60.0
+                sessions_info.append({
+                    "session_id": session_id,
+                    "user_name": session.user_info.name,
+                    "student_id": session.user_info.student_id,
+                    "case_title": session.case_info.case_title,
+                    "case_id": session.case_info.case_id,
+                    "created_at": session.created_at.isoformat(),
+                    "last_activity": session.last_activity.isoformat(),
+                    "inactive_minutes": round(inactive_minutes, 1),
+                    "total_messages": len(session.chat_history),
+                    "exam_mode": session.config.exam_mode
+                })
+            return sessions_info
+    
+    def cleanup_inactive_sessions(self, timeout_minutes: Optional[int] = None) -> List[Tuple[str, Dict[str, Any]]]:
+        """Clean up sessions that have been inactive for longer than timeout_minutes.
+        Properly ends sessions with summary generation and database updates.
+        Returns list of (session_id, session_info) tuples for cleaned up sessions."""
+        if timeout_minutes is None:
+            timeout_minutes = self.SESSION_TIMEOUT_MINUTES
+        
+        with self._lock:
+            now = datetime.now()
+            timeout_delta = timedelta(minutes=timeout_minutes)
+            sessions_to_cleanup = []
+            
+            # Find sessions to cleanup
+            for session_id, session in list(self._sessions.items()):
+                inactive_time = now - session.last_activity
+                if inactive_time > timeout_delta:
+                    inactive_minutes = inactive_time.total_seconds() / 60.0
+                    session_info = {
+                        "session_id": session_id,
+                        "user_name": session.user_info.name,
+                        "student_id": session.user_info.student_id,
+                        "case_title": session.case_info.case_title,
+                        "inactive_minutes": round(inactive_minutes, 1)
+                    }
+                    sessions_to_cleanup.append((session_id, session_info))
+            
+            # Properly end each session (generate summary, update DB)
+            cleaned_sessions = []
+            for session_id, session_info in sessions_to_cleanup:
+                try:
+                    # Generate summary before deleting
+                    summary = self.end_session(session_id)
+                    
+                    # Persist to database if available
+                    if summary:
+                        try:
+                            # Import here to avoid circular dependency
+                            from api.db import repository as repo
+                            from api.db.time_utils import now_th
+                            
+                            if repo and now_th:
+                                total_tokens = int((summary.token_usage or {}).get("total_tokens", 0))
+                                duration_seconds = int(summary.duration_minutes * 60)
+                                
+                                # Update session as complete
+                                repo.complete_session(
+                                    session_id=session_id,
+                                    total_tokens=total_tokens,
+                                    ended_at=now_th().replace(tzinfo=None),
+                                    duration_seconds=duration_seconds,
+                                )
+                                
+                                # Save report if not exists
+                                if not repo.has_session_report(session_id):
+                                    repo.insert_session_report(
+                                        session_id=session_id,
+                                        summary=summary.dict(),
+                                        generated_at=now_th().replace(tzinfo=None),
+                                    )
+                                
+                                # Add audit log
+                                uid = None
+                                try:
+                                    uid = repo.get_user_id_by_student_id(summary.user_info.student_id)
+                                except:
+                                    pass
+                                
+                                token_usage = summary.token_usage or {}
+                                mode = "exam" if summary.exam_mode else "practice"
+                                details = f"mode={mode} | reason=auto_timeout | inactive_minutes={session_info['inactive_minutes']} | messages={summary.total_messages} | duration={duration_seconds}s | tokens={total_tokens}"
+                                
+                                repo.add_audit_log(
+                                    user_id=uid,
+                                    session_id=session_id,
+                                    action_type="session_timeout",
+                                    details=details,
+                                    performed_at=now_th().replace(tzinfo=None),
+                                    ip_address="system"
+                                )
+                        except Exception as db_err:
+                            print(f"   [DB][ERROR] Failed to persist timeout for {session_id}: {db_err}")
+                    
+                    # Delete from memory
+                    self.delete_session(session_id)
+                    cleaned_sessions.append((session_id, session_info))
+                    print(f"🕐 Auto-ended session due to timeout: {session_id} (user: {session_info['user_name']}, inactive: {session_info['inactive_minutes']} min)")
+                    
+                except Exception as e:
+                    print(f"   ❌ Error ending session {session_id}: {e}")
+                    # Force delete even if ending fails
+                    self.delete_session(session_id)
+            
+            return cleaned_sessions
     
     def _extract_patient_info(self, case_data: Dict[str, Any]) -> PatientInfo:
         """Extract patient information from case data for examiner view"""

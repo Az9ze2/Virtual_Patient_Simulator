@@ -17,6 +17,9 @@ except Exception as _db_import_err:
     get_conn = None
     now_th = None
 
+# Session manager import
+from api.utils.session_manager import session_manager
+
 router = APIRouter()
 
 # ============================================
@@ -751,3 +754,107 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
             raise HTTPException(status_code=400, detail=f"Table or column not found: {error_message}")
         else:
             raise HTTPException(status_code=500, detail=f"Query execution failed: {error_message}")
+
+
+@router.get("/active-sessions")
+async def get_active_sessions():
+    """
+    Get list of currently active sessions with details
+    """
+    try:
+        sessions = session_manager.get_active_sessions_details()
+        return {
+            "success": True,
+            "data": sessions,
+            "total": len(sessions)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch active sessions: {str(e)}")
+
+
+@router.post("/cleanup-inactive-sessions")
+async def cleanup_inactive_sessions(timeout_minutes: Optional[int] = None, fastapi_request: Request = None):
+    """
+    Manually trigger cleanup of inactive sessions.
+    Optional timeout_minutes parameter (default: 60 minutes)
+    """
+    try:
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request) if fastapi_request else "Unknown"
+        
+        # Run cleanup
+        cleaned_sessions = session_manager.cleanup_inactive_sessions(timeout_minutes)
+        
+        # Log to audit if database is available
+        if cleaned_sessions and repo and now_th:
+            timeout = timeout_minutes if timeout_minutes else session_manager.SESSION_TIMEOUT_MINUTES
+            session_ids = ", ".join([s[0][:8] for s in cleaned_sessions[:5]])  # First 5 session IDs (truncated)
+            details = f"timeout={timeout}min | cleaned={len(cleaned_sessions)} | sessions={session_ids}"
+            repo.add_audit_log(
+                user_id=None,
+                session_id=None,
+                action_type="admin_cleanup_sessions",
+                details=details,
+                performed_at=now_th().replace(tzinfo=None),
+                ip_address=ip_address
+            )
+        
+        return {
+            "success": True,
+            "message": f"Cleaned up {len(cleaned_sessions)} inactive session(s)",
+            "cleaned_sessions": [{
+                "session_id": s[0],
+                "user_name": s[1]["user_name"],
+                "student_id": s[1]["student_id"],
+                "case_title": s[1]["case_title"],
+                "inactive_minutes": s[1]["inactive_minutes"]
+            } for s in cleaned_sessions]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to cleanup sessions: {str(e)}")
+
+
+@router.post("/close-session/{session_id}")
+async def close_specific_session(session_id: str, fastapi_request: Request = None):
+    """
+    Manually close a specific session by ID
+    """
+    try:
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request) if fastapi_request else "Unknown"
+        
+        # Get session info before deleting
+        session = session_manager.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
+        
+        session_info = {
+            "user_name": session.user_info.name,
+            "student_id": session.user_info.student_id,
+            "case_title": session.case_info.case_title
+        }
+        
+        # Delete the session
+        session_manager.delete_session(session_id)
+        
+        # Log to audit if database is available
+        if repo and now_th:
+            details = f"session_id={session_id} | user={session_info['user_name']} | student_id={session_info['student_id']}"
+            repo.add_audit_log(
+                user_id=None,
+                session_id=session_id,
+                action_type="admin_force_close_session",
+                details=details,
+                performed_at=now_th().replace(tzinfo=None),
+                ip_address=ip_address
+            )
+        
+        return {
+            "success": True,
+            "message": f"Session {session_id} closed successfully",
+            "session_info": session_info
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to close session: {str(e)}")
