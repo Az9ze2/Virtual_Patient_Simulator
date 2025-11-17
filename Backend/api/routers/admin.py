@@ -554,21 +554,33 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
         # Get client IP address with proxy support
         ip_address = get_client_ip(fastapi_request)
         
-        # Verify this is an admin request by checking admin_id
-        admin_id_env = os.getenv("ADMIN_ID", "")
-        admin_name_env = os.getenv("ADMIN_NAME", "")
+        # ✅ CHECK DATABASE FOR is_admin FLAG INSTEAD OF ENV VARS
+        print(f"[QUERY EDITOR] 🔍 Verifying admin access for admin_id: {request.admin_id}")
         
-        if not admin_id_env or request.admin_id.strip() != admin_id_env.strip():
-            print(f"[QUERY EDITOR] ❌ Unauthorized access attempt from IP: {ip_address}")
-            raise HTTPException(status_code=403, detail="Unauthorized: Admin access required")
-        
-        # Get admin user_id from database
-        admin_name = admin_name_env
         with get_conn() as conn, conn.cursor() as cur:
-            cur.execute("SELECT user_id FROM users WHERE student_id = %s LIMIT 1", (request.admin_id,))
+            # Get user and check is_admin flag
+            cur.execute(
+                "SELECT user_id, name, preferences FROM users WHERE student_id = %s LIMIT 1",
+                (request.admin_id,)
+            )
             result = cur.fetchone()
-            if result:
-                admin_user_id = result["user_id"]
+            
+            if not result:
+                print(f"[QUERY EDITOR] ❌ User not found: {request.admin_id} (IP: {ip_address})")
+                raise HTTPException(status_code=403, detail="Unauthorized: Admin access required")
+            
+            admin_user_id = result["user_id"]
+            admin_name = result["name"]
+            preferences = result.get("preferences", {})
+            
+            # Check if user is admin
+            is_admin = preferences.get("is_admin", False) if isinstance(preferences, dict) else False
+            
+            if not is_admin:
+                print(f"[QUERY EDITOR] ❌ User {admin_name} is not an admin (IP: {ip_address})")
+                raise HTTPException(status_code=403, detail="Unauthorized: Admin access required")
+        
+        print(f"[QUERY EDITOR] ✅ Admin verified: {admin_name} (ID: {request.admin_id}, IP: {ip_address})")
         
         query = request.query.strip()
         
