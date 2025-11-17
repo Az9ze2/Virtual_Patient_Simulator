@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import json
+import asyncio
 from datetime import datetime
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -79,16 +80,47 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             print(f"   ❌ Error: {str(e)} | Time: {process_time:.3f}s")
             raise
 
+# Background task for session cleanup
+async def session_cleanup_task():
+    """Background task that runs every 5 minutes to cleanup inactive sessions"""
+    while True:
+        try:
+            await asyncio.sleep(300)  # Run every 5 minutes (300 seconds)
+            print("\n🧹 Running automatic session cleanup...")
+            cleaned_sessions = session_manager.cleanup_inactive_sessions()
+            if cleaned_sessions:
+                print(f"   🕐 Cleaned up {len(cleaned_sessions)} inactive session(s)")
+                for session_id, info in cleaned_sessions:
+                    print(f"      - {info['user_name']} ({info['student_id']}): inactive for {info['inactive_minutes']} min")
+            else:
+                print("   ✓ No inactive sessions to cleanup")
+        except Exception as e:
+            print(f"   ❌ Error in session cleanup task: {e}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage application lifecycle"""
     # Startup
     print("🚀 Virtual Patient Simulator API starting up...")
+    print(f"🕐 Session timeout set to {session_manager.SESSION_TIMEOUT_MINUTES} minutes")
+    print("🔄 Starting background session cleanup task (runs every 5 minutes)...")
+    
+    # Start background task for session cleanup
+    cleanup_task = asyncio.create_task(session_cleanup_task())
+    
     yield
+    
     # Shutdown
     print("🛑 Virtual Patient Simulator API shutting down...")
-    # Clean up sessions
+    # Cancel background task
+    cleanup_task.cancel()
+    try:
+        await cleanup_task
+    except asyncio.CancelledError:
+        print("   ✓ Background cleanup task stopped")
+    # Clean up all remaining sessions
     session_manager.cleanup_all_sessions()
+    print("   ✓ All sessions cleaned up")
 
 # Initialize FastAPI app
 app = FastAPI(

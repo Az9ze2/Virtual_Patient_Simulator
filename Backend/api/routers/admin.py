@@ -2,7 +2,7 @@
 Admin Router - Handle admin authentication and dashboard data
 """
 
-import os
+import os, json
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
@@ -16,6 +16,9 @@ except Exception as _db_import_err:
     repo = None
     get_conn = None
     now_th = None
+
+# Session manager import
+from api.utils.session_manager import session_manager
 
 router = APIRouter()
 
@@ -77,15 +80,39 @@ def get_client_ip(request: Request) -> str:
     # Last resort
     return "Unknown"
 
+import os
+import json
+
 def check_admin_credentials(name: str, admin_id: str) -> bool:
-    """Check if provided credentials match admin credentials in environment"""
-    admin_name = os.getenv("ADMIN_NAME", "")
-    admin_id_env = os.getenv("ADMIN_ID", "")
-    
-    return (
-        name.strip().lower() == admin_name.strip().lower() and
-        admin_id.strip() == admin_id_env.strip()
-    )
+    """Return True when provided credentials match an admin entry in ADMINS env var.
+
+    ADMINS expected as JSON mapping: {"alice": "123", "bob": "456"}
+    This function normalizes both user input and env data (strip + lowercase keys).
+    """
+
+    admins_json = os.getenv("ADMINS", "{}")
+    try:
+        raw_admins = json.loads(admins_json)
+    except json.JSONDecodeError:
+        print("Failed to decode ADMINS JSON:", admins_json)
+        return False
+
+    # Build a normalized admins dict: lowercase stripped name -> stripped id
+    normalized_admins = {
+        str(k).strip().lower(): str(v).strip()
+        for k, v in raw_admins.items()
+        if str(k).strip()  # skip empty keys
+    }
+
+    name_normalized = name.strip().lower()
+    admin_id_normalized = admin_id.strip()
+
+    # Debug
+    print("Normalized admins:", normalized_admins)
+    print("User trying:", name_normalized, admin_id_normalized)
+
+    return normalized_admins.get(name_normalized) == admin_id_normalized
+
 
 # ============================================
 # Admin Endpoints
@@ -751,3 +778,107 @@ async def execute_query(request: ExecuteQueryRequest, fastapi_request: Request):
             raise HTTPException(status_code=400, detail=f"Table or column not found: {error_message}")
         else:
             raise HTTPException(status_code=500, detail=f"Query execution failed: {error_message}")
+
+
+@router.get("/active-sessions")
+async def get_active_sessions():
+    """
+    Get list of currently active sessions with details
+    """
+    try:
+        sessions = session_manager.get_active_sessions_details()
+        return {
+            "success": True,
+            "data": sessions,
+            "total": len(sessions)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch active sessions: {str(e)}")
+
+
+@router.post("/cleanup-inactive-sessions")
+async def cleanup_inactive_sessions(timeout_minutes: Optional[int] = None, fastapi_request: Request = None):
+    """
+    Manually trigger cleanup of inactive sessions.
+    Optional timeout_minutes parameter (default: 60 minutes)
+    """
+    try:
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request) if fastapi_request else "Unknown"
+        
+        # Run cleanup
+        cleaned_sessions = session_manager.cleanup_inactive_sessions(timeout_minutes)
+        
+        # Log to audit if database is available
+        if cleaned_sessions and repo and now_th:
+            timeout = timeout_minutes if timeout_minutes else session_manager.SESSION_TIMEOUT_MINUTES
+            session_ids = ", ".join([s[0][:8] for s in cleaned_sessions[:5]])  # First 5 session IDs (truncated)
+            details = f"timeout={timeout}min | cleaned={len(cleaned_sessions)} | sessions={session_ids}"
+            repo.add_audit_log(
+                user_id=None,
+                session_id=None,
+                action_type="admin_cleanup_sessions",
+                details=details,
+                performed_at=now_th().replace(tzinfo=None),
+                ip_address=ip_address
+            )
+        
+        return {
+            "success": True,
+            "message": f"Cleaned up {len(cleaned_sessions)} inactive session(s)",
+            "cleaned_sessions": [{
+                "session_id": s[0],
+                "user_name": s[1]["user_name"],
+                "student_id": s[1]["student_id"],
+                "case_title": s[1]["case_title"],
+                "inactive_minutes": s[1]["inactive_minutes"]
+            } for s in cleaned_sessions]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to cleanup sessions: {str(e)}")
+
+
+@router.post("/close-session/{session_id}")
+async def close_specific_session(session_id: str, fastapi_request: Request = None):
+    """
+    Manually close a specific session by ID
+    """
+    try:
+        # Get client IP address with proxy support
+        ip_address = get_client_ip(fastapi_request) if fastapi_request else "Unknown"
+        
+        # Get session info before deleting
+        session = session_manager.get_session(session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
+        
+        session_info = {
+            "user_name": session.user_info.name,
+            "student_id": session.user_info.student_id,
+            "case_title": session.case_info.case_title
+        }
+        
+        # Delete the session
+        session_manager.delete_session(session_id)
+        
+        # Log to audit if database is available
+        if repo and now_th:
+            details = f"session_id={session_id} | user={session_info['user_name']} | student_id={session_info['student_id']}"
+            repo.add_audit_log(
+                user_id=None,
+                session_id=session_id,
+                action_type="admin_force_close_session",
+                details=details,
+                performed_at=now_th().replace(tzinfo=None),
+                ip_address=ip_address
+            )
+        
+        return {
+            "success": True,
+            "message": f"Session {session_id} closed successfully",
+            "session_info": session_info
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to close session: {str(e)}")

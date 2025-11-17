@@ -82,6 +82,7 @@ class SessionData(BaseModel):
     case_info: CaseInfo
     config: SessionConfig
     created_at: datetime
+    last_activity: datetime
     chat_history: List[Dict[str, str]] = []
     diagnosis_treatment: DiagnosisAndTreatment = DiagnosisAndTreatment()
     patient_info: Optional[PatientInfo] = None
